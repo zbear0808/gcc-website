@@ -12,6 +12,7 @@
 /* Components - Order by dependency */
 @import './components/buttons.css';
 @import './components/cards.css';
+@import './components/skeleton.css';
 @import './components/grids.css';
 @import './components/header.css';
 @import './components/sidebar.css';
