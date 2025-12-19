@@ -7,7 +7,7 @@
 
 
 (def image-files
-  ["CHYLPics-29.jpg",
+  ["CHYLPics-29.jpg"
    "BASS GIRLS teddy.jpg"
    "BASS GIRLS wide.jpg"
    "boogie boi.jpg"

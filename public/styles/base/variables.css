@@ -2,6 +2,9 @@
 /* CSS Custom Properties */
 /* ==================== */
 :root {
+  /* Tell browsers and extensions this site uses dark mode */
+  color-scheme: dark;
+  
   /* Colors */
   --color-white: #ffffff;
   --color-black: #000000;

@@ -1,14 +1,17 @@
 # zubair laser website
 
+**Live Site:** https://zulaser.onrender.com  
+**Local Development:** http://localhost:5000
+
 A ClojureScript React website built with shadow-cljs
 
-## Development
+## Local Development
 
 ```bash
 # Install dependencies
 $ npm ci
 
-# Start application and tests
+# Starts development server with hot reload
 $ npm start
 
 # Run tests in node with jsdom
@@ -18,40 +21,42 @@ $ npm test
 $ npm run build
 ```
 
-Development server: `http://localhost:5000`
+The development server will start at `http://localhost:5000` with hot-reloading enabled.
 
 ## Deployment
 
-This project requires **JDK 21+** to build (for shadow-cljs compilation).
+This project uses an automated deployment pipeline:
 
-### Option 1: Deploy to Render.com (Recommended)
+### Current Deployment Workflow
 
-1. Push your code to GitHub/GitLab
-2. Connect your repository to [Render.com](https://render.com)
-3. Render will automatically detect the `render.yaml` configuration
-4. Deploy with one click - Render uses the included Dockerfile with JDK 21
+1. **GitHub Actions** - Builds the site on every push to `main`
+   - Compiles ClojureScript code with shadow-cljs (requires JDK 21+)
+   - Pushes compiled output to [zulaser-deploy](https://github.com/zbear0808/zulaser-deploy)
 
-### Option 2: Deploy to Railway.app
+2. **Render.com** - Automatically deploys when `zulaser-deploy` receives new commits
+   - Watches the [zulaser-deploy](https://github.com/zbear0808/zulaser-deploy) repository
+   - Serves the static files from the `public/` directory
 
-1. Push your code to GitHub
-2. Connect to [Railway.app](https://railway.app)
-3. Railway will use the Dockerfile to build with JDK 21
+The GitHub Actions workflow (`.github/workflows/main.yml`) handles the build process, and the compiled site is pushed to the deployment repository for Render to pick up.
 
-### Option 3: Build Locally (Works with any static host)
+### Docker (Optional)
 
-If you want to deploy to Netlify, Vercel, or GitHub Pages:
+Docker can be used as an alternative way to run or host the website locally or on other platforms:
 
 ```bash
-# Build on your local machine (requires JDK 21+)
-$ npm run build
+# Build the Docker image
+$ docker build -t zulaser-website .
 
-# The compiled site is in the public/ directory
-# Deploy public/ to any static hosting service
+# Run the container
+$ docker run -p 8080:80 zulaser-website
 ```
+
+The included `Dockerfile` uses JDK 21 to compile the ClojureScript code and serves the static output.
 
 ## Project Structure
 
 - `src/main/` - ClojureScript source files
 - `public/` - Static assets and compiled JavaScript output
 - `shadow-cljs.edn` - Build configuration
-- `Dockerfile` - Docker build with JDK 21 for deployment platforms
+- `.github/workflows/` - GitHub Actions CI/CD pipeline
+- `Dockerfile` - Docker build configuration (optional deployment method)
