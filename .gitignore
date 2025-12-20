@@ -24,4 +24,6 @@ pom.xml.asc
 .hgignore
 .hg/
 .calva/
-.vscode/
+.vscode/ 
+.clinerules/
+! .vscode/settings.json
