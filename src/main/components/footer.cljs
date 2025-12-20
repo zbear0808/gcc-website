@@ -5,14 +5,24 @@
    [main.components.icons :as icons]))
 
 
-(defnc social-link [{:keys [href label social-class on-click children]}]
-  (d/a {:href (when-not on-click href)
-        :target "_blank"
-        :rel "noopener noreferrer"
-        :class (str "btn social-link " social-class)
-        :aria-label label
-        :on-click on-click}
-       children))
+(defn mobile?
+  "Detect if user is on a mobile device"
+  []
+  (or (< (.-innerWidth js/window) 768)
+      (some? (re-find #"Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini"
+                      (.-userAgent js/navigator)))))
+
+
+(defnc social-link
+  [{:keys [href label social-class on-click children]}]
+  (d/a
+   {:href (when-not on-click href)
+    :target "_blank"
+    :rel "noopener noreferrer"
+    :class (str "btn social-link " social-class)
+    :aria-label label
+    :on-click on-click}
+   children))
 
 
 (defnc footer []
@@ -48,7 +58,8 @@
        {:href "mailto:zugood.lasers@gmail.com"
         :label "Email"
         :social-class "social-link-email"
-        :on-click (fn [e]
-                    (.preventDefault e)
-                    (.open js/window "mailto:zugood.lasers@gmail.com" "mail"))}
+        :on-click (when-not (mobile?)
+                    (fn [e]
+                      (.preventDefault e)
+                      (.open js/window "mailto:zugood.lasers@gmail.com" "mail")))}
        ($ icons/email-icon)))))
