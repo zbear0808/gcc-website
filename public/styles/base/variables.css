@@ -28,6 +28,19 @@
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   
+  /* Glassmorphism */
+  --glass-bg: rgba(25, 25, 25, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-backdrop: blur(12px);
+
+  /* Controller Colors */
+  --shell-oem: #4b4b4b;
+  --shell-white: #e0e0e0;
+  --shell-black: #111111;
+  --shell-cherry: #ffb7c5;
+  --shell-clear: rgba(255, 255, 255, 0.2);
+
   /* Font Families */
   --font-ndot: 'Ndot', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

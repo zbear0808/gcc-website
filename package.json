@@ -10,10 +10,14 @@
     "format": "clojure -M:dev -m cljstyle.main fix"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-refresh": "^0.18.0",
-    "react-router-dom": "^7.10.1"
+    "react-router-dom": "^7.10.1",
+    "stripe": "^22.2.2"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",

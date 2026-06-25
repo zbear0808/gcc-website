@@ -1,0 +1,352 @@
+.shop-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--color-bg-form);
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  flex: 1;
+}
+
+/* Visualizer Area */
+.visualizer-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-backdrop);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--glass-shadow);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* The Controller "Space Map" */
+.controller-map {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  transition: all var(--transition-standard);
+}
+
+.controller-body {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 180px;
+  background-color: var(--shell-oem);
+  border-radius: 40px;
+  transition: background-color var(--transition-standard);
+  z-index: 2;
+}
+
+/* Left and Right handles */
+.controller-handle-left,
+.controller-handle-right {
+  position: absolute;
+  top: 100px;
+  width: 90px;
+  height: 160px;
+  background-color: inherit;
+  border-radius: 45px;
+  z-index: 1;
+  transition: background-color var(--transition-standard);
+}
+
+.controller-handle-left {
+  left: -30px;
+  transform: rotate(20deg);
+}
+
+.controller-handle-right {
+  right: -30px;
+  transform: rotate(-20deg);
+}
+
+/* Paracord */
+.paracord-cable {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 50px;
+  background-color: #333; /* Standard black rubber */
+  border-radius: 4px;
+  z-index: 0;
+  transition: all var(--transition-standard);
+}
+
+.paracord-cable.is-custom {
+  background: repeating-linear-gradient(
+    45deg,
+    #ff0055,
+    #ff0055 5px,
+    #222 5px,
+    #222 10px
+  );
+  box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+  width: 12px;
+}
+
+/* Sticks */
+.stick {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-color: #777;
+  border-radius: 50%;
+  border: 4px solid #555;
+  z-index: 3;
+}
+
+.stick-left {
+  top: 40px;
+  left: 30px;
+}
+
+.stick-c {
+  bottom: 20px;
+  right: 60px;
+  width: 40px;
+  height: 40px;
+  background-color: #ccaa00; /* Yellow c-stick */
+  border-color: #aa8800;
+}
+
+/* Notches */
+.notch-indicator {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 2px dashed rgba(255, 255, 255, 0);
+  border-radius: 50%;
+  transition: border-color var(--transition-standard);
+  pointer-events: none;
+}
+
+.stick-left.has-firefox .notch-indicator {
+  border-color: rgba(255, 100, 0, 0.8);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.stick-left.has-wavedash .notch-indicator {
+  border-color: rgba(0, 200, 255, 0.8);
+  border-style: solid;
+}
+
+.stick-left.has-firefox.has-wavedash .notch-indicator {
+  border-color: rgba(255, 50, 255, 0.8);
+  border-style: dotted;
+}
+
+/* Buttons */
+.button-group {
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  width: 90px;
+  height: 90px;
+  z-index: 3;
+}
+
+.btn {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #888;
+  transition: all var(--transition-standard);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-inter);
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.btn-a {
+  top: 30px;
+  left: 30px;
+  width: 36px;
+  height: 36px;
+  background-color: #55cca2; /* OEM green */
+}
+
+.btn-b {
+  top: 50px;
+  left: -5px;
+  width: 24px;
+  height: 24px;
+  background-color: #cc5555; /* OEM red */
+}
+
+.btn-x {
+  top: 5px;
+  right: 15px;
+  width: 30px;
+  height: 15px;
+  border-radius: 8px;
+  background-color: #aaa; /* OEM gray */
+}
+
+.btn-y {
+  top: 15px;
+  left: 15px;
+  width: 15px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: #aaa; /* OEM gray */
+}
+
+.button-group.is-custom .btn {
+  background-color: #bb00ff; /* Custom purple resin example */
+  color: #fff;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* D-Pad */
+.d-pad {
+  position: absolute;
+  bottom: 20px;
+  left: 60px;
+  width: 40px;
+  height: 40px;
+  background-color: #555;
+  clip-path: polygon(33% 0, 66% 0, 66% 33%, 100% 33%, 100% 66%, 66% 66%, 66% 100%, 33% 100%, 33% 66%, 0 66%, 0 33%, 33% 33%);
+  z-index: 3;
+}
+
+/* Triggers */
+.trigger {
+  position: absolute;
+  top: -15px;
+  width: 50px;
+  height: 20px;
+  background-color: #888;
+  border-radius: 10px 10px 0 0;
+  transition: all var(--transition-standard);
+  z-index: 1;
+}
+
+.trigger-l {
+  left: 40px;
+}
+
+.trigger-r {
+  right: 40px;
+}
+
+.trigger.has-plugs {
+  top: -5px;
+  height: 10px;
+  background-color: #ff3333;
+}
+
+/* Configurator Panel */
+.config-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-backdrop);
+  border-radius: var(--border-radius-md);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.config-section h3 {
+  font-family: var(--font-ndot);
+  color: var(--color-white);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.config-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.toggle-btn {
+  background-color: var(--color-bg-input);
+  color: var(--color-gray-hover);
+  border: 1px solid var(--color-border-input);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-inter);
+}
+
+.toggle-btn:hover {
+  background-color: var(--color-border);
+}
+
+.toggle-btn.active {
+  background-color: var(--color-success);
+  color: var(--color-black);
+  border-color: var(--color-success);
+  font-weight: bold;
+}
+
+/* Price Box */
+.price-box {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-hover);
+  font-family: var(--font-inter);
+}
+
+.price-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-white);
+  font-family: var(--font-ndot);
+}
+
+.checkout-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-ndot);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 900px) {
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}

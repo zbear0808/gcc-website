@@ -17,4 +17,8 @@
           
           :node-tests {:target    :node-test
                        :main      node/main
-                       :output-to "out/node-tests.js"}}}
+                       :output-to "out/node-tests.js"}
+                       
+          :server {:target :node-script
+                   :main server.core/main
+                   :output-to "out/server.js"}}}

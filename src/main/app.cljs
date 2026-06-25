@@ -7,11 +7,8 @@
    [main.components.document-title :refer [document-title]]
    [main.components.footer :refer [footer]]
    [main.components.header :refer [header]]
-   [main.pages.about :refer [about-page]]
    [main.pages.contact :refer [contact-page]]
-   [main.pages.home :refer [home-page]]
-   [main.pages.pictures :refer [pictures-page]]
-   [main.pages.videos :refer [videos-page]]))
+   [main.pages.shop :refer [shop-page]]))
 
 
 (defnc app []
@@ -23,11 +20,8 @@
       (d/main
        {:class "main-content"}
        ($ Routes
-          ($ Route {:path "/" :element ($ home-page)})
-          ($ Route {:path "/pictures" :element ($ pictures-page)})
-          ($ Route {:path "/videos" :element ($ videos-page)})
-          ($ Route {:path "/about" :element ($ about-page)})
-          ($ Route {:path "/contact" :element ($ contact-page)})))
+          ($ Route {:path "/" :element ($ shop-page)})
+          ))
       ($ footer))))
 
 
