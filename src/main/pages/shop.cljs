@@ -7,39 +7,39 @@
     [main.pricing :as pricing]))
 
 (def initial-state
-  {:shell :oem
+  {:product :full-build
+   :shell :cherry
    :notches-firefox? false
    :notches-wavedash? false
-   :paracord? false
-   :buttons-custom? false
-   :trigger-plugs? false})
+   :trigger-plugs? false
+   :trigger-plug-side :both
+   :spring-cut? false})
 
 (defnc visualizer [{:keys [config]}]
-  (let [{:keys [shell notches-firefox? notches-wavedash? paracord? buttons-custom? trigger-plugs?]} config
-        shell-class (str "shell-" (name shell))]
+  (let [{:keys [shell notches-firefox? notches-wavedash? trigger-plugs? trigger-plug-side]} config
+        full-build? (pricing/full-build? config)]
     (d/div
       {:class "visualizer-wrapper"}
       (d/div
         {:class "controller-map"}
         
         ;; Triggers
-        (d/div {:class (str "trigger trigger-l " (when trigger-plugs? "has-plugs"))})
-        (d/div {:class (str "trigger trigger-r " (when trigger-plugs? "has-plugs"))})
-        
-        ;; Paracord
-        (d/div {:class (str "paracord-cable " (when paracord? "is-custom"))})
+        (d/div {:class (str "trigger trigger-l " (when (and full-build? trigger-plugs? (or (= trigger-plug-side :both) (= trigger-plug-side :l))) "has-plugs"))})
+        (d/div {:class (str "trigger trigger-r " (when (and full-build? trigger-plugs? (or (= trigger-plug-side :both) (= trigger-plug-side :r))) "has-plugs"))})
         
         ;; Main Shell Body
         (d/div
           {:class "controller-body"
-           :style {:background-color (str "var(--shell-" (name shell) ")")}}
+           :style {:background-color (if full-build?
+                                       (str "var(--shell-" (name shell) ")")
+                                       "var(--shell-oem)")}}
           (d/div {:class "controller-handle-left"})
           (d/div {:class "controller-handle-right"}))
         
         ;; Left Stick
         (d/div {:class (str "stick stick-left " 
-                            (when notches-firefox? "has-firefox ")
-                            (when notches-wavedash? "has-wavedash "))}
+                            (when (and full-build? notches-firefox?) "has-firefox ")
+                            (when (and full-build? notches-wavedash?) "has-wavedash "))}
                (d/div {:class "notch-indicator"}))
         
         ;; D-Pad
@@ -49,7 +49,7 @@
         (d/div {:class "stick stick-c"})
         
         ;; Button Cluster
-        (d/div {:class (str "button-group " (when buttons-custom? "is-custom"))}
+        (d/div {:class "button-group"}
                (d/div {:class "btn btn-a"} "A")
                (d/div {:class "btn btn-b"} "B")
                (d/div {:class "btn btn-x"} "X")
@@ -60,11 +60,29 @@
   (let [[config set-config] (hooks/use-state initial-state)
         [loading? set-loading] (hooks/use-state false)
         
+        full-build? (pricing/full-build? config)
+        
+        set-product (fn [product-id]
+                      (set-config (fn [prev] (assoc prev :product product-id))))
+        
         toggle-mod (fn [mod-id]
-                     (set-config (fn [prev] (update prev mod-id not))))
+                     (set-config (fn [prev]
+                                   (let [new-val (not (get prev mod-id))
+                                         next-state (assoc prev mod-id new-val)]
+                                     (cond
+                                       (and (= mod-id :notches-firefox?) new-val)
+                                       (assoc next-state :notches-wavedash? false)
+                                       
+                                       (and (= mod-id :notches-wavedash?) new-val)
+                                       (assoc next-state :notches-firefox? false)
+                                       
+                                       :else next-state)))))
         
         set-shell (fn [shell-id]
                     (set-config (fn [prev] (assoc prev :shell shell-id))))
+                    
+        set-trigger-side (fn [side]
+                           (set-config (fn [prev] (assoc prev :trigger-plug-side side))))
                     
         handle-checkout (fn []
                           (set-loading true)
@@ -84,9 +102,11 @@
                                         (js/alert "Checkout failed. Is the backend running?")))))
         
         ;; Calculate total price using shared logic
-        active-mods (filter #(get config (:id %)) pricing/mods)
-        selected-shell (first (filter #(= (:id %) (:shell config)) pricing/shells))
-        shell-price (or (:price selected-shell) 0)
+        selected-product (pricing/product-by-id (:product config))
+        active-mods (when full-build? (filter #(get config (:id %)) pricing/mods))
+        active-addons (when full-build? (filter #(get config (:id %)) pricing/addons))
+        selected-shell (when full-build? (first (filter #(= (:id %) (:shell config)) pricing/shells)))
+        shell-price (if full-build? (or (:price selected-shell) 0) 0)
         total-price (pricing/calculate-total config)]
     
     (d/div
@@ -101,44 +121,100 @@
         (d/div
           {:class "config-panel"}
           
+          ;; Product Tier Selection
           (d/div {:class "config-section"}
-                 (d/h3 "Shell Color")
-                 (d/div {:class "config-options"}
-                        (map (fn [{:keys [id label price]}]
+                 (d/h3 "Product")
+                 (d/div {:class "config-options product-options"}
+                        (map (fn [{:keys [id label description price]}]
                                (d/button
                                  {:key (name id)
-                                  :class (str "toggle-btn " (when (= (:shell config) id) "active"))
-                                  :on-click #(set-shell id)}
-                                 (str label " (+$" price ")")))
-                             pricing/shells)))
+                                  :class (str "toggle-btn product-btn " (when (= (:product config) id) "active"))
+                                  :on-click #(set-product id)}
+                                 (d/span {:class "product-label"} label)
+                                 (d/span {:class "product-price"} (str "$" price))
+                                 (d/span {:class "product-desc"} description)))
+                             pricing/products)))
           
-          (d/div {:class "config-section"}
-                 (d/h3 "Modifications")
-                 (d/div {:class "config-options"}
-                        (map (fn [{:keys [id label price]}]
-                               (let [active? (get config id)]
+          ;; Shell Color (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Shell Color")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
                                  (d/button
                                    {:key (name id)
-                                    :class (str "toggle-btn " (when active? "active"))
-                                    :on-click #(toggle-mod id)}
-                                   (str label " (+$" price ")"))))
-                             pricing/mods)))
+                                    :class (str "toggle-btn " (when (= (:shell config) id) "active"))
+                                    :on-click #(set-shell id)}
+                                   (str label " (+$" price ")")))
+                               pricing/shells))))
+          
+          ;; Modifications (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Modifications")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
+                                 (let [active? (get config id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when active? "active"))
+                                      :on-click #(toggle-mod id)}
+                                     (str label " (+$" price ")"))))
+                               pricing/mods))))
+                               
+          ;; Addons (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Addons")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
+                                 (let [active? (get config id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when active? "active"))
+                                      :on-click #(toggle-mod id)}
+                                     (str label " (+$" price ")"))))
+                               pricing/addons))
+                   ;; Trigger options when trigger-plugs are active
+                   (when (:trigger-plugs? config)
+                     (d/div {:class "trigger-options" :style {:margin-top "10px"}}
+                            (d/h4 {:style {:margin-bottom "5px" :font-size "0.9em"}} "Trigger Side:")
+                            (d/div {:class "config-options" :style {:gap "5px"}}
+                                   (map (fn [[side label]]
+                                          (d/button
+                                            {:key (name side)
+                                             :class (str "toggle-btn " (when (= (:trigger-plug-side config) side) "active"))
+                                             :style {:padding "5px 10px" :font-size "0.85em"}
+                                             :on-click #(set-trigger-side side)}
+                                            label))
+                                        [[:l "Left Only"] [:r "Right Only"] [:both "Both"]]))))))
           
           ;; Price Breakdown
           (d/div
             {:class "price-box"}
             (d/div {:class "price-row"}
-                   (d/span "Phob Base (T3 Stickboxes)")
-                   (d/span (str "$" pricing/base-price)))
-            (when (> shell-price 0)
+                   (d/span (:label selected-product))
+                   (d/span (str "$" (:price selected-product))))
+            (when (and full-build? (> shell-price 0))
               (d/div {:class "price-row"}
                      (d/span (str (:label selected-shell) " Shell"))
                      (d/span (str "+$" shell-price))))
-            (map (fn [m]
-                   (d/div {:key (name (:id m)) :class "price-row"}
-                          (d/span (:label m))
-                          (d/span (str "+$" (:price m)))))
-                 active-mods)
+            (when full-build?
+              (map (fn [m]
+                     (d/div {:key (name (:id m)) :class "price-row"}
+                            (d/span (:label m))
+                            (d/span (str "+$" (:price m)))))
+                   active-mods))
+            (when full-build?
+              (if (and (:trigger-plugs? config) (:spring-cut? config))
+                (d/div {:key "addons-combo" :class "price-row"}
+                       (d/span "Trigger Plugs & Cut Springs")
+                       (d/span "+$10"))
+                (map (fn [a]
+                       (d/div {:key (name (:id a)) :class "price-row"}
+                              (d/span (:label a))
+                              (d/span (str "+$" (:price a)))))
+                     active-addons)))
             
             (d/div {:class "price-total"}
                    (d/span "Total")

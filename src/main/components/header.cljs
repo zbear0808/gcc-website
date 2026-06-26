@@ -2,72 +2,13 @@
   (:require
     ["react-router-dom" :refer [useNavigate]]
     [helix.core :refer [defnc]]
-    [helix.dom :as d]
-    [helix.hooks :as hooks]))
-
+    [helix.dom :as d]))
 
 (defnc header []
-  (let [navigate (useNavigate)
-        [sidebar-open? set-sidebar-open!] (hooks/use-state false)
-        toggle-sidebar #(set-sidebar-open! not)
-        close-sidebar #(set-sidebar-open! false)
-        navigate-and-close (fn [path]
-                             (navigate path)
-                             (close-sidebar))]
+  (let [navigate (useNavigate)]
     (d/header {:class "header"}
-              (d/nav {:class "header-nav header-nav-left desktop-only"}
-                     (d/button {:class "btn header-link"
-                                :on-click #(navigate "/pictures")}
-                               "Pictures")
-                     (d/button {:class "btn header-link"
-                                :on-click #(navigate "/videos")}
-                               "Videos"))
-
-              (d/button {:class "btn hamburger-btn mobile-only"
-                         :on-click toggle-sidebar
-                         :aria-label "Toggle navigation menu"}
-                        (d/span {:class (str "hamburger-icon " (when sidebar-open? "open"))}
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})
-                                (d/span {:class "hamburger-dot"})))
-
-              (d/div {:class "header-title"}
+              (d/div {:class "header-title" :style {:margin "0 auto"}}
                      (d/h1 {:class "header-name trichromatic"
-                            :data-text "ZUBAIR AHMED"
-                            :on-click #(navigate-and-close "/")}
-                           "ZUBAIR AHMED"))
-
-              (d/nav {:class "header-nav header-nav-right desktop-only"}
-                     (d/button {:class "btn header-link"
-                                :on-click #(navigate "/about")}
-                               "About Me")
-                     (d/button {:class "btn header-link wiggle"
-                                :on-click #(navigate "/contact")}
-                               "Booking"))
-
-              ;; Mobile placeholder for layout balance
-              (d/div {:class "header-spacer mobile-only"})
-
-              (d/div {:class (str "sidebar-overlay " (when sidebar-open? "open"))
-                      :on-click close-sidebar})
-
-              (d/nav {:class (str "sidebar " (when sidebar-open? "open"))}
-                     (d/div {:class "sidebar-links"}
-                            (d/button {:class "btn sidebar-link"
-                                       :on-click #(navigate-and-close "/pictures")}
-                                      "Pictures")
-                            (d/button {:class "btn sidebar-link"
-                                       :on-click #(navigate-and-close "/videos")}
-                                      "Videos")
-                            (d/button {:class "btn sidebar-link"
-                                       :on-click #(navigate-and-close "/about")}
-                                      "About Me")
-                            (d/button {:class "btn sidebar-link"
-                                       :on-click #(navigate-and-close "/contact")}
-                                      "Booking"))))))
+                            :data-text "GCC Shop"
+                            :on-click #(navigate "/")}
+                           "GCC Shop")))))

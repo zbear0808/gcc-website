@@ -7,7 +7,6 @@
    [main.components.document-title :refer [document-title]]
    [main.components.footer :refer [footer]]
    [main.components.header :refer [header]]
-   [main.pages.contact :refer [contact-page]]
    [main.pages.shop :refer [shop-page]]))
 
 

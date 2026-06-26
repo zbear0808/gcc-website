@@ -6,11 +6,7 @@
 
 
 (def route-titles
-  {"/" nil
-   "/pictures" "Pictures"
-   "/videos" "Videos"
-   "/about" "About"
-   "/contact" "Booking"})
+  {"/" nil})
 
 
 (defnc document-title []
@@ -21,8 +17,8 @@
       [pathname]
       (let [page-title (route-titles pathname)
             full-title (if page-title
-                         (str "ZuGood Lasers | " page-title)
-                         "ZuGood Lasers")]
+                         (str "GCC Shop | " page-title)
+                         "GCC Shop")]
         (set! (.-title js/document) full-title)))
 
     nil))
