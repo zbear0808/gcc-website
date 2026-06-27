@@ -102,15 +102,19 @@
       (persistent! items))))
 
 (def parts
-  [{:id :slider-pot :label "Slider Potentiometers (Pack of 2)" :price 10}
-   {:id :notch-ruler :label "Notch Ruler" :price 1}
-   {:id :stickbox :label "Stickboxes (Pack of 2)" :price 10}
-   {:id :stickbox-pot :label "Stickbox Potentiometer (Untested)" :price 1}
-   {:id :tactile-z :label "Tactile Z Button" :price 1}
-   {:id :wii-cap :label "Wii Classic Stick Cap" :price 4}
-   {:id :magnet-mount :label "Magnet Mounts (Pack of 4)" :price 1}
-   {:id :dh1212-magnet :label "DH1212 Magnets (Pack of 4)" :price 1}
-   {:id :6-pin-ribbon-cable :label "6 pin ribbon cable" :description "ribbon cable for connecting the main board to the C stick sub board" :price 1}])
+  [{:id :slider-pot :label "Slider Potentiometers (Pack of 2)" :description "Replacement slide potentiometers for triggers." :price 10}
+   {:id :notch-ruler :label "Notch Ruler" :description "Guide tool to help with creating firefox and wavedash notches." :price 1}
+   {:id :stickbox :label "Stickboxes (Pack of 2)" :description "Replacement stickboxes for analog sticks." :price 10}
+   {:id :stickbox-pot :label "Stickbox Potentiometers UNTESTED (Pack of 8)" :description "Untested potentiometers for stickboxes." :price 1}
+   {:id :tactile-z :label "Tactile Z Button" :description "Tactile switch for the Z button." :price 1}
+   {:id :wii-cap-new :label "OEM Wii Classic Stick Cap (New)" :description "OEM stick cap in like-new condition." :price 4}
+   {:id :wii-cap-okay :label "OEM Wii Classic Stick Cap (Okay)" :description "OEM stick cap in okay condition." :price 2}
+   {:id :wii-cap-poor :label "OEM Wii Classic Stick Cap (Poor)" :description "OEM stick cap in poor condition." :price 1}
+   {:id :magnet-mount :label "Magnet Mounts (Pack of 4)" :description "Mounts for magnets used with Hall effect sensors." :price 1}
+   {:id :dh1212-magnet :label "DH1212 Magnets (Pack of 4)" :description "Magnets for use with Hall effect sensors." :price 1}
+   {:id :6-pin-ribbon-cable :label "6 pin ribbon cable" :description "Ribbon cable for connecting the main board to the C stick daughter board." :price 1}
+   {:id :trigger-paddle-pcbs :label "Trigger Paddle PCBs (Pack of 2)" :description "PCBs for custom trigger paddles." :price 1}
+   {:id :trigger-plugs-parts :label "Trigger Plugs (Pack of 2)" :description "Plugs for reducing trigger travel distance." :price 1}])
 
 (defn calculate-parts-total [cart]
   (reduce (fn [total [part-id quantity]]

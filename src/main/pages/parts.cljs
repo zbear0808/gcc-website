@@ -1,41 +1,20 @@
 (ns main.pages.parts
   (:require
+    ["react-router-dom" :refer [useNavigate]]
     [helix.core :refer [defnc $]]
     [helix.dom :as d]
     [helix.hooks :as hooks]
     [main.pricing :as pricing]))
 
-(defnc parts-page []
-  (let [[cart set-cart] (hooks/use-state {})
-        [loading? set-loading] (hooks/use-state false)
-        
+(defnc parts-page [{:keys [cart set-cart]}]
+  (let [navigate (useNavigate)
         update-quantity (fn [part-id delta]
                           (set-cart (fn [prev]
                                       (let [current (get prev part-id 0)
                                             new-val (max 0 (+ current delta))]
                                         (assoc prev part-id new-val)))))
                                         
-        total-price (pricing/calculate-parts-total cart)
-        
-        handle-checkout (fn []
-                          (if (= total-price 0)
-                            (js/alert "Your cart is empty.")
-                            (do
-                              (set-loading true)
-                              (-> (js/fetch "http://localhost:3000/create-checkout-session"
-                                            #js {:method "POST"
-                                                 :headers #js {"Content-Type" "application/json"}
-                                                 :body (js/JSON.stringify (clj->js {:is-parts true :cart cart}))})
-                                  (.then (fn [res]
-                                           (if (.-ok res)
-                                             (.json res)
-                                             (throw (js/Error. "Failed to create checkout session")))))
-                                  (.then (fn [data]
-                                           (set! (.-href js/window.location) (.-url data))))
-                                  (.catch (fn [err]
-                                            (js/console.error err)
-                                            (set-loading false)
-                                            (js/alert "Checkout failed. Is the backend running?")))))))]
+        total-price (pricing/calculate-parts-total cart)]
     
     (d/div
       {:class "page shop-page"}
@@ -71,6 +50,5 @@
                    (d/span "Total")
                    (d/span (str "$" total-price)))
             (d/button {:class "checkout-btn" 
-                       :on-click handle-checkout
-                       :disabled (or loading? (= total-price 0))} 
-                      (if loading? "Loading..." "Checkout"))))))))
+                       :on-click #(navigate "/cart")} 
+                      "View Cart"))))))
