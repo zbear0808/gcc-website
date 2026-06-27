@@ -27,7 +27,9 @@
                    ;; In a real app, you'd define the base URL in ENV
                    domain "http://localhost:5000" 
                    
-                   line-items (pricing/get-line-items config)
+                   line-items (if (:is-parts config)
+                                (pricing/get-parts-line-items (:cart config))
+                                (pricing/get-line-items config))
                    
                    ;; Create Stripe Session
                    session-params (clj->js {:payment_method_types ["card"]

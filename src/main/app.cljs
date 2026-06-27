@@ -7,7 +7,8 @@
    [main.components.document-title :refer [document-title]]
    [main.components.footer :refer [footer]]
    [main.components.header :refer [header]]
-   [main.pages.shop :refer [shop-page]]))
+   [main.pages.shop :refer [shop-page]]
+   [main.pages.parts :refer [parts-page]]))
 
 
 (defnc app []
@@ -20,7 +21,7 @@
        {:class "main-content"}
        ($ Routes
           ($ Route {:path "/" :element ($ shop-page)})
-          ))
+          ($ Route {:path "/parts" :element ($ parts-page)})))
       ($ footer))))
 
 

@@ -100,3 +100,36 @@
         (persistent! items))
       ;; Board-only or board-kit: just the base line item
       (persistent! items))))
+
+(def parts
+  [{:id :slider-pot :label "Slider Potentiometers (Pack of 2)" :price 10}
+   {:id :notch-ruler :label "Notch Ruler" :price 1}
+   {:id :stickbox :label "Stickboxes (Pack of 2)" :price 10}
+   {:id :stickbox-pot :label "Stickbox Potentiometer (Untested)" :price 1}
+   {:id :tactile-z :label "Tactile Z Button" :price 1}
+   {:id :wii-cap :label "Wii Classic Stick Cap" :price 4}
+   {:id :magnet-mount :label "Magnet Mounts (Pack of 4)" :price 1}
+   {:id :dh1212-magnet :label "DH1212 Magnets (Pack of 4)" :price 1}
+   {:id :6-pin-ribbon-cable :label "6 pin ribbon cable" :description "ribbon cable for connecting the main board to the C stick sub board" :price 1}])
+
+(defn calculate-parts-total [cart]
+  (reduce (fn [total [part-id quantity]]
+            (if-let [part (first (filter #(= (:id %) part-id) parts))]
+              (+ total (* (:price part) quantity))
+              total))
+          0
+          cart))
+
+(defn get-parts-line-items [cart]
+  (let [items (transient [])
+        items (reduce (fn [acc [part-id quantity]]
+                        (if (and (> quantity 0) (some #(= (:id %) part-id) parts))
+                          (let [part (first (filter #(= (:id %) part-id) parts))]
+                            (conj! acc {:price_data {:currency "usd"
+                                                     :product_data {:name (:label part)}
+                                                     :unit_amount (* (:price part) 100)}
+                                        :quantity quantity}))
+                          acc))
+                      items
+                      cart)]
+    (persistent! items)))
