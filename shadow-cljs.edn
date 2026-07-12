@@ -19,6 +19,6 @@
                        :main      node/main
                        :output-to "out/node-tests.js"}
                        
-          :server {:target :node-script
-                   :main server.core/main
-                   :output-to "out/server.js"}}}
+          :server {:target :node-library
+                   :exports {:handler server.core/handler}
+                   :output-to "api/index.js"}}}

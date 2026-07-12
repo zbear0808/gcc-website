@@ -9,6 +9,7 @@
 (def initial-state
   {:product :full-build
    :shell :cherry
+   :buttons :oem-buttons
    :notches-firefox? false
    :notches-wavedash? false
    :trigger-plugs? false
@@ -56,11 +57,14 @@
                (d/div {:class "btn btn-y"} "Y"))))))
 
 
-(defnc shop-page []
+(defnc shop-page [{:keys [inventory]}]
   (let [[config set-config] (hooks/use-state initial-state)
         [loading? set-loading] (hooks/use-state false)
         
         full-build? (pricing/full-build? config)
+        
+        get-stock (fn [item-id] (get inventory item-id 0))
+        out-of-stock? (fn [item-id] (<= (get-stock item-id) 0))
         
         set-product (fn [product-id]
                       (set-config (fn [prev] (assoc prev :product product-id))))
@@ -81,12 +85,15 @@
         set-shell (fn [shell-id]
                     (set-config (fn [prev] (assoc prev :shell shell-id))))
                     
+        set-buttons (fn [button-id]
+                      (set-config (fn [prev] (assoc prev :buttons button-id))))
+                    
         set-trigger-side (fn [side]
                            (set-config (fn [prev] (assoc prev :trigger-plug-side side))))
                     
         handle-checkout (fn []
                           (set-loading true)
-                          (-> (js/fetch "http://localhost:3000/create-checkout-session"
+                          (-> (js/fetch "/api/checkout"
                                         #js {:method "POST"
                                              :headers #js {"Content-Type" "application/json"}
                                              :body (js/JSON.stringify (clj->js config))})
@@ -101,12 +108,13 @@
                                         (set-loading false)
                                         (js/alert "Checkout failed. Is the backend running?")))))
         
-        ;; Calculate total price using shared logic
         selected-product (pricing/product-by-id (:product config))
         active-mods (when full-build? (filter #(get config (:id %)) pricing/mods))
         active-addons (when full-build? (filter #(get config (:id %)) pricing/addons))
         selected-shell (when full-build? (first (filter #(= (:id %) (:shell config)) pricing/shells)))
         shell-price (if full-build? (or (:price selected-shell) 0) 0)
+        selected-buttons (when full-build? (first (filter #(= (:id %) (:buttons config)) pricing/buttons)))
+        buttons-price (if full-build? (or (:price selected-buttons) 0) 0)
         total-price (pricing/calculate-total config)]
     
     (d/div
@@ -126,27 +134,75 @@
                  (d/h3 "Product")
                  (d/div {:class "config-options product-options"}
                         (map (fn [{:keys [id label description price]}]
-                               (d/button
-                                 {:key (name id)
-                                  :class (str "toggle-btn product-btn " (when (= (:product config) id) "active"))
-                                  :on-click #(set-product id)}
-                                 (d/span {:class "product-label"} label)
-                                 (d/span {:class "product-price"} (str "$" price))
-                                 (d/span {:class "product-desc"} description)))
+                               (let [oos? (out-of-stock? id)
+                                     stock (get-stock id)]
+                                 (d/button
+                                   {:key (name id)
+                                    :class (str "toggle-btn product-btn " (when (= (:product config) id) "active ") (when oos? "disabled"))
+                                    :disabled oos?
+                                    :on-click #(set-product id)}
+                                   (d/span {:class "product-label"} label)
+                                   (d/span {:class "product-price"} (str "$" price))
+                                   (d/span {:class "product-desc"} description)
+                                   (if oos?
+                                     (d/span {:class "out-of-stock-badge" :style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "5px"}} "Out of Stock")
+                                     (d/span {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "5px"}} (str stock " in stock"))))))
                              pricing/products)))
           
-          ;; Shell Color (full build only)
           (when full-build?
             (d/div {:class "config-section"}
                    (d/h3 "Shell Color")
+                   
+                   (d/h4 {:style {:margin "10px 0 5px 0" :font-size "0.9em"}} "OEM Shells")
                    (d/div {:class "config-options"}
                           (map (fn [{:keys [id label price]}]
-                                 (d/button
-                                   {:key (name id)
-                                    :class (str "toggle-btn " (when (= (:shell config) id) "active"))
-                                    :on-click #(set-shell id)}
-                                   (str label " (+$" price ")")))
-                               pricing/shells))))
+                                 (let [oos? (out-of-stock? id)
+                                       stock (get-stock id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when (= (:shell config) id) "active ") (when oos? "disabled"))
+                                      :disabled oos?
+                                      :on-click #(set-shell id)}
+                                     (str label " (+$" price ")")
+                                     (if oos?
+                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
+                               (filter #(= (:type %) :oem) pricing/shells)))
+                               
+                   (d/h4 {:style {:margin "15px 0 5px 0" :font-size "0.9em"}} "Extremerate Shells")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
+                                 (let [oos? (out-of-stock? id)
+                                       stock (get-stock id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when (= (:shell config) id) "active ") (when oos? "disabled"))
+                                      :disabled oos?
+                                      :on-click #(set-shell id)}
+                                     (str label " (+$" price ")")
+                                     (if oos?
+                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
+                               (filter #(= (:type %) :extremerate) pricing/shells)))))
+                               
+          ;; Buttons (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Buttons")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
+                                 (let [oos? (out-of-stock? id)
+                                       stock (get-stock id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when (= (:buttons config) id) "active ") (when oos? "disabled"))
+                                      :disabled oos?
+                                      :on-click #(set-buttons id)}
+                                     (str label " (+$" price ")")
+                                     (if oos?
+                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
+                               pricing/buttons))))
           
           ;; Modifications (full build only)
           (when full-build?
@@ -154,12 +210,18 @@
                    (d/h3 "Modifications")
                    (d/div {:class "config-options"}
                           (map (fn [{:keys [id label price]}]
-                                 (let [active? (get config id)]
+                                 (let [active? (get config id)
+                                       oos? (out-of-stock? id)
+                                       stock (get-stock id)]
                                    (d/button
                                      {:key (name id)
-                                      :class (str "toggle-btn " (when active? "active"))
+                                      :class (str "toggle-btn " (when active? "active ") (when oos? "disabled"))
+                                      :disabled oos?
                                       :on-click #(toggle-mod id)}
-                                     (str label " (+$" price ")"))))
+                                     (str label " (+$" price ")")
+                                     (if oos?
+                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/mods))))
                                
           ;; Addons (full build only)
@@ -168,12 +230,18 @@
                    (d/h3 "Addons")
                    (d/div {:class "config-options"}
                           (map (fn [{:keys [id label price]}]
-                                 (let [active? (get config id)]
+                                 (let [active? (get config id)
+                                       oos? (out-of-stock? id)
+                                       stock (get-stock id)]
                                    (d/button
                                      {:key (name id)
-                                      :class (str "toggle-btn " (when active? "active"))
+                                      :class (str "toggle-btn " (when active? "active ") (when oos? "disabled"))
+                                      :disabled oos?
                                       :on-click #(toggle-mod id)}
-                                     (str label " (+$" price ")"))))
+                                     (str label " (+$" price ")")
+                                     (if oos?
+                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/addons))
                    ;; Trigger options when trigger-plugs are active
                    (when (:trigger-plugs? config)
@@ -199,6 +267,10 @@
               (d/div {:class "price-row"}
                      (d/span (str (:label selected-shell) " Shell"))
                      (d/span (str "+$" shell-price))))
+            (when (and full-build? (> buttons-price 0))
+              (d/div {:class "price-row"}
+                     (d/span (:label selected-buttons))
+                     (d/span (str "+$" buttons-price))))
             (when full-build?
               (map (fn [m]
                      (d/div {:key (name (:id m)) :class "price-row"}

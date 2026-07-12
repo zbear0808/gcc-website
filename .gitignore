@@ -2,6 +2,7 @@ node_modules/
 public/js
 public/css
 
+/api
 /out
 /checkouts
 /src/gen

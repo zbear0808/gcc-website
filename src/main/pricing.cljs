@@ -1,5 +1,5 @@
-(ns main.pricing)
-
+(ns main.pricing
+  (:require [clojure.string :as str]))
 (def products
   [{:id :board-only
     :label "PhobGCC Board Only"
@@ -19,13 +19,22 @@
    {:id :notches-wavedash? :label "Wavedash Notches" :price 20}])
 
 (def addons
-  [{:id :trigger-plugs? :label "Trigger Plugs" :price 8}
+  [{:id :trigger-plugs? :label "Trigger Plugs" :price 8 :individual-price 10}
    {:id :spring-cut? :label "Cut Springs" :price 5}])
 
 (def shells
-  [{:id :cherry :label "Cherry Blossom" :price 0}
-   {:id :white :label "White" :price 0}
-   {:id :clear :label "Clear" :price 0}])
+  [{:id :cherry :label "Cherry Blossom" :type :extremerate :price 0 :individual-price 35}
+   {:id :white :label "White" :type :extremerate :price 0 :individual-price 35}
+   {:id :clear :label "Clear" :type :extremerate :price 0 :individual-price 35}
+   {:id :indigo :label "Indigo" :type :oem :price 0 :individual-price 25}
+   {:id :black :label "Black" :type :oem :price 0 :individual-price 25}
+   {:id :orange :label "Spice Orange" :type :oem :price 0 :individual-price 25}
+   {:id :emerald :label "Emerald Blue" :type :oem :price 0 :individual-price 25}])
+
+(def buttons
+  [{:id :oem-buttons :label "OEM Buttons" :price 0 :individual-price 15}
+   {:id :white-buttons :label "White Buttons" :price 0 :individual-price 18}
+   {:id :chrome-buttons :label "Chrome Buttons" :price 0 :individual-price 18}])
 
 (defn product-by-id [product-id]
   (first (filter #(= (:id %) product-id) products)))
@@ -41,11 +50,13 @@
             mods-total (reduce + 0 (mapv :price active-mods))
             selected-shell (first (filter #(= (:id %) (:shell config)) shells))
             shell-price (or (:price selected-shell) 0)
-            active-addons (filter #(get config (:id %)) addons)
+        active-addons (filter #(get config (:id %)) addons)
             addons-total (if (and (:trigger-plugs? config) (:spring-cut? config))
                            10
-                           (reduce + 0 (mapv :price active-addons)))]
-        (+ base mods-total shell-price addons-total))
+                           (reduce + 0 (mapv :price active-addons)))
+            selected-buttons (first (filter #(= (:id %) (:buttons config)) buttons))
+            buttons-price (or (:price selected-buttons) 0)]
+        (+ base mods-total shell-price addons-total buttons-price))
       base)))
 
 (defn get-line-items [config]
@@ -80,13 +91,13 @@
             
             items (if (and trigger-plugs? spring-cut?)
                     (conj! items {:price_data {:currency "usd"
-                                               :product_data {:name (str "Trigger Plugs (" (clojure.string/upper-case (name trigger-side)) ") & Cut Springs")}
+                                               :product_data {:name (str "Trigger Plugs (" (str/upper-case (name trigger-side)) ") & Cut Springs")}
                                                :unit_amount 1000}
                                   :quantity 1})
                     (let [acc items
                           acc (if trigger-plugs?
                                 (conj! acc {:price_data {:currency "usd"
-                                                         :product_data {:name (str "Trigger Plugs (" (clojure.string/upper-case (name trigger-side)) ")")}
+                                                         :product_data {:name (str "Trigger Plugs (" (str/upper-case (name trigger-side)) ")")}
                                                          :unit_amount 800}
                                             :quantity 1})
                                 acc)
@@ -96,30 +107,40 @@
                                                          :unit_amount 500}
                                             :quantity 1})
                                 acc)]
-                      acc))]
+                      acc))
+            
+            items (if-let [selected-buttons (first (filter #(= (:id %) (:buttons config)) buttons))]
+                    (conj! items {:price_data {:currency "usd"
+                                               :product_data {:name (:label selected-buttons)}
+                                               :unit_amount (* (:price selected-buttons) 100)}
+                                  :quantity 1})
+                    items)]
         (persistent! items))
       ;; Board-only or board-kit: just the base line item
       (persistent! items))))
 
 (def parts
-  [{:id :slider-pot :label "Slider Potentiometers (Pack of 2)" :description "Replacement slide potentiometers for triggers." :price 10}
-   {:id :notch-ruler :label "Notch Ruler" :description "Guide tool to help with creating firefox and wavedash notches." :price 1}
-   {:id :stickbox :label "Stickboxes (Pack of 2)" :description "Replacement stickboxes for analog sticks." :price 10}
-   {:id :stickbox-pot :label "Stickbox Potentiometers UNTESTED (Pack of 8)" :description "Untested potentiometers for stickboxes." :price 1}
-   {:id :tactile-z :label "Tactile Z Button" :description "Tactile switch for the Z button." :price 1}
-   {:id :wii-cap-new :label "OEM Wii Classic Stick Cap (New)" :description "OEM stick cap in like-new condition." :price 4}
-   {:id :wii-cap-okay :label "OEM Wii Classic Stick Cap (Okay)" :description "OEM stick cap in okay condition." :price 2}
-   {:id :wii-cap-poor :label "OEM Wii Classic Stick Cap (Poor)" :description "OEM stick cap in poor condition." :price 1}
-   {:id :magnet-mount :label "Magnet Mounts (Pack of 4)" :description "Mounts for magnets used with Hall effect sensors." :price 1}
-   {:id :dh1212-magnet :label "DH1212 Magnets (Pack of 4)" :description "Magnets for use with Hall effect sensors." :price 1}
-   {:id :6-pin-ribbon-cable :label "6 pin ribbon cable" :description "Ribbon cable for connecting the main board to the C stick daughter board." :price 1}
-   {:id :trigger-paddle-pcbs :label "Trigger Paddle PCBs (Pack of 2)" :description "PCBs for custom trigger paddles." :price 1}
-   {:id :trigger-plugs-parts :label "Trigger Plugs (Pack of 2)" :description "Plugs for reducing trigger travel distance." :price 1}])
+  [{:id :slider-pot :label "Slider Potentiometers (Pack of 2)" :description "Replacement slide potentiometers for triggers." :price 10 :individual-price 12}
+   {:id :notch-ruler :label "Notch Ruler" :description "Guide tool to help with creating firefox and wavedash notches." :price 1 :individual-price 2}
+   {:id :stickbox :label "Stickboxes (Pack of 2)" :description "Replacement stickboxes for analog sticks." :price 10 :individual-price 12}
+   {:id :stickbox-pot :label "Stickbox Potentiometers UNTESTED (Pack of 8)" :description "Untested potentiometers for stickboxes." :price 1 :individual-price 2}
+   {:id :tactile-z :label "Tactile Z Button" :description "Tactile switch for the Z button." :price 1 :individual-price 2}
+   {:id :wii-cap-new :label "OEM Wii Classic Stick Cap (New)" :description "OEM stick cap in like-new condition." :price 4 :individual-price 5}
+   {:id :wii-cap-okay :label "OEM Wii Classic Stick Cap (Okay)" :description "OEM stick cap in okay condition." :price 2 :individual-price 3}
+   {:id :wii-cap-poor :label "OEM Wii Classic Stick Cap (Poor)" :description "OEM stick cap in poor condition." :price 1 :individual-price 2}
+   {:id :magnet-mount :label "Magnet Mounts (Pack of 4)" :description "Mounts for magnets used with Hall effect sensors." :price 1 :individual-price 2}
+   {:id :dh1212-magnet :label "DH1212 Magnets (Pack of 4)" :description "Magnets for use with Hall effect sensors." :price 1 :individual-price 2}
+   {:id :6-pin-ribbon-cable :label "6 pin ribbon cable" :description "Ribbon cable for connecting the main board to the C stick daughter board." :price 1 :individual-price 2}
+   {:id :trigger-paddle-pcbs :label "Trigger Paddle PCBs (Pack of 2)" :description "PCBs for custom trigger paddles." :price 1 :individual-price 2}
+   {:id :trigger-plugs-parts :label "Trigger Plugs (Pack of 2)" :description "Plugs for reducing trigger travel distance." :price 1 :individual-price 2}])
+
+(def individual-items
+  (filterv :individual-price (concat addons shells buttons parts)))
 
 (defn calculate-parts-total [cart]
   (reduce (fn [total [part-id quantity]]
-            (if-let [part (first (filter #(= (:id %) part-id) parts))]
-              (+ total (* (:price part) quantity))
+            (if-let [part (first (filter #(= (:id %) part-id) individual-items))]
+              (+ total (* (:individual-price part) quantity))
               total))
           0
           cart))
@@ -127,11 +148,11 @@
 (defn get-parts-line-items [cart]
   (let [items (transient [])
         items (reduce (fn [acc [part-id quantity]]
-                        (if (and (> quantity 0) (some #(= (:id %) part-id) parts))
-                          (let [part (first (filter #(= (:id %) part-id) parts))]
+                        (if (and (> quantity 0) (some #(= (:id %) part-id) individual-items))
+                          (let [part (first (filter #(= (:id %) part-id) individual-items))]
                             (conj! acc {:price_data {:currency "usd"
                                                      :product_data {:name (:label part)}
-                                                     :unit_amount (* (:price part) 100)}
+                                                     :unit_amount (* (:individual-price part) 100)}
                                         :quantity quantity}))
                           acc))
                       items
