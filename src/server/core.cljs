@@ -42,8 +42,13 @@
                   (.json res #js {:error (.-message err)}))))))
 
 (defn handle-get-inventory [res]
-  (if-not redis
-    (.json res #js {})
+  (if (or (.-USE_FALLBACK_INVENTORY js/process.env) (not redis))
+    ;; NOTE: This fallback inventory is strictly for local testing 
+    ;; so the backend can be developed more easily without Redis.
+    ;; It uses dummy values (10 stock for all items).
+    (let [all-items (concat pricing/products pricing/shells pricing/buttons pricing/mods pricing/addons pricing/parts)
+          fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} all-items)]
+      (.json res (clj->js fallback-inventory)))
     (-> (.hgetall redis "inventory")
         (.then (fn [data]
                  (let [inventory (if data (js->clj data :keywordize-keys true) {})]

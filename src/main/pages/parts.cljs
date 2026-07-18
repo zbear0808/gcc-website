@@ -19,6 +19,26 @@
                                             capped-val (min new-val stock)]
                                         (assoc prev part-id capped-val)))))
                                         
+        render-item (fn [{:keys [id label description image subtypes] :as product}]
+                      (let [price-to-show (if (= 1 (count subtypes))
+                                            (or (:individual-price (first subtypes)) (:price (first subtypes)))
+                                            (str "From $" (apply min (map #(or (:individual-price %) (:price %)) subtypes))))
+                            ;; For a single subtype, we could show stock, but since we link to the product page anyway, we can keep it simple
+                            ]
+                        (d/div
+                          {:key (name id)
+                           :class "toggle-btn"
+                           :on-click #(navigate (str "/product/" (name id)))
+                           :style {:display "flex" :justify-content "flex-start" :align-items "center" :padding "15px" :cursor "pointer" :gap "20px"}}
+                          (if image
+                            (d/img {:src image :alt label :style {:width "80px" :height "80px" :object-fit "cover" :border-radius "4px"}})
+                            (d/div {:style {:width "80px" :height "80px" :background "var(--bg-secondary)" :border-radius "4px"}}))
+                          (d/div {:style {:flex "1"}}
+                            (d/span {:class "product-label" :style {:font-size "1.1em"}} label)
+                            (d/span {:class "product-price" :style {:display "block" :color "var(--text-muted)"}} (str price-to-show))
+                            (when description
+                              (d/span {:class "product-desc" :style {:display "block" :font-size "0.9em" :color "var(--text-muted)" :margin-top "5px"}} description))))))
+                                            
         total-price (pricing/calculate-parts-total cart)]
     
     (d/div
@@ -28,34 +48,10 @@
         (d/div
           {:class "config-panel" :style {:max-width "800px" :margin "0 auto"}}
           (d/h2 {:style {:margin-bottom "20px" :text-align "center"}} "Individual Parts")
-          (d/div {:class "config-section"}
-                 (d/div {:class "config-options product-options" :style {:display "flex" :flex-direction "column" :gap "15px"}}
-                        (map (fn [{:keys [id label individual-price price description]}]
-                               (let [quantity (get cart id 0)
-                                     stock (get-stock id)
-                                     oos? (out-of-stock? id)
-                                     price-to-show (or individual-price price)]
-                                 (d/div
-                                   {:key (name id)
-                                    :class "toggle-btn"
-                                    :style {:display "flex" :justify-content "space-between" :align-items "center" :padding "15px" :cursor "default"}}
-                                   (d/div
-                                     (d/span {:class "product-label" :style {:font-size "1.1em"}} label)
-                                     (d/span {:class "product-price" :style {:display "block" :color "var(--text-muted)"}} (str "$" price-to-show))
-                                     (if oos?
-                                       (d/span {:style {:display "block" :color "var(--primary-color)" :font-size "0.8em" :margin-top "5px"}} "Out of Stock")
-                                       (d/span {:style {:display "block" :color "var(--text-muted)" :font-size "0.8em" :margin-top "5px"}} (str stock " in stock")))
-                                     (when description
-                                       (d/span {:class "product-desc" :style {:display "block" :font-size "0.9em" :color "var(--text-muted)" :margin-top "5px"}} description)))
-                                   (d/div {:style {:display "flex" :align-items "center" :gap "15px"}}
-                                          (d/button {:on-click #(update-quantity id -1)
-                                                     :disabled (<= quantity 0)
-                                                     :style {:width "30px" :height "30px" :border-radius "50%" :border "1px solid var(--border-color)" :background "transparent" :color "var(--text-color)" :cursor "pointer"}} "-")
-                                          (d/span {:style {:font-size "1.2em" :min-width "20px" :text-align "center"}} quantity)
-                                          (d/button {:on-click #(update-quantity id 1)
-                                                     :disabled (>= quantity stock)
-                                                     :style {:width "30px" :height "30px" :border-radius "50%" :border "1px solid var(--border-color)" :background "transparent" :color "var(--text-color)" :cursor "pointer"}} "+")))))
-                             pricing/individual-items)))
+          
+          (d/div {:class "config-section" :style {:margin-bottom "30px"}}
+                 (d/div {:class "config-options product-options" :style {:display "grid" :grid-template-columns "1fr 1fr" :gap "15px"}}
+                        (map render-item pricing/full-catalog)))
           
           (d/div
             {:class "price-box" :style {:margin-top "30px"}}

@@ -11,7 +11,9 @@
    [main.pages.parts :refer [parts-page]]
    [main.pages.cart :refer [cart-page]]
    [main.pages.admin :refer [admin-page]]
-   [helix.hooks :as hooks]))
+   [main.pages.product :refer [product-page]]
+   [helix.hooks :as hooks]
+   [main.pricing :as pricing]))
 
 
 (defnc app []
@@ -20,11 +22,21 @@
         
         load-inventory (fn []
                          (-> (js/fetch "/api/inventory")
-                             (.then #(.json %))
+                             (.then (fn [res]
+                                      (if (.-ok res)
+                                        (.json res)
+                                        (throw (js/Error. "Server not running")))))
                              (.then (fn [data]
                                       (let [clj-data (js->clj data :keywordize-keys true)]
                                         (set-inventory clj-data))))
-                             (.catch #(js/console.error "Failed to fetch inventory:" %))))]
+                             (.catch (fn [err]
+                                       (js/console.warn "Backend not running, using client-side fallback inventory.")
+                                       ;; NOTE: This fallback inventory is strictly for local testing 
+                                       ;; so the UI can be developed more easily while the backend server is offline.
+                                       ;; It uses dummy values (10 stock for all items).
+                                       (let [all-items (concat pricing/products pricing/shells pricing/buttons pricing/mods pricing/addons pricing/parts)
+                                             fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} all-items)]
+                                         (set-inventory fallback-inventory))))))]
                              
     (hooks/use-effect :once
       (load-inventory))
@@ -39,6 +51,7 @@
          ($ Routes
             ($ Route {:path "/" :element ($ shop-page {:inventory inventory})})
             ($ Route {:path "/parts" :element ($ parts-page {:cart cart :set-cart set-cart :inventory inventory})})
+            ($ Route {:path "/product/:id" :element ($ product-page {:cart cart :set-cart set-cart :inventory inventory})})
             ($ Route {:path "/cart" :element ($ cart-page {:cart cart :set-cart set-cart :inventory inventory})})
             ($ Route {:path "/admin" :element ($ admin-page)})))
         ($ footer)))))

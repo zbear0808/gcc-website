@@ -14,7 +14,8 @@
    :notches-wavedash? false
    :trigger-plugs? false
    :trigger-plug-side :both
-   :spring-cut? false})
+   :spring-cut? false
+   :rumble :rumble-none})
 
 (defnc visualizer [{:keys [config]}]
   (let [{:keys [shell notches-firefox? notches-wavedash? trigger-plugs? trigger-plug-side]} config
@@ -90,6 +91,9 @@
                     
         set-trigger-side (fn [side]
                            (set-config (fn [prev] (assoc prev :trigger-plug-side side))))
+                           
+        set-rumble (fn [rumble-id]
+                     (set-config (fn [prev] (assoc prev :rumble rumble-id))))
                     
         handle-checkout (fn []
                           (set-loading true)
@@ -115,6 +119,8 @@
         shell-price (if full-build? (or (:price selected-shell) 0) 0)
         selected-buttons (when full-build? (first (filter #(= (:id %) (:buttons config)) pricing/buttons)))
         buttons-price (if full-build? (or (:price selected-buttons) 0) 0)
+        selected-rumble (when full-build? (first (filter #(= (:id %) (:rumble config)) pricing/rumbles)))
+        rumble-price (if full-build? (or (:price selected-rumble) 0) 0)
         total-price (pricing/calculate-total config)]
     
     (d/div
@@ -145,7 +151,7 @@
                                    (d/span {:class "product-price"} (str "$" price))
                                    (d/span {:class "product-desc"} description)
                                    (if oos?
-                                     (d/span {:class "out-of-stock-badge" :style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "5px"}} "Out of Stock")
+                                     (d/span {:class "out-of-stock-badge" :style {:color "red" :font-size "0.8em" :margin-top "5px"}} "Out of Stock")
                                      (d/span {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "5px"}} (str stock " in stock"))))))
                              pricing/products)))
           
@@ -165,7 +171,7 @@
                                       :on-click #(set-shell id)}
                                      (str label " (+$" price ")")
                                      (if oos?
-                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                (filter #(= (:type %) :oem) pricing/shells)))
                                
@@ -181,7 +187,7 @@
                                       :on-click #(set-shell id)}
                                      (str label " (+$" price ")")
                                      (if oos?
-                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                (filter #(= (:type %) :extremerate) pricing/shells)))))
                                
@@ -200,9 +206,29 @@
                                       :on-click #(set-buttons id)}
                                      (str label " (+$" price ")")
                                      (if oos?
-                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/buttons))))
+          
+          ;; Rumble Motor (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Rumble Motor")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price]}]
+                                 (let [oos? (out-of-stock? id)
+                                       stock (get-stock id)]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when (= (:rumble config) id) "active ") (when oos? "disabled"))
+                                      :disabled oos?
+                                      :on-click #(set-rumble id)}
+                                     (str label (when (> price 0) (str " (+$" price ")")))
+                                     (if oos?
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (when (not= id :rumble-none)
+                                         (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock")))))))
+                               pricing/rumbles))))
           
           ;; Modifications (full build only)
           (when full-build?
@@ -220,7 +246,7 @@
                                       :on-click #(toggle-mod id)}
                                      (str label " (+$" price ")")
                                      (if oos?
-                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/mods))))
                                
@@ -240,7 +266,7 @@
                                       :on-click #(toggle-mod id)}
                                      (str label " (+$" price ")")
                                      (if oos?
-                                       (d/div {:style {:color "var(--primary-color)" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/addons))
                    ;; Trigger options when trigger-plugs are active
@@ -271,6 +297,10 @@
               (d/div {:class "price-row"}
                      (d/span (:label selected-buttons))
                      (d/span (str "+$" buttons-price))))
+            (when (and full-build? (> rumble-price 0))
+              (d/div {:class "price-row"}
+                     (d/span (:label selected-rumble))
+                     (d/span (str "+$" rumble-price))))
             (when full-build?
               (map (fn [m]
                      (d/div {:key (name (:id m)) :class "price-row"}
@@ -278,15 +308,11 @@
                             (d/span (str "+$" (:price m)))))
                    active-mods))
             (when full-build?
-              (if (and (:trigger-plugs? config) (:spring-cut? config))
-                (d/div {:key "addons-combo" :class "price-row"}
-                       (d/span "Trigger Plugs & Cut Springs")
-                       (d/span "+$10"))
-                (map (fn [a]
-                       (d/div {:key (name (:id a)) :class "price-row"}
-                              (d/span (:label a))
-                              (d/span (str "+$" (:price a)))))
-                     active-addons)))
+              (map (fn [a]
+                     (d/div {:key (name (:id a)) :class "price-row"}
+                            (d/span (:label a))
+                            (d/span (str "+$" (:price a)))))
+                   active-addons))
             
             (d/div {:class "price-total"}
                    (d/span "Total")
