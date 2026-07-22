@@ -14,7 +14,7 @@
 
 (defn handle-checkout [req res]
   (let [body (.-body req)
-        config (js->clj body :keywordize-keys true)
+        config (pricing/sanitize-config (js->clj body :keywordize-keys true))
         
         domain (if (.-VERCEL_PROJECT_PRODUCTION_URL js/process.env)
                  (str "https://" (.-VERCEL_PROJECT_PRODUCTION_URL js/process.env))
@@ -45,9 +45,7 @@
   (if (or (.-USE_FALLBACK_INVENTORY js/process.env) (not redis))
     ;; NOTE: This fallback inventory is strictly for local testing 
     ;; so the backend can be developed more easily without Redis.
-    ;; It uses dummy values (10 stock for all items).
-    (let [all-items (concat pricing/products pricing/shells pricing/buttons pricing/mods pricing/addons pricing/parts)
-          fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} all-items)]
+    (let [fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} pricing/all-items)]
       (.json res (clj->js fallback-inventory)))
     (-> (.hgetall redis "inventory")
         (.then (fn [data]
@@ -77,11 +75,12 @@
         (dotimes [_ quantity]
           (conj! items (keyword part-id))))
       ;; Controller build config
-      (let [{:keys [product shell buttons notches-firefox? notches-wavedash? trigger-plugs? spring-cut?]} config
+      (let [{:keys [product shell buttons cable notches-firefox? notches-wavedash? trigger-plugs? spring-cut?]} config
             items (conj! items (keyword product))]
         (when (pricing/full-build? config)
           (when shell (conj! items (keyword shell)))
           (when buttons (conj! items (keyword buttons)))
+          (when cable (conj! items (keyword cable)))
           (when notches-firefox? (conj! items :notches-firefox?))
           (when notches-wavedash? (conj! items :notches-wavedash?))
           (when trigger-plugs? (conj! items :trigger-plugs?))

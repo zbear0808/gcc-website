@@ -40,6 +40,10 @@
   --shell-black: #111111;
   --shell-cherry: #ffb7c5;
   --shell-clear: rgba(255, 255, 255, 0.2);
+  --shell-indigo: #4a3c75;
+  --shell-platinum: #a8a9a6;
+  --shell-orange: #f17600;
+  --shell-emerald: #02828b;
 
   /* Font Families */
   --font-ndot: 'Ndot', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

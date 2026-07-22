@@ -4,6 +4,7 @@
                 :asset-path       "/js"
                 :devtools         {:http-port 5000
                                    :http-root "public"
+                                   :push-state true
                                    :preloads [dev.refresh]
                                    :reload-strategy :full}
                 :modules          {:main {:init-fn main.app/init}}

@@ -11,7 +11,7 @@
         [saving? set-saving] (hooks/use-state false)
         [message set-message] (hooks/use-state nil)
         
-        all-items (concat pricing/products pricing/shells pricing/buttons pricing/mods pricing/addons pricing/parts)
+        all-items pricing/all-items
         
         load-inventory (fn []
                          (set-loading true)

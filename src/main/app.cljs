@@ -33,10 +33,8 @@
                                        (js/console.warn "Backend not running, using client-side fallback inventory.")
                                        ;; NOTE: This fallback inventory is strictly for local testing 
                                        ;; so the UI can be developed more easily while the backend server is offline.
-                                       ;; It uses dummy values (10 stock for all items).
-                                       (let [all-items (concat pricing/products pricing/shells pricing/buttons pricing/mods pricing/addons pricing/parts)
-                                             fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} all-items)]
-                                         (set-inventory fallback-inventory))))))]
+                                        (let [fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} pricing/all-items)]
+                                          (set-inventory fallback-inventory))))))]
                              
     (hooks/use-effect :once
       (load-inventory))

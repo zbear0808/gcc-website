@@ -6,7 +6,10 @@
 
 
 (def route-titles
-  {"/" nil})
+  {"/" nil
+   "/parts" "Parts"
+   "/cart" "Cart"
+   "/admin" "Admin"})
 
 
 (defnc document-title []

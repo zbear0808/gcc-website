@@ -46,16 +46,19 @@
         {:class "page product-page"}
         (d/div {:style {:display "flex" :gap "40px" :max-width "1000px" :margin "0 auto" :flex-wrap "wrap"}}
                ;; Left side - Image
-               (d/div {:style {:flex "1" :min-width "300px" :display "flex" :justify-content "center" :align-items "flex-start"}}
-                      (if (:image product)
-                        (d/img {:src (:image product) :alt (:label product) :style {:max-width "100%" :border-radius "8px" :box-shadow "0 4px 12px rgba(0,0,0,0.1)"}})
-                        (d/div {:style {:width "100%" :aspect-ratio "1" :background "var(--bg-secondary)" :border-radius "8px" :display "flex" :align-items "center" :justify-content "center"}}
-                               "No image available")))
+               (let [img-url (or (:image selected-subtype) (:image product))
+                     desc-text (or (:description selected-subtype) (:description product))]
+                 (d/div {:style {:flex "1" :min-width "300px" :display "flex" :justify-content "center" :align-items "flex-start"}}
+                        (if img-url
+                          (d/img {:src img-url :alt (:label product) :style {:max-width "100%" :border-radius "8px" :box-shadow "0 4px 12px rgba(0,0,0,0.1)"}})
+                          (d/div {:style {:width "100%" :aspect-ratio "1" :background "var(--bg-secondary)" :border-radius "8px" :display "flex" :align-items "center" :justify-content "center"}}
+                                 "No image available"))))
                
                ;; Right side - Details
                (d/div {:style {:flex "1" :min-width "300px" :display "flex" :flex-direction "column" :gap "20px"}}
                       (d/h1 {:style {:margin "0"}} (:label product))
-                      (d/p {:style {:font-size "1.1em" :color "var(--text-muted)" :margin "0"}} (:description product))
+                      (when-let [desc (or (:description selected-subtype) (:description product))]
+                        (d/p {:style {:font-size "1.1em" :color "var(--text-muted)" :margin "0"}} desc))
                       
                       (if (> (count (:subtypes product)) 1)
                         (d/div {:class "config-section" :style {:margin-top "20px"}}

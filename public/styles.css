@@ -238,7 +238,7 @@ body {
 
 .header-name.trichromatic::before,
 .header-name.trichromatic::after {
-  content: 'ZUBAIR AHMED';
+  content: attr(data-text);
   position: absolute;
   left: 0;
   top: 0;

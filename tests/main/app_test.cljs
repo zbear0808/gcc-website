@@ -20,6 +20,6 @@
   (let [container (tlr/render
                     ($ MemoryRouter
                        ($ header)))
-        name-element (.getByText container "ZUBAIR AHMED")]
+        name-element (.getByText container "GCC Shop")]
     (is (some? name-element))
-    (is (= "ZUBAIR AHMED" (.-textContent name-element)))))
+    (is (= "GCC Shop" (.-textContent name-element)))))

@@ -7,9 +7,10 @@
     [main.pricing :as pricing]))
 
 (def initial-state
-  {:product :full-build
+   {:product :full-build
    :shell :cherry
    :buttons :oem-buttons
+   :cable :cable-3rd-party-3m
    :notches-firefox? false
    :notches-wavedash? false
    :trigger-plugs? false
@@ -68,32 +69,36 @@
         out-of-stock? (fn [item-id] (<= (get-stock item-id) 0))
         
         set-product (fn [product-id]
-                      (set-config (fn [prev] (assoc prev :product product-id))))
+                      (set-config (fn [prev] (pricing/sanitize-config (assoc prev :product product-id)))))
         
         toggle-mod (fn [mod-id]
                      (set-config (fn [prev]
                                    (let [new-val (not (get prev mod-id))
                                          next-state (assoc prev mod-id new-val)]
-                                     (cond
-                                       (and (= mod-id :notches-firefox?) new-val)
-                                       (assoc next-state :notches-wavedash? false)
-                                       
-                                       (and (= mod-id :notches-wavedash?) new-val)
-                                       (assoc next-state :notches-firefox? false)
-                                       
-                                       :else next-state)))))
+                                     (pricing/sanitize-config
+                                       (cond
+                                         (and (= mod-id :notches-firefox?) new-val)
+                                         (assoc next-state :notches-wavedash? false)
+                                         
+                                         (and (= mod-id :notches-wavedash?) new-val)
+                                         (assoc next-state :notches-firefox? false)
+                                         
+                                         :else next-state))))))
         
         set-shell (fn [shell-id]
-                    (set-config (fn [prev] (assoc prev :shell shell-id))))
+                    (set-config (fn [prev] (pricing/sanitize-config (assoc prev :shell shell-id)))))
                     
         set-buttons (fn [button-id]
-                      (set-config (fn [prev] (assoc prev :buttons button-id))))
+                      (set-config (fn [prev] (pricing/sanitize-config (assoc prev :buttons button-id)))))
                     
         set-trigger-side (fn [side]
-                           (set-config (fn [prev] (assoc prev :trigger-plug-side side))))
+                           (set-config (fn [prev] (pricing/sanitize-config (assoc prev :trigger-plug-side side)))))
                            
         set-rumble (fn [rumble-id]
-                     (set-config (fn [prev] (assoc prev :rumble rumble-id))))
+                     (set-config (fn [prev] (pricing/sanitize-config (assoc prev :rumble rumble-id)))))
+                     
+        set-cable (fn [cable-id]
+                    (set-config (fn [prev] (pricing/sanitize-config (assoc prev :cable cable-id)))))
                     
         handle-checkout (fn []
                           (set-loading true)
@@ -121,6 +126,8 @@
         buttons-price (if full-build? (or (:price selected-buttons) 0) 0)
         selected-rumble (when full-build? (first (filter #(= (:id %) (:rumble config)) pricing/rumbles)))
         rumble-price (if full-build? (or (:price selected-rumble) 0) 0)
+        selected-cable (when full-build? (first (filter #(= (:id %) (:cable config)) pricing/cables)))
+        cable-price (if full-build? (or (:price selected-cable) 0) 0)
         total-price (pricing/calculate-total config)]
     
     (d/div
@@ -209,6 +216,29 @@
                                        (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
                                        (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock"))))))
                                pricing/buttons))))
+                               
+          ;; Cables (full build only)
+          (when full-build?
+            (d/div {:class "config-section"}
+                   (d/h3 "Cable")
+                   (d/div {:class "config-options"}
+                          (map (fn [{:keys [id label price description]}]
+                                 (let [oos? (out-of-stock? id)
+                                       stock (get-stock id)
+                                       disabled? (or oos? (and (= id :cable-oem) (not= (:type selected-shell) :oem)))]
+                                   (d/button
+                                     {:key (name id)
+                                      :class (str "toggle-btn " (when (= (:cable config) id) "active ") (when disabled? "disabled"))
+                                      :disabled disabled?
+                                      :on-click #(set-cable id)}
+                                     (str label (when (> price 0) (str " (+$" price ")")))
+                                     (when description
+                                       (d/div {:style {:font-size "0.8em" :color "var(--text-muted)" :margin-top "2px"}} description))
+                                     (if oos?
+                                       (d/div {:style {:color "red" :font-size "0.8em" :margin-top "2px"}} "Out of Stock")
+                                       (when (and (not= id :cable-oem) (not= id :cable-3rd-party-3m))
+                                         (d/div {:style {:color "var(--text-muted)" :font-size "0.8em" :margin-top "2px"}} (str stock " in stock")))))))
+                               pricing/cables))))
           
           ;; Rumble Motor (full build only)
           (when full-build?
@@ -297,6 +327,10 @@
               (d/div {:class "price-row"}
                      (d/span (:label selected-buttons))
                      (d/span (str "+$" buttons-price))))
+            (when (and full-build? (> cable-price 0))
+              (d/div {:class "price-row"}
+                     (d/span (:label selected-cable))
+                     (d/span (str "+$" cable-price))))
             (when (and full-build? (> rumble-price 0))
               (d/div {:class "price-row"}
                      (d/span (:label selected-rumble))
