@@ -13,14 +13,12 @@
    [main.pages.admin :refer [admin-page]]
    [main.pages.product :refer [product-page]]
    [helix.hooks :as hooks]
+   [main.state :as state]
    [main.pricing :as pricing]))
 
 
 (defnc app []
-  (let [[cart set-cart] (hooks/use-state {})
-        [inventory set-inventory] (hooks/use-state {})
-        
-        load-inventory (fn []
+  (let [load-inventory (fn []
                          (-> (js/fetch "/api/inventory")
                              (.then (fn [res]
                                       (if (.-ok res)
@@ -28,13 +26,13 @@
                                         (throw (js/Error. "Server not running")))))
                              (.then (fn [data]
                                       (let [clj-data (js->clj data :keywordize-keys true)]
-                                        (set-inventory clj-data))))
+                                        (swap! state/!state assoc :inventory clj-data))))
                              (.catch (fn [err]
                                        (js/console.warn "Backend not running, using client-side fallback inventory.")
                                        ;; NOTE: This fallback inventory is strictly for local testing 
                                        ;; so the UI can be developed more easily while the backend server is offline.
                                         (let [fallback-inventory (reduce (fn [acc item] (assoc acc (:id item) 10)) {} pricing/all-items)]
-                                          (set-inventory fallback-inventory))))))]
+                                          (swap! state/!state assoc :inventory fallback-inventory))))))]
                              
     (hooks/use-effect :once
       (load-inventory))
@@ -43,14 +41,14 @@
        (d/div
         {:class "app-container"}
         ($ document-title)
-        ($ header {:cart cart})
+        ($ header)
         (d/main
          {:class "main-content"}
          ($ Routes
-            ($ Route {:path "/" :element ($ shop-page {:inventory inventory})})
-            ($ Route {:path "/parts" :element ($ parts-page {:cart cart :set-cart set-cart :inventory inventory})})
-            ($ Route {:path "/product/:id" :element ($ product-page {:cart cart :set-cart set-cart :inventory inventory})})
-            ($ Route {:path "/cart" :element ($ cart-page {:cart cart :set-cart set-cart :inventory inventory})})
+            ($ Route {:path "/" :element ($ shop-page)})
+            ($ Route {:path "/parts" :element ($ parts-page)})
+            ($ Route {:path "/product/:id" :element ($ product-page)})
+            ($ Route {:path "/cart" :element ($ cart-page)})
             ($ Route {:path "/admin" :element ($ admin-page)})))
         ($ footer)))))
 

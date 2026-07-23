@@ -4,15 +4,17 @@
     [helix.core :refer [defnc $]]
     [helix.dom :as d]
     [helix.hooks :as hooks]
+    [main.state :as state]
     [main.pricing :as pricing]
     [clojure.string :as str]))
 
-(defnc product-page [{:keys [cart set-cart inventory]}]
+(defnc product-page []
   (let [params (useParams)
         id-str (.-id params)
         product-id (keyword id-str)
         product (pricing/get-catalog-item product-id)
         navigate (useNavigate)
+        {:keys [cart inventory]} (state/use-app-state)
         
         [selected-subtype-id set-selected-subtype-id] (hooks/use-state 
                                                         (when product 
@@ -25,19 +27,23 @@
         
         get-stock (fn [item-id] (get inventory item-id 0))
         
-        selected-subtype (first (filter #(= (:id %) selected-subtype-id) (:subtypes product)))
+        selected-subtype (some #(when (= (:id %) selected-subtype-id) %) (:subtypes product))
         
         stock (get-stock selected-subtype-id)
         quantity-in-cart (get cart selected-subtype-id 0)
         
         handle-add-to-cart (fn []
-                             (set-cart (fn [prev]
-                                         (assoc prev selected-subtype-id (inc quantity-in-cart)))))
+                             (swap! state/!state update :cart
+                                    (fn [prev]
+                                      (let [current (get prev selected-subtype-id 0)]
+                                        (assoc prev selected-subtype-id (inc current))))))
                                          
         handle-remove-from-cart (fn []
-                                  (set-cart (fn [prev]
-                                              (let [new-val (max 0 (dec quantity-in-cart))]
-                                                (assoc prev selected-subtype-id new-val)))))]
+                                  (swap! state/!state update :cart
+                                         (fn [prev]
+                                           (let [current (get prev selected-subtype-id 0)
+                                                 new-val (max 0 (dec current))]
+                                             (assoc prev selected-subtype-id new-val)))))]
                                                 
     (if-not product
       (d/div {:class "page"}
@@ -66,9 +72,10 @@
                                (d/select {:value (name selected-subtype-id)
                                           :on-change #(set-selected-subtype-id (keyword (.. % -target -value)))
                                           :style {:width "100%" :padding "10px" :border-radius "4px" :border "1px solid var(--border-color)" :background "var(--bg-color)" :color "var(--text-color)" :font-size "1em"}}
-                                         (for [subtype (:subtypes product)]
-                                           (d/option {:key (name (:id subtype)) :value (name (:id subtype))}
-                                                     (str (:label subtype) " - $" (or (:individual-price subtype) (:price subtype)))))))
+                                         (mapv (fn [subtype]
+                                                 (d/option {:key (name (:id subtype)) :value (name (:id subtype))}
+                                                           (str (:label subtype) " - $" (or (:individual-price subtype) (:price subtype)))))
+                                               (:subtypes product))))
                         
                         ;; Only one subtype, just show its price
                         (d/div {:style {:font-size "1.5em" :font-weight "bold" :margin-top "10px"}}

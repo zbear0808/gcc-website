@@ -21,5 +21,6 @@
                        :output-to "out/node-tests.js"}
                        
           :server {:target :node-library
-                   :exports {:handler server.core/handler}
+                   :exports {:handler server.core/handler
+                             :webhook server.core/webhook-handler}
                    :output-to "api/index.js"}}}

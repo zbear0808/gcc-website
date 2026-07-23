@@ -2,10 +2,12 @@
   (:require
     ["react-router-dom" :refer [useNavigate]]
     [helix.core :refer [defnc]]
-    [helix.dom :as d]))
+    [helix.dom :as d]
+    [main.state :refer [use-app-state]]))
 
-(defnc header [{:keys [cart]}]
+(defnc header []
   (let [navigate (useNavigate)
+        {:keys [cart]} (use-app-state)
         cart-count (reduce + 0 (vals cart))]
     (d/header {:class "header"}
               (d/div {:class "header-content" :style {:display "flex" :justify-content "space-between" :align-items "center" :width "100%" :max-width "1200px" :margin "0 auto" :padding "0 2rem"}}

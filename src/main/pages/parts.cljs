@@ -4,25 +4,16 @@
     [helix.core :refer [defnc $]]
     [helix.dom :as d]
     [helix.hooks :as hooks]
+    [main.state :as state]
     [main.pricing :as pricing]))
 
-(defnc parts-page [{:keys [cart set-cart inventory]}]
+(defnc parts-page []
   (let [navigate (useNavigate)
-        get-stock (fn [item-id] (get inventory item-id 0))
-        out-of-stock? (fn [item-id] (<= (get-stock item-id) 0))
-        
-        update-quantity (fn [part-id delta]
-                          (set-cart (fn [prev]
-                                      (let [current (get prev part-id 0)
-                                            new-val (max 0 (+ current delta))
-                                            stock (get-stock part-id)
-                                            capped-val (min new-val stock)]
-                                        (assoc prev part-id capped-val)))))
-                                        
+        {:keys [cart]} (state/use-app-state)
         render-item (fn [{:keys [id label description image subtypes] :as product}]
                       (let [price-to-show (if (= 1 (count subtypes))
                                             (or (:individual-price (first subtypes)) (:price (first subtypes)))
-                                            (str "From $" (apply min (map #(or (:individual-price %) (:price %)) subtypes))))
+                                            (str "From $" (apply min (mapv #(or (:individual-price %) (:price %)) subtypes))))
                             ;; For a single subtype, we could show stock, but since we link to the product page anyway, we can keep it simple
                             ]
                         (d/div
@@ -51,7 +42,7 @@
           
           (d/div {:class "config-section" :style {:margin-bottom "30px"}}
                  (d/div {:class "config-options product-options" :style {:display "grid" :grid-template-columns "1fr 1fr" :gap "15px"}}
-                        (map render-item pricing/full-catalog)))
+                        (mapv render-item pricing/full-catalog)))
           
           (d/div
             {:class "price-box" :style {:margin-top "30px"}}
