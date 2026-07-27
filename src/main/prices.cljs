@@ -4,17 +4,17 @@
   [{:id :board-only
     :label "PhobGCC Board Only"
     :description "Just the board — no attachments, no shell."
-    :price 22
+    :price 20
     :image "/images/products/board-only.png"}
    {:id :diy-kit
     :label "DIY Kit"
     :description "Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. THIS IS FOR DIY, parts do not come soldered on"
-    :price 75
+    :price 50
     :image "/images/products/diy-kit.png"}
    {:id :full-build
     :label "PhobGCC Full Build"
     :description "Complete controller with T3 stickboxes — choose your shell and mods."
-    :price 150
+    :price 99
     :image "/images/products/full-build.png"}])
 
 (def mods

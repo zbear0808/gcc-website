@@ -20,6 +20,7 @@
                      (d/nav {:class "header-nav" :style {:display "flex" :gap "1.5rem" :align-items "center"}}
                             (d/a {:class "nav-link" :on-click #(navigate "/") :style {:cursor "pointer" :font-weight "bold"}} "Builds")
                             (d/a {:class "nav-link" :on-click #(navigate "/parts") :style {:cursor "pointer" :font-weight "bold"}} "Parts")
+                            (d/a {:class "nav-link" :on-click #(navigate "/faq") :style {:cursor "pointer" :font-weight "bold"}} "FAQ")
                             (d/div {:class "cart-icon" 
                                     :on-click #(navigate "/cart") 
                                     :style {:cursor "pointer" :display "flex" :align-items "center" :position "relative"}}

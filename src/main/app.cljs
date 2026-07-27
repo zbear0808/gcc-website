@@ -12,6 +12,7 @@
    [main.pages.cart :refer [cart-page]]
    [main.pages.admin :refer [admin-page]]
    [main.pages.product :refer [product-page]]
+   [main.pages.faq :refer [faq-page]]
    [helix.hooks :as hooks]
    [main.state :as state]
    [main.pricing :as pricing]))
@@ -47,6 +48,7 @@
          ($ Routes
             ($ Route {:path "/" :element ($ shop-page)})
             ($ Route {:path "/parts" :element ($ parts-page)})
+            ($ Route {:path "/faq" :element ($ faq-page)})
             ($ Route {:path "/product/:id" :element ($ product-page)})
             ($ Route {:path "/cart" :element ($ cart-page)})
             ($ Route {:path "/admin" :element ($ admin-page)})))
