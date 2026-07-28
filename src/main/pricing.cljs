@@ -31,14 +31,15 @@
   (= product :full-build))
 
 (defn diy-kit? [{:keys [product]}]
-  (= product :diy-kit))
+  (or (= product :diy-kit) (= product :0-solder-diy-kit)))
 
 (defn sanitize-config [config]
   (let [{:keys [shell cable product]} config
         selected-shell (get-item shell)]
     (if (and (= cable :cable-oem)
              (or (not= (:type selected-shell) :oem)
-                 (= product :diy-kit)))
+                 (= product :diy-kit)
+                 (= product :0-solder-diy-kit)))
       (assoc config :cable :cable-3rd-party-3m)
       config)))
 

@@ -22,7 +22,7 @@
         ;; Main Shell Body
         (d/div
           {:class "controller-body"
-           :style {:background-color (if full-build?
+           :style {:background-color (if (and full-build? shell)
                                        (str "var(--shell-" (name shell) ")")
                                        "var(--shell-oem)")}}
           (d/div {:class "controller-handle-left"})

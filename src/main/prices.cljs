@@ -9,8 +9,13 @@
    {:id :diy-kit
     :label "DIY Kit"
     :description "Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. THIS IS FOR DIY, parts do not come soldered on"
-    :price 50
+    :price 45
     :image "/images/products/diy-kit.png"}
+   {:id :0-solder-diy-kit
+    :label "0-Solder DIY Kit"
+    :description "Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. All components are pre-soldered, you just need to mount the stickboxes and magnets and calibrate."
+    :price 79
+    :image "/images/products/diy-kit-no-solder.png"}
    {:id :full-build
     :label "PhobGCC Full Build"
     :description "Complete controller with T3 stickboxes — choose your shell and mods."
