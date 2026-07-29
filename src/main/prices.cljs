@@ -1,12 +1,7 @@
 (ns main.prices)
 
 (def products
-  [{:id :board-only
-    :label "PhobGCC Board Only"
-    :description "Just the board — no attachments, no shell."
-    :price 20
-    :image "/images/products/board-only.png"}
-   {:id :diy-kit
+  [{:id :diy-kit
     :label "DIY Kit"
     :description "Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. THIS IS FOR DIY, parts do not come soldered on"
     :price 45
@@ -65,8 +60,14 @@
   [{:id :tactile-z :label "Tactile Z Button" :description "Tactile switch for the Z button." :price 0 :individual-price 1 :image "/images/parts/tactile-z.png"}
    {:id :oem-z :label "OEM Z Button" :description "Softer, original style Z button." :price 0 :individual-price 1}])
 
+(def membranes
+  [{:id :membrane-extremerate :label "Extremerate Clear Rubber Membranes" :description "The most stiff and clicky ones." :price 0 :individual-price 1 :image "/images/parts/membrane-clear.png"}
+   {:id :membrane-jcd :label "JCD Dark Grey Rubber Membranes" :description "In the middle, more clicky than OEM. (My personal preference)" :price 0 :individual-price 1 :image "/images/parts/membrane-dark-grey.png"}
+   {:id :membrane-oem :label "OEM Rubber Membranes" :description "The most squishy ones." :price 0 :individual-price 1 :image "/images/parts/membrane-oem.png"}])
+
 (def parts
-  [{:id :notch-ruler :label "Notch Ruler" :description "Guide tool to help with creating firefox and wavedash notches." :price 0 :individual-price 2 :image "/images/parts/notch-ruler.png"}
+  [{:id :board-only :label "PhobGCC Board Only" :description "Just the board" :price 0 :individual-price 20 :image "/images/products/board-only.png"}
+   {:id :notch-ruler :label "Notch Ruler" :description "Guide tool to help with creating firefox and wavedash notches." :price 0 :individual-price 2 :image "/images/parts/notch-ruler.png"}
    {:id :stickbox :label "T3 Stickbox" :description "OEM T3 stickboxes cleaned with ipa and relubed with Shin Etsu silicone lubricant." :price 0 :individual-price 12 :image "/images/parts/stickbox.png"}
    {:id :stickbox-pot :label "Stickbox Potentiometers UNTESTED (Pack of 8)" :description "Untested OEM Noble brand potentiometers for stickboxes, can't guarantee that they can pivot, but from a random batch I tested most could." #_#_:price 1 :individual-price 2 :image "/images/parts/stickbox-pot.png"}
    {:id :wii-cap-new :label "OEM Wii Classic Stick Cap (New)" :description "OEM stick cap in like-new condition." :price 4 :individual-price 5 :image "/images/parts/wii-cap-new.png"}
@@ -78,4 +79,4 @@
    {:id :trigger-paddle-pcbs :label "Trigger Paddle PCBs (Pack of 2)" :description "PCBs for custom trigger paddles." :price 0 :individual-price 1 :image "/images/parts/trigger-paddle.png"}])
 
 (def all-items
-  (concat products shells buttons mods addons parts cables rumbles slider-pots z-buttons))
+  (concat products shells buttons mods addons parts cables rumbles slider-pots z-buttons membranes))

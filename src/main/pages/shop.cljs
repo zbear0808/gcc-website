@@ -131,6 +131,9 @@
         set-z-button (fn [z-button-id]
                        (set-config (fn [prev] (pricing/sanitize-config (assoc prev :z-button z-button-id)))))
                     
+        set-membrane (fn [membrane-id]
+                       (set-config (fn [prev] (pricing/sanitize-config (assoc prev :membrane membrane-id)))))
+                    
         handle-checkout (fn []
                           (set-loading true)
                           (-> (js/fetch "/api/checkout"
@@ -150,7 +153,7 @@
                                         (set-loading false)
                                         (js/alert "Checkout failed. Is the backend running?")))))
         
-        {:keys [shell buttons rumble cable slider-pots z-button]} config
+        {:keys [shell buttons rumble cable slider-pots z-button membrane]} config
         selected-product (pricing/product-by-id (:product config))
         active-mods (when full-build? (filterv #(get config (:id %)) pricing/mods))
         active-addons (when full-build? (filterv #(get config (:id %)) pricing/addons))
@@ -166,6 +169,8 @@
         slider-pots-price (if customizable-base? (or (:price selected-slider-pots) 0) 0)
         selected-z-button (when customizable-base? (some #(when (= (:id %) z-button) %) pricing/z-buttons))
         z-button-price (if customizable-base? (or (:price selected-z-button) 0) 0)
+        selected-membrane (when full-build? (some #(when (= (:id %) membrane) %) pricing/membranes))
+        membrane-price (if full-build? (or (:price selected-membrane) 0) 0)
         total-price (pricing/calculate-total config)]
     
     (d/div
@@ -256,6 +261,8 @@
 
           (when full-build?
             ($ :<>
+               ($ config-section-buttons {:title "Rubber Membranes" :category :membrane :items pricing/membranes :config config :out-of-stock? out-of-stock? :get-stock get-stock :set-fn set-membrane :multi? false})
+               
                ($ config-section-buttons {:title "Modifications" :category :mods :items pricing/mods :config config :out-of-stock? out-of-stock? :get-stock get-stock :set-fn toggle-mod :multi? true})
                
                ($ config-section-buttons {:title "Addons" :category :addons :items pricing/addons :config config :out-of-stock? out-of-stock? :get-stock get-stock :set-fn toggle-mod :multi? true})
@@ -304,6 +311,10 @@
               (d/div {:class "price-row"}
                      (d/span (:label selected-z-button))
                      (d/span (str "+$" z-button-price))))
+            (when (and full-build? (> membrane-price 0))
+              (d/div {:class "price-row"}
+                     (d/span (:label selected-membrane))
+                     (d/span (str "+$" membrane-price))))
             (when full-build?
               (mapv (fn [m]
                      (d/div {:key (name (:id m)) :class "price-row"}

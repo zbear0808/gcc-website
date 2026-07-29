@@ -13,6 +13,7 @@
 (def cables prices/cables)
 (def slider-pots prices/slider-pots)
 (def z-buttons prices/z-buttons)
+(def membranes prices/membranes)
 (def all-items prices/all-items)
 
 (def item-lookup
@@ -33,19 +34,36 @@
 (defn diy-kit? [{:keys [product]}]
   (or (= product :diy-kit) (= product :0-solder-diy-kit)))
 
-(defn sanitize-config [config]
-  (let [{:keys [shell cable product]} config
-        selected-shell (get-item shell)]
-    (if (and (= cable :cable-oem)
+(defn sanitize-config [{:keys [product shell buttons rumble cable slider-pots z-button membrane] :as config}]
+  (let [config (cond
+                 (full-build? config)
+                 (assoc config
+                        :shell (or shell :white)
+                        :buttons (or buttons :oem-buttons)
+                        :rumble (or rumble :rumble-none)
+                        :cable (or cable :cable-3rd-party-3m)
+                        :slider-pots (or slider-pots :slider-pot-alps)
+                        :z-button (or z-button :tactile-z)
+                        :membrane (or membrane :membrane-extremerate))
+                        
+                 (diy-kit? config)
+                 (assoc config
+                        :cable (or cable :cable-3rd-party-3m)
+                        :slider-pots (or slider-pots :slider-pot-alps)
+                        :z-button (or z-button :tactile-z))
+                        
+                 :else config)
+        new-cable (:cable config)
+        selected-shell (get-item (:shell config))]
+    (if (and (= new-cable :cable-oem)
              (or (not= (:type selected-shell) :oem)
-                 (= product :diy-kit)
-                 (= product :0-solder-diy-kit)))
+                 (diy-kit? config)))
       (assoc config :cable :cable-3rd-party-3m)
       config)))
 
 (defn calculate-total [config]
   (let [config (sanitize-config config)
-        {:keys [product shell buttons rumble cable slider-pots z-button]} config
+        {:keys [product shell buttons rumble cable slider-pots z-button membrane]} config
         base (get-item-price product)]
     (cond
       (full-build? config)
@@ -59,7 +77,8 @@
            (get-item-price rumble)
            (get-item-price cable)
            (get-item-price slider-pots)
-           (get-item-price z-button)))
+           (get-item-price z-button)
+           (get-item-price membrane)))
            
       (diy-kit? config)
       (+ base
@@ -80,7 +99,7 @@
 
 (defn get-line-items [config]
   (let [config (sanitize-config config)
-        {:keys [product shell buttons rumble cable slider-pots z-button trigger-plugs? spring-cut? trigger-plug-side]} config
+        {:keys [product shell buttons rumble cable slider-pots z-button membrane trigger-plugs? spring-cut? trigger-plug-side]} config
         selected-product (get-item product)
         
         ;; Add base product (include shell in name if full build)
@@ -112,7 +131,8 @@
                         rumble (conj (create-stripe-line-item (get-item rumble)))
                         cable (conj (create-stripe-line-item (get-item cable)))
                         slider-pots (conj (create-stripe-line-item (get-item slider-pots)))
-                        z-button (conj (create-stripe-line-item (get-item z-button)))))]
+                        z-button (conj (create-stripe-line-item (get-item z-button)))
+                        membrane (conj (create-stripe-line-item (get-item membrane)))))]
         ;; Filter out any nil items (e.g. price 0)
         (filterv some? items))
         
@@ -129,7 +149,7 @@
       items)))
 
 (def individual-items
-  (filterv :individual-price (concat addons shells buttons parts rumbles cables slider-pots z-buttons)))
+  (filterv :individual-price (concat addons shells buttons parts rumbles cables slider-pots z-buttons membranes)))
 
 (def individual-item-lookup
   (into {} (map (juxt :id identity) individual-items)))
@@ -195,7 +215,12 @@
     :label "Z Buttons"
     :description "Tactile or OEM Z Buttons."
     :image "/images/parts/tactile-z.png"
-    :subtypes z-buttons}])
+    :subtypes z-buttons}
+   {:id :membranes
+    :label "Rubber Membranes"
+    :description "Rubber membranes for the A, B, X, Y, Start, and D-Pad buttons."
+    :image "/images/parts/membrane-clear.png"
+    :subtypes membranes}])
 
 ;; We will append individual items that don't have subtypes to the catalog directly
 (def full-catalog
