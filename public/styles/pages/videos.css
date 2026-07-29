@@ -1,8 +1,0 @@
-.video-container {
-  width: 100%;
-}
-
-.video-iframe {
-  border: none;
-  border-radius: var(--border-radius-sm);
-}

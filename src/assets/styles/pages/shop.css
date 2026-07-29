@@ -1,0 +1,2 @@
+.shop-page { display: flex; flex-direction: column; min-height: 100vh; padding: 2rem; background-color: var(--color-bg-form); }
+.shop-grid { display: grid; grid-template-columns: 1fr 400px; gap: 2rem; flex: 1; }

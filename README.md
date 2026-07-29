@@ -1,112 +1,75 @@
-# zubair laser website
+# GCC Shop
 
-**Live Site:** https://zulaser.onrender.com  
-**Local Development:** http://localhost:5000
+Modern e-commerce platform for custom GameCube Controllers (GCC).
 
-A ClojureScript React website for a custom GameCube controller shop, built with shadow-cljs and Helix. Includes a Vercel serverless backend for Stripe Checkout and inventory management.
+## Architecture
 
-## Prerequisites
+This project has been rewritten as a Vite + React + TypeScript Single Page Application (SPA).
+- **Frontend**: Vite, React, React Router v7, Zustand for state management.
+- **Backend**: Vercel Serverless Functions (`api/` directory).
+- **Database**: Upstash Redis (for inventory tracking).
+- **Payments**: Stripe Checkout.
+- **Styling**: Vanilla CSS with custom properties and glassmorphism. No tailwind.
 
-- **JDK 21+** — required by shadow-cljs to compile ClojureScript
-- **Node.js 18+** and **npm**
-- **Vercel CLI** — for local backend development (install with `npm i -g vercel`)
-- A **Stripe account** with API keys (for checkout functionality)
+## Development
 
-## Local Development
+To run the full stack locally, you will need to run three separate processes:
 
-### 1. Install dependencies
+### 1. Web UI (Frontend)
 
-```bash
-npm ci
-```
-
-### 2. Set up environment variables
-
-Create a `.env` file in the project root (it is already gitignored):
-
-```
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-
-# For inventory management, either use the fallback or provide Upstash Redis credentials:
-USE_FALLBACK_INVENTORY=true
-# KV_REST_API_URL=your_upstash_url
-# KV_REST_API_TOKEN=your_upstash_token
-```
-
-You can find your test-mode secret key in the [Stripe Dashboard → API keys](https://dashboard.stripe.com/test/apikeys).
-
-### 3. Start the frontend dev server
+Run the Vite development server. This will start on `http://localhost:5000` and proxy `/api` requests to the backend server.
 
 ```bash
-npm start
+# Install dependencies
+npm install
+
+# Run local frontend server
+npm run dev
 ```
 
-This runs `shadow-cljs watch app tests` and starts the frontend at **http://localhost:5000** with hot-reloading.
+### 2. Backend API (Serverless Functions)
 
-### 4. Start the backend server (Vercel Dev)
-
-In a **separate terminal**, compile the server and start Vercel Dev:
+The backend uses Vercel Serverless Functions. You need the [Vercel CLI](https://vercel.com/docs/cli) installed to run these locally.
 
 ```bash
-# Compile the server build (outputs to api/index.js)
-npx shadow-cljs compile server
+# Install Vercel CLI globally (if you haven't already)
+npm i -g vercel
 
-# Run Vercel local dev environment
+# Run the backend dev server (starts on http://localhost:3000)
 vercel dev
 ```
 
-Vercel Dev will start on **http://localhost:3000** and handle routing `/api/*` to the serverless function. 
+### 3. Stripe Webhooks (Local Testing)
 
-The backend exposes several endpoints:
-- `POST /api/checkout` — accepts a JSON body with the controller configuration and returns a Stripe Checkout session URL.
-- `GET /api/inventory` — fetches current inventory.
-- `POST /api/inventory` — updates inventory manually.
-- `POST /api/webhooks/stripe` — handles post-checkout logic (decrementing inventory).
-
-> **Both processes need to be running** for local checkout to work. The frontend on port 5000 makes requests to the Vercel dev server on port 3000.
-
-### Other commands
+To test Stripe checkout and payments locally, you must use the [Stripe CLI](https://stripe.com/docs/stripe-cli) to forward webhooks to your local backend server.
 
 ```bash
-# Run tests in node with jsdom
-npm test
+# Forward Stripe webhooks to your local Vercel server
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+*Note: The Stripe CLI will output a webhook signing secret (starts with `whsec_`). Add this to your `.env` file as `STRIPE_WEBHOOK_SECRET`.*
 
-# Build frontend for production
+### Building for Production
+
+```bash
+# Build the React frontend for production
 npm run build
 ```
 
-## How Checkout Works
+## Environment Variables
 
-1. The user configures their controller on the shop page (shell, mods, etc.)
-2. Clicking **"Build It"** sends the config as JSON to `POST /api/checkout`
-3. The server (`src/server/core.cljs`) uses the shared pricing logic (`src/main/pricing.cljs`) to generate Stripe line items
-4. Stripe creates a Checkout Session and returns a URL
-5. The browser redirects to Stripe's hosted checkout page
-6. On success, Stripe hits the webhook (`POST /api/webhooks/stripe`) which updates the inventory.
+Copy `.env.example` to `.env` and fill in the values:
+- `STRIPE_SECRET_KEY`: Your Stripe secret key
+- `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook signing secret
+- `KV_REST_API_URL` & `KV_REST_API_TOKEN`: Your Upstash Redis credentials
+- `ADMIN_SECRET`: Secret token for the `/admin` inventory update endpoint
+- `USE_FALLBACK_INVENTORY`: Set to "true" to skip Redis locally and mock inventory
+- `VITE_API_URL`: (Production Render deployment only) URL of your Vercel deployment (e.g. `https://your-vercel-project.vercel.app`)
 
 ## Deployment
 
-This project uses an automated deployment pipeline:
+The project is designed to be deployed with:
+1. **Frontend**: Render (or any static host)
+2. **Backend**: Vercel (zero-config, auto-deploys from the `api/` directory)
 
-### Current Deployment Workflow
-
-1. **GitHub Actions** - Builds the site on every push to `main`
-   - Compiles ClojureScript code with shadow-cljs (requires JDK 21+)
-   - Pushes compiled output to [zulaser-deploy](https://github.com/zbear0808/zulaser-deploy)
-
-2. **Render.com** - Automatically deploys when `zulaser-deploy` receives new commits
-   - Watches the [zulaser-deploy](https://github.com/zbear0808/zulaser-deploy) repository
-   - Serves the static files from the `public/` directory
-
-The GitHub Actions workflow (`.github/workflows/main.yml`) handles the build process, and the compiled site is pushed to the deployment repository for Render to pick up.
-
-## Project Structure
-
-- `src/main/` — Frontend ClojureScript source (React components, routing)
-- `src/main/pages/shop.cljs` — Shop page with controller configurator and checkout
-- `src/main/pricing.cljs` — Shared pricing logic (used by both frontend and server)
-- `src/server/core.cljs` — Serverless backend for Stripe Checkout sessions and inventory
-- `public/` — Static assets and compiled JavaScript output
-- `shadow-cljs.edn` — Build configuration (defines `app`, `tests`, and `server` builds)
-- `.github/workflows/` — GitHub Actions CI/CD pipeline
-- `api/` — Compiled backend serverless function (created during build)
+When deploying to Render, make sure to set the `VITE_API_URL` environment variable so the frontend knows where to send API requests. When deploying entirely to Vercel, this variable can be left empty as Vercel will handle the API routing automatically.

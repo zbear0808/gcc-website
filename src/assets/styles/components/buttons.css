@@ -1,0 +1,11 @@
+.btn { background: transparent; color: var(--color-white); border: none; cursor: pointer; font-family: var(--font-ndot); transition: color var(--transition-standard), transform var(--transition-fast), background-color var(--transition-standard); }
+.btn:hover { color: var(--color-gray-hover); }
+.btn:active { transform: scale(0.98); }
+.btn-solid { background-color: var(--color-white); color: var(--color-black); border-radius: var(--border-radius-sm); }
+.btn-solid:hover { background-color: #e0e0e0; color: var(--color-black); transform: translateY(-2px); }
+.btn-solid:active { transform: translateY(0) scale(0.98); }
+.btn-solid:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-solid:hover:disabled, .btn-solid:active:disabled { transform: none; background-color: var(--color-white); }
+.toggle-btn { background-color: var(--color-bg-input); color: var(--color-gray-hover); border: 1px solid var(--color-border-input); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-inter); }
+.toggle-btn:hover { background-color: var(--color-border); }
+.toggle-btn.active { background-color: var(--color-success); color: var(--color-black); border-color: var(--color-success); font-weight: bold; }

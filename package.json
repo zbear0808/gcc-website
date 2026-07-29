@@ -1,28 +1,34 @@
 {
-  "name": "memento",
-  "version": "0.0.1",
+  "name": "gcc-website",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "shadow-cljs watch app tests",
-    "build": "shadow-cljs release app",
-    "test": "shadow-cljs compile node-tests && node out/node-tests.js",
-    "test:watch": "shadow-cljs watch node-tests --config-merge \"{:autorun true}\"",
-    "format": "clojure -M:dev -m cljstyle.main fix"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.8.0",
+    "@stripe/stripe-js": "^9.12.1",
     "@upstash/redis": "^1.38.0",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "react-refresh": "^0.18.0",
-    "react-router-dom": "^7.10.1",
-    "stripe": "^22.2.2"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2",
+    "stripe": "^22.3.2",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "global-jsdom": "27.0.0",
-    "jsdom": "27.3.0",
-    "shadow-cljs": "^3.3.3"
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "jsdom": "^27.3.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

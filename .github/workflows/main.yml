@@ -9,22 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
-
-      - uses: DeLaGuardo/setup-clojure@13.4
-        with:
-          cli: "1.12.0.1530"
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
@@ -32,30 +22,27 @@ jobs:
       - name: Build application
         run: npm run build
 
-    # Optional: Run tests
-    # - name: Run tests
-    #   run: npm run test
+      # Optional: Run tests
+      # - name: Run tests
+      #   run: npm run test
 
-    # Deploy to separate repository
-    # - name: Deploy to deploy repo
-    #   env:
-    #     DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-    #   run: |
-    #     git config --global user.name "GitHub Actions"
-    #     git config --global user.email "actions@github.com"
-
-    #     git clone https://x-access-token:${DEPLOY_TOKEN}@github.com/zbear0808/zulaser-deploy.git deploy-repo
-
-    #     cd deploy-repo
-    #     rm -rf public
-    #     mkdir public
-
-    #     cp -r ../public/* public/
-    #     git add -A
-
-    #     if ! git diff --staged --quiet; then
-    #       git commit -m "Deploy: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-    #       git push origin main
-    #     else
-    #       echo "No changes to deploy"
-    #     fi
+      # Vercel deployment is handled automatically by their GitHub integration.
+      # If you still want to deploy static files to another repo, you can uncomment below.
+      # - name: Deploy to deploy repo
+      #   env:
+      #     DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+      #   run: |
+      #     git config --global user.name "GitHub Actions"
+      #     git config --global user.email "actions@github.com"
+      #     git clone https://x-access-token:${DEPLOY_TOKEN}@github.com/zbear0808/zulaser-deploy.git deploy-repo
+      #     cd deploy-repo
+      #     rm -rf public
+      #     mkdir public
+      #     cp -r ../dist/* public/
+      #     git add -A
+      #     if ! git diff --staged --quiet; then
+      #       git commit -m "Deploy: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+      #       git push origin main
+      #     else
+      #       echo "No changes to deploy"
+      #     fi

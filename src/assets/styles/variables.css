@@ -1,0 +1,36 @@
+:root {
+  color-scheme: dark;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-hover: #cccccc;
+  --color-gray-dark: #666;
+  --color-border: #333;
+  --color-border-input: #444;
+  --color-bg-card: #111;
+  --color-bg-header: #191818;
+  --color-bg-form: #1a1a1a;
+  --color-bg-input: #2a2a2a;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --transition-fast: 0.2s ease;
+  --transition-standard: 0.3s ease;
+  --transition-slow: 0.8s ease-in-out;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --glass-bg: rgba(25, 25, 25, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-backdrop: blur(12px);
+  --shell-oem: #4b4b4b;
+  --shell-white: #e0e0e0;
+  --shell-black: #111111;
+  --shell-cherry: #ffb7c5;
+  --shell-clear: rgba(255, 255, 255, 0.2);
+  --shell-indigo: #4a3c75;
+  --shell-platinum: #a8a9a6;
+  --shell-orange: #f17600;
+  --shell-emerald: #02828b;
+  --shell-smash-ultimate-black: #111111;
+  --font-ndot: 'Ndot', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}

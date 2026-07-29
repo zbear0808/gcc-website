@@ -1,30 +1,26 @@
 node_modules/
-public/js
-public/css
+dist/
 
-/api
-/out
-/checkouts
-/src/gen
+# Env files
+.env
+.env.local
+.env.*.local
 
+# Editor
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# Old ClojureScript (can remove after migration)
 .clj-kondo/.cache
 .lsp/.cache
 .cpcache
-
-pom.xml
-pom.xml.asc
-*.iml
-*.jar
-*.log
 .shadow-cljs
-.idea
-.lein-*
-.nrepl-*
-.DS_Store
-
-.hgignore
-.hg/
-.calva/
-.vscode/ 
-.clinerules/
-! .vscode/settings.json
+out/

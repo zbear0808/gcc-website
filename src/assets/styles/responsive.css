@@ -1,0 +1,37 @@
+@media (max-width: 900px) {
+  .shop-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .mobile-only { display: flex; }
+  .desktop-only { display: none; }
+  .header { padding: 0 20px; }
+  .header-title h1 { font-size: 1.6rem; letter-spacing: 1px; }
+  .header-name.trichromatic { color: var(--color-white); mix-blend-mode: normal; transform: none; }
+  .header-name.trichromatic::before, .header-name.trichromatic::after { display: none; }
+  .header-name.trichromatic:hover { color: var(--color-gray-hover); transform: scale(1.02); }
+  .page { padding: 30px 15px; }
+  .page h1 { font-size: 2rem; }
+  .page p { font-size: 1rem; }
+  .videos-grid { grid-template-columns: 1fr; gap: 16px; }
+  .pictures-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+  .nav-buttons { flex-direction: column; gap: 10px; }
+  .nav-button { width: 100%; text-align: center; }
+  .home-grid { grid-template-columns: 1fr; gap: 20px; }
+  .home-card-title { font-size: 1.3rem; padding: 8px; }
+  .home-card-overlay-title { font-size: 15vw; letter-spacing: 1vw; }
+  .inquiry-form-container { padding: 20px; margin-top: 20px; }
+  .form-title { font-size: 1.3rem; }
+  .form-input { padding: 10px 14px; }
+  .form-submit-btn { padding: 12px 24px; font-size: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .header { padding: 0 15px; }
+  .header-title h1 { font-size: 1.4rem; }
+  .sidebar { width: 100%; max-width: 100%; }
+  .page { padding: 20px 10px; }
+  .page h1 { font-size: 1.6rem; }
+  .pictures-grid { grid-template-columns: 1fr; }
+  .home-card-overlay-title { font-size: 18vw; letter-spacing: 1.5vw; }
+}
