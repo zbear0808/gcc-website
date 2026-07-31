@@ -1,5 +1,6 @@
 import React from 'react';
-import { CatalogItem, ConfiguratorState } from '@shared/types';
+import type { CatalogItem, ConfiguratorState } from '@shared/types';
+import { formatPrice } from '@shared/pricing';
 
 interface Group {
   groupTitle: string;
@@ -10,13 +11,15 @@ interface ConfigSectionProps {
   title: string;
   category?: keyof ConfiguratorState;
   items: CatalogItem[];
-  config: ConfiguratorState;
-  isOutOfStock: (id: string) => boolean;
-  getStock: (id: string) => number;
+  config?: ConfiguratorState;
+  isOutOfStock?: (id: string) => boolean;
+  getStock?: (id: string) => number;
   onSelect: (id: string) => void;
+  selectedId?: string;
   isMulti?: boolean;
-  disabledFn?: (id: string) => boolean;
+  disabledFn?: (item: CatalogItem) => boolean;
   groups?: Group[];
+  basePrice?: number;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -24,24 +27,49 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   category,
   items,
   config,
-  isOutOfStock,
-  getStock,
+  isOutOfStock = () => false,
+  getStock = () => 10,
   onSelect,
+  selectedId,
   isMulti = false,
   disabledFn = () => false,
   groups,
+  basePrice,
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
     const stock = getStock(item.id);
-    const disabled = disabledFn(item.id) || outOfStock;
+    const disabled = disabledFn(item) || outOfStock;
     
     let isActive = false;
-    if (isMulti) {
-      const multiValues = category ? config[category] as unknown as string[] : [];
+    if (selectedId !== undefined) {
+      isActive = selectedId === item.id;
+    } else if (isMulti) {
+      const multiValues = category && config ? config[category] as unknown as string[] : [];
       isActive = Array.isArray(multiValues) && multiValues.includes(item.id);
-    } else if (category) {
+    } else if (category && config) {
       isActive = config[category] === item.id;
+    }
+
+    let diff = item.price;
+    if (basePrice !== undefined) {
+      diff = item.price - basePrice;
+    }
+
+    let priceText = '';
+    let priceClass = '';
+    
+    if (basePrice !== undefined && diff === 0) {
+      priceText = '';
+    } else if (diff > 0) {
+      priceText = ` +$${formatPrice(diff)}`;
+      priceClass = ' price-increase';
+    } else if (diff < 0) {
+      priceText = ` -$${formatPrice(Math.abs(diff))}`;
+      priceClass = ' price-decrease';
+    } else if (basePrice === undefined && item.price > 0) {
+      priceText = ` +$${formatPrice(item.price)}`;
+      priceClass = ' price-increase';
     }
 
     return (
@@ -52,11 +80,11 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
         disabled={disabled}
       >
         <div className="item-label">
-          {item.name}
-          {item.price > 0 && <span className="item-price"> +${item.price.toFixed(2)}</span>}
+          {item.label}
+          {priceText && <span className={`item-price${priceClass}`}>{priceText}</span>}
         </div>
         
-        {item.description && (
+        {item.description && isActive && (
           <div className="item-description">{item.description}</div>
         )}
         

@@ -6,43 +6,54 @@ const ControllerVisualizer: React.FC = () => {
   
   const shellColor = `var(--shell-${config.shell || 'oem'})`;
 
-  const hasFirefox = config.mods?.includes('firefox-notches') || false;
-  const hasWavedash = config.mods?.includes('wavedash-notches') || false;
-  const hasTriggerPlugs = config.mods?.includes('trigger-plugs') || false;
+  const hasFirefox = config.notchesFirefox || false;
+  const hasWavedash = config.notchesWavedash || false;
+  const hasTriggerPlugs = config.triggerPlugs || false;
+  const hasKalihChoco = config.kalihChoco || false;
+  
+  const triggerClass = hasTriggerPlugs ? 'has-plugs' : hasKalihChoco ? 'has-choco' : '';
 
   return (
     <div className="visualizer-wrapper">
-      <div className="controller-map">
+      <div className={`controller-map ${config.buttons ? `theme-${config.buttons}` : ''}`}>
         {/* Left Trigger */}
-        <div className={`trigger-l ${hasTriggerPlugs ? 'has-plugs' : ''}`}></div>
+        <div className={`trigger trigger-l ${triggerClass}`}></div>
         {/* Right Trigger */}
-        <div className={`trigger-r ${hasTriggerPlugs ? 'has-plugs' : ''}`}></div>
+        <div className={`trigger trigger-r ${triggerClass}`}></div>
 
         <div 
           className="controller-body" 
           style={{ backgroundColor: shellColor }}
         >
+          {/* Left Pod */}
+          <div className="controller-pod-left" style={{ backgroundColor: shellColor }}></div>
+          
+          {/* Right Pod */}
+          <div className="controller-pod-right" style={{ backgroundColor: shellColor }}></div>
+
           {/* Left Handle */}
-          <div className="handle-l" style={{ backgroundColor: shellColor }}></div>
+          <div className="controller-handle-left" style={{ backgroundColor: shellColor }}></div>
           
           {/* Right Handle */}
-          <div className="handle-r" style={{ backgroundColor: shellColor }}></div>
+          <div className="controller-handle-right" style={{ backgroundColor: shellColor }}></div>
           
           {/* D-Pad */}
           <div className="d-pad"></div>
           
           {/* Left Stick */}
-          <div className={`stick-l ${hasFirefox ? 'has-firefox' : ''} ${hasWavedash ? 'has-wavedash' : ''}`}></div>
+          <div className={`stick stick-left ${hasFirefox ? 'has-firefox' : ''} ${hasWavedash ? 'has-wavedash' : ''}`}>
+            <div className="notch-indicator"></div>
+          </div>
           
           {/* C-Stick (Yellow) */}
-          <div className="stick-c" style={{ backgroundColor: 'yellow' }}></div>
+          <div className="stick stick-c"></div>
           
           {/* Button Cluster */}
-          <div className="button-cluster">
-            <div className="btn-a" style={{ backgroundColor: 'green' }}>A</div>
-            <div className="btn-b" style={{ backgroundColor: 'red' }}>B</div>
-            <div className="btn-x" style={{ backgroundColor: 'gray' }}>X</div>
-            <div className="btn-y" style={{ backgroundColor: 'gray' }}>Y</div>
+          <div className="button-group">
+            <div className="btn-v btn-a">A</div>
+            <div className="btn-v btn-b">B</div>
+            <div className="btn-v btn-x">X</div>
+            <div className="btn-v btn-y">Y</div>
           </div>
         </div>
       </div>

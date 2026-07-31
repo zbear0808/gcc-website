@@ -27,14 +27,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const inventory = await redis.hgetall('inventory');
         return res.status(200).json(inventory || {});
       } else {
-        // Fallback
-        const fallback: Record<string, number> = {};
-        for (const category of Object.values(allItems)) {
-          for (const item of category) {
+        // Fallback for local development
+        if (process.env.NODE_ENV !== 'production') {
+          const fallback: Record<string, number> = {};
+          for (const item of allItems) {
             fallback[item.id] = 10;
           }
+          return res.status(200).json(fallback);
+        } else {
+          return res.status(200).json({});
         }
-        return res.status(200).json(fallback);
       }
     } catch (error: any) {
       console.error('Inventory GET error:', error);

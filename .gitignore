@@ -24,3 +24,6 @@ dist/
 .cpcache
 .shadow-cljs
 out/
+
+.vercel
+.env*

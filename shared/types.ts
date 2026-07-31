@@ -5,6 +5,7 @@
 export type ShellType = 'oem' | 'extremerate';
 export type ButtonType = 'oem' | 'extremerate' | 'other-3rd-party';
 export type TriggerSide = 'l' | 'r' | 'both';
+export type TriggerPlugLength = 'tall' | 'short';
 
 // ==================
 // Base Item Interface
@@ -17,6 +18,18 @@ export interface CatalogItem {
   price: number;
   individualPrice?: number;
   image?: string;
+  weight?: number; // Weight in ounces
+}
+
+// ==================
+// Shipping Types
+// ==================
+
+export interface ParcelDimensions {
+  weight: number; // Total weight in ounces
+  length: number;
+  width: number;
+  height: number;
 }
 
 // ==================
@@ -47,6 +60,8 @@ export interface ZButtonOption extends CatalogItem {}
 
 export interface MembraneOption extends CatalogItem {}
 
+export interface StickCapOption extends CatalogItem {}
+
 export interface ModOption {
   id: string;
   label: string;
@@ -57,7 +72,7 @@ export interface ModOption {
 export interface AddonOption {
   id: string;
   label: string;
-  price?: number;
+  price: number;
   image: string;
 }
 
@@ -88,11 +103,17 @@ export interface ConfiguratorState {
   sliderPots?: string;
   zButton?: string;
   membrane?: string;
+  stickCap?: string;
   notchesFirefox?: boolean;
   notchesWavedash?: boolean;
+  notchStyle?: 'deep' | 'subtle';
   triggerPlugs?: boolean;
+  kalihChoco?: boolean;
+  kalihChocoSide?: TriggerSide;
   springCut?: boolean;
+  wornShell?: boolean;
   triggerPlugSide?: TriggerSide;
+  triggerPlugLength?: TriggerPlugLength;
 }
 
 // ==================
@@ -121,6 +142,7 @@ export interface StripeLineItem {
 
 export interface CheckoutPayload {
   config?: ConfiguratorState;
+  customBuilds?: ConfiguratorState[];
   cart?: Cart;
   parts?: boolean;
 }

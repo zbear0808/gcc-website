@@ -1,13 +1,6 @@
 import type { ConfiguratorState, CatalogItem, StripeLineItem } from './types';
 import {
-  products,
   shells,
-  buttons,
-  cables,
-  rumbles,
-  sliderPots,
-  zButtons,
-  membranes,
   mods,
   addons,
   allItems,
@@ -28,6 +21,10 @@ export function getItem(id: string): CatalogItem | undefined {
 
 export function getItemPrice(id: string): number {
   return getItem(id)?.price ?? 0;
+}
+
+export function formatPrice(price: number): string {
+  return Number.isInteger(price) ? price.toString() : price.toFixed(2);
 }
 
 export function productById(productId: string): CatalogItem | undefined {
@@ -60,21 +57,24 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
   if (isFullBuild(result)) {
     result = {
       ...result,
-      shell: result.shell ?? 'white',
+      shell: result.shell ?? 'indigo',
       buttons: result.buttons ?? 'oem-buttons',
-      rumble: result.rumble ?? 'rumble-none',
-      cable: result.cable ?? 'cable-3rd-party-3m',
+      rumble: result.rumble ?? 'rumble-oem',
+      cable: result.cable ?? 'cable-paracord-3m',
       sliderPots: result.sliderPots ?? 'slider-pot-alps',
       zButton: result.zButton ?? 'tactile-z',
       membrane: result.membrane ?? 'membrane-extremerate',
+      stickCap: result.stickCap ?? 'gc-cap-okay',
+      notchStyle: result.notchStyle ?? 'deep',
     };
   } else if (isDiyKit(result)) {
     result = {
       ...result,
-      cable: result.cable ?? 'cable-3rd-party-3m',
+      cable: result.cable ?? 'cable-paracord-3m',
       sliderPots: result.sliderPots ?? 'slider-pot-alps',
       zButton: result.zButton ?? 'tactile-z',
       membrane: result.membrane ?? 'membrane-extremerate',
+      stickCap: result.stickCap ?? 'gc-cap-okay',
     };
   }
 
@@ -82,8 +82,13 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
   if (result.cable === 'cable-oem') {
     const selectedShell = shells.find((s) => s.id === result.shell);
     if (selectedShell?.type !== 'oem' || isDiyKit(result)) {
-      result = { ...result, cable: 'cable-3rd-party-3m' };
+      result = { ...result, cable: 'cable-paracord-3m' };
     }
+  }
+
+  // Worn shell discount only applies to indigo, black, platinum
+  if (result.wornShell && !['indigo', 'black', 'platinum'].includes(result.shell ?? '')) {
+    result.wornShell = false;
   }
 
   return result;
@@ -106,17 +111,33 @@ export function calculateTotal(config: ConfiguratorState): number {
       .filter((a) => sanitized[a.id as keyof ConfiguratorState])
       .reduce((sum, a) => sum + (a.price ?? 0), 0);
 
+    let kalihChocoPremium = 0;
+    if (sanitized.kalihChoco) {
+      kalihChocoPremium = (sanitized.kalihChocoSide ?? 'both') === 'both' ? 40 : 30;
+    }
+
+    const wornDiscount = sanitized.wornShell ? -4 : 0;
+    
+    let subtlePremium = 0;
+    if (sanitized.notchStyle === 'subtle' && (sanitized.notchesFirefox || sanitized.notchesWavedash)) {
+      subtlePremium = 15;
+    }
+
     return (
       base +
       modsTotal +
       addonsTotal +
+      kalihChocoPremium +
+      wornDiscount +
+      subtlePremium +
       getItemPrice(sanitized.shell ?? '') +
       getItemPrice(sanitized.buttons ?? '') +
       getItemPrice(sanitized.rumble ?? '') +
       getItemPrice(sanitized.cable ?? '') +
       getItemPrice(sanitized.sliderPots ?? '') +
       getItemPrice(sanitized.zButton ?? '') +
-      getItemPrice(sanitized.membrane ?? '')
+      getItemPrice(sanitized.membrane ?? '') +
+      getItemPrice(sanitized.stickCap ?? '')
     );
   }
 
@@ -126,7 +147,8 @@ export function calculateTotal(config: ConfiguratorState): number {
       getItemPrice(sanitized.cable ?? '') +
       getItemPrice(sanitized.sliderPots ?? '') +
       getItemPrice(sanitized.zButton ?? '') +
-      getItemPrice(sanitized.membrane ?? '')
+      getItemPrice(sanitized.membrane ?? '') +
+      getItemPrice(sanitized.stickCap ?? '')
     );
   }
 
@@ -163,7 +185,12 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
     ? `${selectedProduct.label} - ${getItem(sanitized.shell ?? '')?.label ?? ''} Shell`
     : selectedProduct.label;
 
-  const baseItem = createStripeLineItem(selectedProduct, baseName);
+  let basePrice = selectedProduct.individualPrice ?? selectedProduct.price ?? 0;
+  if (isFullBuild(sanitized) && sanitized.wornShell) {
+    basePrice -= 4; // Apply worn shell discount directly to base build item
+  }
+
+  const baseItem = createStripeLineItem({ ...selectedProduct, individualPrice: basePrice }, baseName);
   const items: StripeLineItem[] = baseItem ? [baseItem] : [];
 
   if (isFullBuild(sanitized)) {
@@ -175,20 +202,36 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
       }
     }
 
+    if (sanitized.notchStyle === 'subtle' && (sanitized.notchesFirefox || sanitized.notchesWavedash)) {
+      const subtleItem = createStripeLineItem({
+        id: 'subtle-notches-premium',
+        label: 'Subtle Notches Premium',
+        price: 15
+      });
+      if (subtleItem) items.push(subtleItem);
+    }
+
     // Active addons
     for (const addon of addons) {
       if (sanitized[addon.id as keyof ConfiguratorState]) {
         const label =
           addon.id === 'triggerPlugs'
-            ? `Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
+            ? `${(sanitized.triggerPlugLength ?? 'tall').charAt(0).toUpperCase() + (sanitized.triggerPlugLength ?? 'tall').slice(1)} Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
+            : addon.id === 'kalihChoco'
+            ? `Kalih Choco Switch Mechanical Trigger (${(sanitized.kalihChocoSide ?? 'both').toUpperCase()})`
             : undefined;
-        const item = createStripeLineItem(addon as unknown as CatalogItem, label);
+        
+        const priceOverride = addon.id === 'kalihChoco'
+          ? ((sanitized.kalihChocoSide ?? 'both') === 'both' ? 40 : 30)
+          : addon.price;
+
+        const item = createStripeLineItem({ ...addon, price: priceOverride } as unknown as CatalogItem, label);
         if (item) items.push(item);
       }
     }
 
     // Component selections
-    for (const id of [sanitized.buttons, sanitized.rumble, sanitized.cable, sanitized.sliderPots, sanitized.zButton, sanitized.membrane]) {
+    for (const id of [sanitized.buttons, sanitized.rumble, sanitized.cable, sanitized.sliderPots, sanitized.zButton, sanitized.membrane, sanitized.stickCap]) {
       if (id) {
         const catalogItem = getItem(id);
         if (catalogItem) {
@@ -198,7 +241,7 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
       }
     }
   } else if (isDiyKit(sanitized)) {
-    for (const id of [sanitized.cable, sanitized.sliderPots, sanitized.zButton, sanitized.membrane]) {
+    for (const id of [sanitized.cable, sanitized.sliderPots, sanitized.zButton, sanitized.membrane, sanitized.stickCap]) {
       if (id) {
         const catalogItem = getItem(id);
         if (catalogItem) {
@@ -254,20 +297,29 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
   if (config.product) items.push(config.product);
 
   if (isFullBuild(config)) {
-    if (config.shell) items.push(config.shell);
+    if (config.shell) {
+      if (config.wornShell) {
+        items.push(`${config.shell}-worn`);
+      } else {
+        items.push(config.shell);
+      }
+    }
     if (config.buttons) items.push(config.buttons);
     if (config.cable) items.push(config.cable);
     if (config.rumble) items.push(config.rumble);
     if (config.sliderPots) items.push(config.sliderPots);
     if (config.zButton) items.push(config.zButton);
+    if (config.stickCap) items.push(config.stickCap);
     if (config.notchesFirefox) items.push('notchesFirefox');
     if (config.notchesWavedash) items.push('notchesWavedash');
-    if (config.triggerPlugs) items.push('triggerPlugs');
+    if (config.triggerPlugs) items.push(`trigger-plugs-${config.triggerPlugLength ?? 'tall'}`);
+    if (config.kalihChoco) items.push(`kalih-choco-${config.kalihChocoSide ?? 'both'}`);
     if (config.springCut) items.push('springCut');
   } else if (isDiyKit(config)) {
     if (config.cable) items.push(config.cable);
     if (config.sliderPots) items.push(config.sliderPots);
     if (config.zButton) items.push(config.zButton);
+    if (config.stickCap) items.push(config.stickCap);
   }
 
   return items;
@@ -275,6 +327,7 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
 
 export function extractRequestedItems(payload: {
   config?: ConfiguratorState;
+  customBuilds?: ConfiguratorState[];
   cart?: Record<string, number>;
   parts?: boolean;
 }): Record<string, number> {
@@ -284,6 +337,15 @@ export function extractRequestedItems(payload: {
     const configItems = getAllItemsFromConfig(payload.config);
     for (const item of configItems) {
       itemsMap[item] = (itemsMap[item] ?? 0) + 1;
+    }
+  }
+
+  if (payload.customBuilds) {
+    for (const build of payload.customBuilds) {
+      const configItems = getAllItemsFromConfig(build);
+      for (const item of configItems) {
+        itemsMap[item] = (itemsMap[item] ?? 0) + 1;
+      }
     }
   }
 

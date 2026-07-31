@@ -13,31 +13,30 @@ This project has been rewritten as a Vite + React + TypeScript Single Page Appli
 
 ## Development
 
-To run the full stack locally, you will need to run three separate processes:
+To run the full stack locally (Frontend + Vercel Serverless Functions) without proxy errors, the best way is to use the Vercel CLI, which manages both the frontend and backend for you. 
 
-### 1. Web UI (Frontend)
+### 1. Start the Local Server (Frontend + Backend)
 
-Run the Vite development server. This will start on `http://localhost:5000` and proxy `/api` requests to the backend server.
+You need the [Vercel CLI](https://vercel.com/docs/cli) installed to run the backend serverless functions locally alongside Vite.
 
 ```bash
-# Install dependencies
+# Install dependencies if you haven't already
 npm install
 
-# Run local frontend server
-npm run dev
-```
-
-### 2. Backend API (Serverless Functions)
-
-The backend uses Vercel Serverless Functions. You need the [Vercel CLI](https://vercel.com/docs/cli) installed to run these locally.
-
-```bash
 # Install Vercel CLI globally (if you haven't already)
 npm i -g vercel
 
-# Run the backend dev server (starts on http://localhost:3000)
+# Start the dev server
 vercel dev
 ```
+
+`vercel dev` will automatically:
+1. Start your Vercel Serverless Functions (the `api/` directory) on `http://localhost:3000`.
+2. Start your Vite frontend development server in the background and serve it seamlessly at `http://localhost:3000`.
+
+**Important Note:** 
+- Open your browser to **`http://localhost:3000`** (NOT `http://localhost:5000`).
+- You do **NOT** need to run `npm run dev` separately. `vercel dev` handles starting Vite for you. Running both at the same time is what causes port conflicts and `ECONNREFUSED` proxy errors.
 
 ### 3. Stripe Webhooks (Local Testing)
 
@@ -61,7 +60,7 @@ npm run build
 Copy `.env.example` to `.env` and fill in the values:
 - `STRIPE_SECRET_KEY`: Your Stripe secret key
 - `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook signing secret
-- `KV_REST_API_URL` & `KV_REST_API_TOKEN`: Your Upstash Redis credentials
+- `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`: Your Upstash Redis credentials
 - `ADMIN_SECRET`: Secret token for the `/admin` inventory update endpoint
 - `USE_FALLBACK_INVENTORY`: Set to "true" to skip Redis locally and mock inventory
 - `VITE_API_URL`: (Production Render deployment only) URL of your Vercel deployment (e.g. `https://your-vercel-project.vercel.app`)

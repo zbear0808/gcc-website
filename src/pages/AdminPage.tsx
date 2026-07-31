@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { fullCatalog, shells, buttons, cables, rumbles, sliderPots, zButtons, rubberMembranes, mods, triggers, products } from '@shared/catalog';
-import '@/assets/styles/admin.css';
+import { useState, useEffect } from 'react';
+import { fullCatalog, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, mods, products } from '@shared/catalog';
+import '@/assets/styles/pages/admin.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -12,11 +12,10 @@ const allItems = [
   ...rumbles,
   ...sliderPots,
   ...zButtons,
-  ...rubberMembranes,
+  ...membranes,
   ...mods,
-  ...triggers,
-  ...products,
-  ...fullCatalog.flatMap(category => category.items)
+    ...products,
+  ...fullCatalog.flatMap(category => category.subtypes)
 ].filter((item, index, self) => self.findIndex(i => i.id === item.id) === index); // Unique items
 
 export default function AdminPage() {

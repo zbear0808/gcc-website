@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
 import { sanitizeConfig, getLineItems, getPartsLineItems, extractRequestedItems } from '../../shared/pricing';
-import { allItems } from '../../shared/catalog';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2023-10-16' as any,
@@ -31,24 +30,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { config, cart, parts } = req.body || {};
+    const { config, customBuilds, cart, parts } = req.body || {};
     
     let validConfig = config;
     if (config) {
       validConfig = sanitizeConfig(config);
     }
 
-    const requestedItems = extractRequestedItems({ config: validConfig, cart, parts });
+    const requestedItems = extractRequestedItems({ config: validConfig, customBuilds, cart, parts });
 
     if (redis || process.env.USE_FALLBACK_INVENTORY) {
-      // Check inventory
       const outOfStock = [];
       let inventoryData: Record<string, number> = {};
       
       if (redis) {
         inventoryData = (await redis.hgetall('inventory')) as Record<string, number> || {};
       } else {
-        // Fallback
         for (const item of Object.keys(requestedItems)) {
           inventoryData[item] = 10;
         }
@@ -68,30 +65,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const lineItems = [
       ...(validConfig ? getLineItems(validConfig) : []),
-      ...getPartsLineItems(cart || parts || {}),
+      ...(customBuilds ? customBuilds.flatMap((build: any) => getLineItems(sanitizeConfig(build))) : []),
+      ...getPartsLineItems(cart || {}),
     ];
 
     if (lineItems.length === 0) {
       return res.status(400).json({ error: 'No items in cart' });
     }
 
-    const frontendUrl = process.env.FRONTEND_URL 
-      || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:5000');
+    const amount = lineItems.reduce((acc: number, item: any) => {
+      return acc + (item.price_data.unit_amount * item.quantity);
+    }, 0);
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${frontendUrl}/success`,
-      cancel_url: `${frontendUrl}/cart`,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
       metadata: {
-        payload: JSON.stringify({ config: validConfig, cart, parts })
+        payload: JSON.stringify({ config: validConfig, customBuilds, cart, parts }),
+        base_amount: amount.toString()
       }
     });
 
-    return res.status(200).json({ url: session.url });
+    return res.status(200).json({ 
+      client_secret: paymentIntent.client_secret,
+      id: paymentIntent.id
+    });
   } catch (error: any) {
-    console.error('Checkout error:', error);
+    console.error('Create PaymentIntent error:', error);
     return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 }

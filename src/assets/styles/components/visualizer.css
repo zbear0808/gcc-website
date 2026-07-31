@@ -1,26 +1,61 @@
 .visualizer-wrapper { display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-backdrop); border-radius: var(--border-radius-md); box-shadow: var(--glass-shadow); padding: 2rem; position: relative; overflow: hidden; }
 .controller-map { position: relative; width: 400px; min-width: 400px; height: 300px; transition: all var(--transition-standard); }
-.controller-body { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 240px; height: 120px; background-color: var(--shell-oem); border-radius: 60px; transition: background-color var(--transition-standard); z-index: 2; }
-.controller-handle-left, .controller-handle-right { position: absolute; top: 40px; width: 80px; height: 150px; background-color: inherit; border-radius: 40px; z-index: -1; transition: background-color var(--transition-standard); }
-.controller-handle-left { left: -25px; transform: rotate(25deg); }
-.controller-handle-right { right: -25px; transform: rotate(-25deg); }
+.controller-body { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 280px; height: 100px; background-color: var(--shell-oem); border-radius: 50px; transition: background-color var(--transition-standard); z-index: 2; box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1); }
+.controller-pod-left, .controller-pod-right { position: absolute; top: 15px; width: 84px; height: 145px; background-color: inherit; border-radius: 42px; z-index: -1; transition: background-color var(--transition-standard); box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1); }
+.controller-pod-left { left: 50%; margin-left: -108px; transform: rotate(-18deg); }
+.controller-pod-right { left: 50%; margin-left: 26px; transform: rotate(18deg); }
+.controller-handle-left, .controller-handle-right { position: absolute; top: 40px; width: 70px; height: 170px; background-color: inherit; border-radius: 35px; z-index: -2; transition: background-color var(--transition-standard); box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1); }
+.controller-handle-left { left: 50%; margin-left: -147px; transform: rotate(12deg); transform-origin: top center; }
+.controller-handle-right { left: 50%; margin-left: 77px; transform: rotate(-12deg); transform-origin: top center; }
 .stick { position: absolute; width: 60px; height: 60px; background-color: #777; border-radius: 50%; border: 4px solid #555; z-index: 3; }
-.stick-left { top: 60px; left: 50%; margin-left: -105px; }
-.stick-c { top: 150px; left: 50%; margin-left: 60px; width: 40px; height: 40px; background-color: #ccaa00; border-color: #aa8800; }
+.stick-left { top: 15px; left: 50%; margin-left: -110px; }
+.stick-c { top: 98px; left: 50%; margin-left: 33px; width: 44px; height: 44px; background-color: #f7d002; border-color: #d1ad00; }
 .notch-indicator { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: 50%; transition: all var(--transition-standard); pointer-events: none; -webkit-mask-image: radial-gradient(circle, transparent 36px, black 37px); mask-image: radial-gradient(circle, transparent 36px, black 37px); }
 .stick-left.has-firefox .notch-indicator { background: conic-gradient(from 0deg, transparent 13deg, #ff6400 13deg, #ff6400 17deg, transparent 17deg, transparent 73deg, #ff6400 73deg, #ff6400 77deg, transparent 77deg, transparent 103deg, #ff6400 103deg, #ff6400 107deg, transparent 107deg, transparent 163deg, #ff6400 163deg, #ff6400 167deg, transparent 167deg, transparent 193deg, #ff6400 193deg, #ff6400 197deg, transparent 197deg, transparent 253deg, #ff6400 253deg, #ff6400 257deg, transparent 257deg, transparent 283deg, #ff6400 283deg, #ff6400 287deg, transparent 287deg, transparent 343deg, #ff6400 343deg, #ff6400 347deg, transparent 347deg); }
 .stick-left.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, #00c8ff 108deg, #00c8ff 112deg, transparent 112deg, transparent 248deg, #00c8ff 248deg, #00c8ff 252deg, transparent 252deg); }
 .stick-left.has-firefox.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, #00c8ff 108deg, #00c8ff 112deg, transparent 112deg, transparent 248deg, #00c8ff 248deg, #00c8ff 252deg, transparent 252deg), conic-gradient(from 0deg, transparent 13deg, #ff6400 13deg, #ff6400 17deg, transparent 17deg, transparent 73deg, #ff6400 73deg, #ff6400 77deg, transparent 77deg, transparent 103deg, #ff6400 103deg, #ff6400 107deg, transparent 107deg, transparent 163deg, #ff6400 163deg, #ff6400 167deg, transparent 167deg, transparent 193deg, #ff6400 193deg, #ff6400 197deg, transparent 197deg, transparent 253deg, #ff6400 253deg, #ff6400 257deg, transparent 257deg, transparent 283deg, #ff6400 283deg, #ff6400 287deg, transparent 287deg, transparent 343deg, #ff6400 343deg, #ff6400 347deg, transparent 347deg); }
-.button-group { position: absolute; top: 55px; left: 50%; margin-left: 20px; width: 90px; height: 90px; z-index: 3; }
+.button-group { position: absolute; top: 10px; left: 50%; margin-left: 30px; width: 100px; height: 100px; z-index: 3; }
 .btn-v { position: absolute; border-radius: 50%; background-color: #888; transition: all var(--transition-standard); display: flex; justify-content: center; align-items: center; font-family: var(--font-inter); font-weight: bold; font-size: 14px; color: #333; }
-.btn-a { top: 35px; left: 35px; width: 36px; height: 36px; background-color: #55cca2; }
-.btn-b { top: 60px; left: 10px; width: 24px; height: 24px; background-color: #cc5555; }
-.btn-x { top: 25px; right: -5px; width: 30px; height: 16px; border-radius: 8px; background-color: #aaa; transform: rotate(-20deg); }
-.btn-y { top: 5px; left: 25px; width: 16px; height: 30px; border-radius: 8px; background-color: #aaa; transform: rotate(20deg); }
-.button-group.is-custom .btn-v { background-color: #bb00ff; color: #fff; box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4); }
-.button-group.is-chrome .btn-v { background: linear-gradient(135deg, #e8e8e8, #b0b0b0, #d8d8d8); color: #222; box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3); }
-.d-pad { position: absolute; top: 150px; left: 50%; margin-left: -100px; width: 40px; height: 40px; background-color: #555; clip-path: polygon(33% 0, 66% 0, 66% 33%, 100% 33%, 100% 66%, 66% 66%, 66% 100%, 33% 100%, 33% 66%, 0 66%, 0 33%, 33% 33%); z-index: 3; }
-.trigger { position: absolute; top: 35px; width: 50px; height: 20px; background-color: #888; border-radius: 10px 10px 0 0; transition: all var(--transition-standard); z-index: 1; }
+.btn-x, .btn-y { font-size: 11px; }
+.btn-a { top: 32px; left: 32px; width: 36px; height: 36px; background-color: #55cca2; }
+.btn-b { top: 58px; left: 13px; width: 24px; height: 24px; background-color: #cc5555; }
+.btn-x { top: 34px; left: 71px; width: 14px; height: 32px; border-radius: 15px; background-color: #aaa; transform: rotate(15deg); }
+.btn-y { top: 15px; left: 34px; width: 32px; height: 14px; border-radius: 15px; background-color: #aaa; transform: rotate(-5deg); }
+/* Gray Buttons */
+.theme-gray-buttons .btn-a,
+.theme-gray-buttons .btn-b,
+.theme-gray-buttons .btn-x,
+.theme-gray-buttons .btn-y,
+.theme-gray-buttons .d-pad,
+.theme-gray-buttons .trigger {
+  background: #666;
+  color: #ddd;
+}
+
+/* White Buttons */
+.theme-white-buttons .btn-a,
+.theme-white-buttons .btn-b,
+.theme-white-buttons .btn-x,
+.theme-white-buttons .btn-y,
+.theme-white-buttons .d-pad,
+.theme-white-buttons .trigger {
+  background: #eaeaea;
+  color: #333;
+}
+
+/* Chrome Buttons */
+.theme-chrome-buttons .btn-a,
+.theme-chrome-buttons .btn-b,
+.theme-chrome-buttons .btn-x,
+.theme-chrome-buttons .btn-y,
+.theme-chrome-buttons .d-pad,
+.theme-chrome-buttons .trigger {
+  background: linear-gradient(135deg, #e8e8e8, #b0b0b0, #d8d8d8);
+  color: #222;
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.d-pad { position: absolute; top: 107px; left: 50%; margin-left: -73px; width: 36px; height: 36px; background-color: #555; clip-path: polygon(33% 0, 66% 0, 66% 33%, 100% 33%, 100% 66%, 66% 66%, 66% 100%, 33% 100%, 33% 66%, 0 66%, 0 33%, 33% 33%); z-index: 3; }
+.trigger { position: absolute; top: 30px; width: 60px; height: 30px; background-color: #888; border-radius: 10px 10px 0 0; transition: all var(--transition-standard); z-index: 1; }
 .trigger-l { left: 50%; margin-left: -100px; }
-.trigger-r { left: 50%; margin-left: 50px; }
-.trigger.has-plugs { top: 45px; height: 10px; background-color: #ff3333; }
+.trigger-r { left: 50%; margin-left: 40px; }
+.trigger.has-plugs { top: 40px; height: 20px; background-color: #ff3333 !important; }

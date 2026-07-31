@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import '@/assets/styles/faq.css';
+import { useState } from 'react';
+import '@/assets/styles/pages/faq.css';
 
 const faqs = [
   {
@@ -21,6 +21,10 @@ const faqs = [
   {
     q: 'Is there a warranty?',
     a: "Yes, you get 10 days to bring up any issues with it. I'll only cover defects from my manufacturing and / or any damage suffered during shipping.\nIt's only such a short window since I hand test each controller for at least 30 minutes to ensure everything is working properly."
+  },
+  {
+    q: 'Is there a warranty on OEM parts?',
+    a: "No, there is no warranty on OEM parts (like OEM cables or shells). The only way to obtain these parts is by salvaging them from used controllers, so I have no way to test their long-term durability or how heavily used they were previously. For cables specifically, I always recommend buying an additional new backup cable just in case."
   }
 ];
 

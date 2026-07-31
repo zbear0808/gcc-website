@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
-import '@/assets/styles/product.css';
+import '@/assets/styles/pages/product.css';
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -10,11 +10,11 @@ export default function ProductPage() {
   const store = useStore();
   
   const category = fullCatalog.find(c => c.id === id);
-  const [selectedItem, setSelectedItem] = useState(category?.items[0]?.id || '');
+  const [selectedItem, setSelectedItem] = useState(category?.subtypes[0]?.id || '');
   
   if (!category) return <div>Product not found</div>;
 
-  const item = category.items.find(i => i.id === selectedItem) || category.items[0];
+  const item = category.subtypes.find(i => i.id === selectedItem) || category.subtypes[0];
   const stock = store.inventory[item.id] || 0;
   const inCart = store.cart[item.id] || 0;
 
@@ -34,20 +34,23 @@ export default function ProductPage() {
           <h2>{category.label}</h2>
           <p>{category.description}</p>
           
-          {category.items.length > 1 && (
+          {category.subtypes.length > 1 && (
             <select 
               value={selectedItem} 
               onChange={(e) => setSelectedItem(e.target.value)}
             >
-              {category.items.map(subItem => (
-                <option key={subItem.id} value={subItem.id}>
-                  {subItem.label} - ${subItem.price}
-                </option>
-              ))}
+              {category.subtypes.map(subItem => {
+                const displayPrice = subItem.individualPrice ?? subItem.price ?? 0;
+                return (
+                  <option key={subItem.id} value={subItem.id}>
+                    {subItem.label} - ${displayPrice}
+                  </option>
+                );
+              })}
             </select>
           )}
 
-          <div className="price">${item.price}</div>
+          <div className="price">${item.individualPrice ?? item.price ?? 0}</div>
           <div className="stock">
             {stock > 0 ? `${stock} in stock` : 'Out of stock'}
           </div>

@@ -1,1 +1,115 @@
-.parts-page { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.parts-page {
+  padding: 3rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+  padding-bottom: 6rem;
+}
+
+.parts-page h1 {
+  font-size: 2.5rem;
+  font-family: var(--font-ndot);
+  margin-bottom: 3rem;
+  text-align: center;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.catalog-card {
+  background: var(--color-bg-card);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-white);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.catalog-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  background: #111;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.catalog-info {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.catalog-info h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-white);
+  font-family: var(--font-inter);
+}
+
+.catalog-info .price {
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.cart-summary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  border-top: 1px solid var(--glass-border);
+  padding: 1.5rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.cart-summary span {
+  font-size: 1.5rem;
+  font-family: var(--font-ndot);
+  color: var(--color-white);
+}
+
+.cart-summary button {
+  background: var(--color-white);
+  color: var(--color-black);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.cart-summary button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
