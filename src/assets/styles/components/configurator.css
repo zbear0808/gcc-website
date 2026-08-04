@@ -116,7 +116,14 @@
 }
 
 /* Specific product buttons */
+.product-selector {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
 .product-btn {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -235,4 +242,38 @@
 .mod-btn.active, .trigger-btn.active {
   background: var(--color-white);
   color: var(--color-black);
+}
+
+/* Sub-variant styles for ConfigSection */
+.config-section.sub-variant {
+  gap: 0.5rem;
+  margin-top: -0.5rem;
+  margin-left: 1rem;
+}
+
+.section-subtitle {
+  font-family: var(--font-inter);
+  color: var(--color-gray-hover);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.sub-grid {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.sub-btn {
+  padding: 0.5rem 0.75rem;
+  gap: 0.25rem;
+}
+
+.sub-btn .item-label {
+  font-size: 0.85rem;
+}
+
+.sub-btn .item-price {
+  font-size: 0.75rem;
 }

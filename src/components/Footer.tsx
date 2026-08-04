@@ -20,7 +20,6 @@ const Footer: React.FC = () => {
           <EmailIcon />
         </a>
       </div>
-      <p>© 2026 GCC Shop. All rights reserved.</p>
     </footer>
   );
 };

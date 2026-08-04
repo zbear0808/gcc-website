@@ -20,6 +20,7 @@ interface ConfigSectionProps {
   disabledFn?: (item: CatalogItem) => boolean;
   groups?: Group[];
   basePrice?: number;
+  variant?: 'default' | 'sub';
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -35,6 +36,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   disabledFn = () => false,
   groups,
   basePrice,
+  variant = 'default',
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -75,7 +77,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     return (
       <button
         key={item.id}
-        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''}`}
         onClick={() => !disabled && onSelect(item.id)}
         disabled={disabled}
       >
@@ -97,8 +99,14 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   };
 
   return (
-    <div className="config-section">
-      <h3 className="section-title">{title}</h3>
+    <div className={`config-section ${variant === 'sub' ? 'sub-variant' : ''}`}>
+      {title && (
+        variant === 'sub' ? (
+          <h4 className="section-subtitle">{title}</h4>
+        ) : (
+          <h3 className="section-title">{title}</h3>
+        )
+      )}
       
       {groups ? (
         groups.map((group) => {
@@ -108,14 +116,14 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
           return (
             <div key={group.groupTitle} className="config-group">
               <h4 className="group-title">{group.groupTitle}</h4>
-              <div className="config-items-grid">
+              <div className={`config-items-grid ${variant === 'sub' ? 'sub-grid' : ''}`}>
                 {groupItems.map(renderItem)}
               </div>
             </div>
           );
         })
       ) : (
-        <div className="config-items-grid">
+        <div className={`config-items-grid ${variant === 'sub' ? 'sub-grid' : ''}`}>
           {items.map(renderItem)}
         </div>
       )}

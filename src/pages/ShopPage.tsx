@@ -9,9 +9,9 @@ import VariantSelector from '@/components/VariantSelector';
 import '@/assets/styles/pages/shop.css';
 
 const triggers = [
-  { id: 'l', label: 'Left Only' },
-  { id: 'r', label: 'Right Only' },
-  { id: 'both', label: 'Both' },
+  { id: 'l', label: 'Left Only', price: 0 },
+  { id: 'r', label: 'Right Only', price: 0 },
+  { id: 'both', label: 'Both', price: 0 },
 ];
 
 const shellFacets = [
@@ -79,15 +79,43 @@ const stickCapFacets = [
 ];
 
 export default function ShopPage() {
+  const navigate = useNavigate();
   const store = useStore();
-
   const { config } = store;
+
+  const notchOptions = [
+    { id: 'none', label: 'None', price: 0 },
+    { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20 },
+    { id: 'notchesFirefox', label: 'Firefox Notches', price: 40 },
+  ];
+  const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : 'none';
+
+  const triggerModOptions = [
+    { id: 'none', label: 'Standard Triggers', price: 0 },
+    { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0 },
+    { id: 'kalihChoco', label: 'Kalih Choco Switch', price: (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30 },
+  ];
+  const selectedTriggerMod = config.kalihChoco ? 'kalihChoco' : config.triggerPlugs ? 'triggerPlugs' : 'none';
+
+  const springOptions = [
+    { id: 'none', label: 'Standard Springs', price: 0 },
+    { id: 'springCut', label: 'Cut Springs', price: 0 },
+  ];
+  const selectedSpring = config.springCut ? 'springCut' : 'none';
+
+  const notchStyles = [
+    { id: 'deep', label: 'Deep Grooves (Default)', price: 0 },
+    { id: 'subtle', label: 'Subtle Notches', price: 15 },
+  ];
+
+  const triggerPlugLengths = [
+    { id: 'tall', label: 'Tall', price: 0 },
+    { id: 'short', label: 'Short', price: 0 },
+  ];
   const isFullBuild = config.product === 'full-build';
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
 
   const selectedShell = shells.find(s => s.id === config.shell);
-
-  const navigate = useNavigate();
 
   const handleAddToCart = () => {
     store.addCustomBuild(store.config);
@@ -215,100 +243,90 @@ export default function ShopPage() {
 
             {isFullBuild && (
               <>
-                <div className="config-section mods-section">
-                  <h3>Modifications</h3>
-                  {mods.map(m => (
-                    <button
-                      key={m.id}
-                      className={`mod-btn ${config[m.id as keyof typeof config] ? 'active' : ''}`}
-                      onClick={() => store.toggleMod(m.id)}
-                    >
-                      {m.label} <span className="price-increase">(+${m.price})</span>
-                    </button>
-                  ))}
-                  {addons.map(a => {
-                    let displayPrice = a.price;
-                    if (a.id === 'kalihChoco') {
-                      displayPrice = (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30;
-                    }
-                    return (
-                      <button
-                        key={a.id}
-                        className={`mod-btn ${config[a.id as keyof typeof config] ? 'active' : ''}`}
-                        onClick={() => store.toggleMod(a.id)}
-                      >
-                        {a.label} {displayPrice ? <span className="price-increase">{`(+$${displayPrice})`}</span> : ''}
-                      </button>
-                    );
-                  })}
-                </div>
+                <ConfigSection
+                  title="Notches"
+                  items={notchOptions}
+                  selectedId={selectedNotch}
+                  onSelect={(id) => {
+                    store.setConfig(prev => ({
+                      ...prev,
+                      notchesFirefox: id === 'notchesFirefox',
+                      notchesWavedash: id === 'notchesWavedash',
+                      notchStyle: id === 'none' ? undefined : prev.notchStyle
+                    }));
+                  }}
+                  basePrice={notchOptions.find(n => n.id === selectedNotch)?.price || 0}
+                />
 
                 {(config.notchesFirefox || config.notchesWavedash) && (
-                  <div className="config-section triggers-section">
-                    <h3>Notch Style</h3>
-                    <button
-                      className={`trigger-btn ${config.notchStyle === 'deep' || !config.notchStyle ? 'active' : ''}`}
-                      onClick={() => store.setNotchStyle('deep')}
-                    >
-                      Deep Grooves (Default)
-                    </button>
-                    <button
-                      className={`trigger-btn ${config.notchStyle === 'subtle' ? 'active' : ''}`}
-                      onClick={() => store.setNotchStyle('subtle')}
-                    >
-                      Subtle Notches <span className="price-increase">(+$15.00)</span>
-                    </button>
-                  </div>
+                  <ConfigSection
+                    title="Notch Style"
+                    items={notchStyles}
+                    selectedId={config.notchStyle || 'deep'}
+                    onSelect={(id) => store.setNotchStyle(id as any)}
+                    basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
+                    variant="sub"
+                  />
                 )}
+
+                <ConfigSection
+                  title="Trigger Modifications"
+                  items={triggerModOptions}
+                  selectedId={selectedTriggerMod}
+                  onSelect={(id) => {
+                    store.setConfig(prev => ({
+                      ...prev,
+                      kalihChoco: id === 'kalihChoco',
+                      triggerPlugs: id === 'triggerPlugs',
+                    }));
+                  }}
+                  basePrice={triggerModOptions.find(t => t.id === selectedTriggerMod)?.price || 0}
+                />
 
                 {config.triggerPlugs && (
                   <>
-                    <div className="config-section triggers-section">
-                      <h3>Trigger Side</h3>
-                      {triggers.map(t => (
-                        <button
-                          key={t.id}
-                          className={`trigger-btn ${config.triggerPlugSide === t.id ? 'active' : ''}`}
-                          onClick={() => store.setTriggerSide(t.id as TriggerSide)}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="config-section triggers-section" style={{ marginTop: '1rem' }}>
-                      <h3>Trigger Plug Length</h3>
-                      <button
-                        className={`trigger-btn ${config.triggerPlugLength === 'tall' || !config.triggerPlugLength ? 'active' : ''}`}
-                        onClick={() => store.setTriggerLength('tall')}
-                      >
-                        Tall
-                      </button>
-                      <button
-                        className={`trigger-btn ${config.triggerPlugLength === 'short' ? 'active' : ''}`}
-                        onClick={() => store.setTriggerLength('short')}
-                      >
-                        Short
-                      </button>
-                    </div>
+                    <ConfigSection
+                      title="Trigger Side"
+                      items={triggers}
+                      selectedId={config.triggerPlugSide || 'both'}
+                      onSelect={(id) => store.setTriggerSide(id as any)}
+                      basePrice={0}
+                      variant="sub"
+                    />
+                    <ConfigSection
+                      title="Trigger Plug Length"
+                      items={triggerPlugLengths}
+                      selectedId={config.triggerPlugLength || 'tall'}
+                      onSelect={(id) => store.setTriggerLength(id as any)}
+                      basePrice={0}
+                      variant="sub"
+                    />
                   </>
                 )}
 
                 {config.kalihChoco && (
-                  <>
-                    <div className="config-section triggers-section">
-                      <h3>Kalih Choco Side</h3>
-                      {triggers.map(t => (
-                        <button
-                          key={t.id}
-                          className={`trigger-btn ${config.kalihChocoSide === t.id || (!config.kalihChocoSide && t.id === 'both') ? 'active' : ''}`}
-                          onClick={() => store.setKalihChocoSide(t.id as TriggerSide)}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
-                    </div>
-                  </>
+                  <ConfigSection
+                    title="Kalih Choco Side"
+                    items={triggers}
+                    selectedId={config.kalihChocoSide || 'both'}
+                    onSelect={(id) => store.setKalihChocoSide(id as any)}
+                    basePrice={0}
+                    variant="sub"
+                  />
                 )}
+
+                <ConfigSection
+                  title="Spring Modifications"
+                  items={springOptions}
+                  selectedId={selectedSpring}
+                  onSelect={(id) => {
+                    store.setConfig(prev => ({
+                      ...prev,
+                      springCut: id === 'springCut'
+                    }));
+                  }}
+                  basePrice={0}
+                />
               </>
             )}
           </>
