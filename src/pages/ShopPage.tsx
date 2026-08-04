@@ -39,10 +39,9 @@ const stickCapFacets = [
     key: 'type',
     label: 'Type',
     getValue: (c: any) => {
-      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap') && !c.id.startsWith('wii-u')) return null;
+      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap')) return null;
       if (c.id.includes('gc-cap')) return 'GameCube';
-      if (c.id.includes('wii-cap')) return 'Wii Classic';
-      if (c.id.includes('wii-u')) return 'Wii U';
+      if (c.id.includes('wii-cap')) return 'Wii';
       return null;
     }
   },
@@ -50,21 +49,11 @@ const stickCapFacets = [
     key: 'color',
     label: 'Color',
     getValue: (c: any) => {
-      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap') && !c.id.startsWith('wii-u')) return null;
+      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap')) return null;
       if (c.id.includes('tpu')) return null;
       if (c.id.includes('black')) return 'Black';
       if (c.id.includes('wii-cap')) return 'White';
       if (c.id.includes('gc-cap')) return 'Grey';
-      return null;
-    }
-  },
-  {
-    key: 'condition',
-    label: 'Condition',
-    getValue: (c: any) => {
-      if (c.id.includes('new')) return 'New';
-      if (c.id.includes('okay')) return 'Okay';
-      if (c.id.includes('poor')) return 'Poor';
       return null;
     }
   },
@@ -74,6 +63,16 @@ const stickCapFacets = [
     getValue: (c: any) => {
       if (c.id.includes('tpu')) return 'TPU Top';
       if (c.id.includes('gc-cap')) return 'Standard';
+      return null;
+    }
+  },
+  {
+    key: 'condition',
+    label: 'Condition',
+    getValue: (c: any) => {
+      if (c.id.includes('good')) return 'Good';
+      if (c.id.includes('okay')) return 'Okay';
+      if (c.id.includes('poor')) return 'Poor';
       return null;
     }
   }

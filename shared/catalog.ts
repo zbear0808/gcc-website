@@ -15,9 +15,7 @@ import type {
   CatalogCategory,
 } from './types';
 
-// ==================
 // Products
-// ==================
 
 export const products: Product[] = [
   {
@@ -48,18 +46,14 @@ export const products: Product[] = [
   },
 ];
 
-// ==================
 // Modifications (Full Build only)
-// ==================
 
 export const mods: ModOption[] = [
   { id: 'notchesFirefox', label: 'Firefox Notches', price: 40, image: '/images/mods/firefox.png' },
   { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20, image: '/images/mods/wavedash.png' },
 ];
 
-// ==================
 // Addons (Full Build only)
-// ==================
 
 export const addons: AddonOption[] = [
   { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png' },
@@ -67,9 +61,7 @@ export const addons: AddonOption[] = [
   { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png' },
 ];
 
-// ==================
 // Shells
-// ==================
 
 export const shells: ShellOption[] = [
   { id: 'cherry', label: 'Cherry Blossom', type: 'extremerate', price: 0, individualPrice: 15, image: '/images/shells/cherry.png', weight: 4 },
@@ -83,9 +75,7 @@ export const shells: ShellOption[] = [
   { id: 'emerald', label: 'Emerald Blue', type: 'oem', price: 25, individualPrice: 50, image: '/images/shells/emerald.png', weight: 4 },
 ];
 
-// ==================
 // Cables
-// ==================
 
 export const cables: CableOption[] = [
   { id: 'cable-3rd-party-3m', label: '3rd Party 3m', description: 'Brand new. Has an indigo plug and no metal shielding under the rubber sleeve.', price: 0, individualPrice: 3, image: '/images/parts/cable-3rd-party.png', weight: 2 },
@@ -93,9 +83,7 @@ export const cables: CableOption[] = [
   { id: 'cable-oem', label: 'OEM Cable (2m, or 3m for Smash Ultimate Black)', description: 'All used.', price: 0, image: '/images/parts/cable-oem.png', weight: 2 },
 ];
 
-// ==================
 // Buttons
-// ==================
 
 export const buttons: ButtonOption[] = [
   { id: 'oem-buttons', label: 'OEM Buttons', type: 'oem', price: 0, individualPrice: 3, image: '/images/buttons/oem.png' },
@@ -104,9 +92,7 @@ export const buttons: ButtonOption[] = [
   { id: 'chrome-buttons', label: 'Chrome Buttons', type: 'extremerate', price: 7, individualPrice: 10, image: '/images/buttons/chrome.png' },
 ];
 
-// ==================
 // Rumble Motors
-// ==================
 
 export const rumbles: RumbleOption[] = [
   { id: 'rumble-none', label: 'No Rumble Motor', price: 0, image: '/images/parts/rumble-none.png' },
@@ -114,27 +100,21 @@ export const rumbles: RumbleOption[] = [
   { id: 'rumble-non-oem', label: 'Non-OEM Rumble Motor', price: 2, individualPrice: 1, image: '/images/parts/rumble-non-oem.png' },
 ];
 
-// ==================
 // Slider Potentiometers
-// ==================
 
 export const sliderPots: SliderPotOption[] = [
   { id: 'slider-pot-alps', label: 'Alps Slider Potentiometers (Pack of 2)', description: 'Replacement slide potentiometers for triggers. All slider potentiometers are relubricated with deox fader lubricant before shipping.', price: 0, individualPrice: 12, image: '/images/parts/slider-pot.png' },
   { id: 'slider-pot-noble', label: 'Noble Slider Potentiometers (Pack of 2)', description: 'Replacement slide potentiometers for triggers. All slider potentiometers are relubricated with deox fader lubricant before shipping.', price: 2, individualPrice: 14, image: '/images/parts/slider-pot.png' },
 ];
 
-// ==================
 // Z Buttons
-// ==================
 
 export const zButtons: ZButtonOption[] = [
   { id: 'tactile-z', label: 'Tactile Z Button', description: 'Tactile switch for the Z button.', price: 0, individualPrice: 1, image: '/images/parts/tactile-z.png' },
   { id: 'oem-z', label: 'OEM Z Button', description: 'Softer, original style Z button.', price: 0, individualPrice: 1 },
 ];
 
-// ==================
 // Rubber Membranes
-// ==================
 
 export const membranes: MembraneOption[] = [
   { id: 'membrane-extremerate', label: 'Extremerate Clear Rubber Membranes', description: 'The most stiff and clicky ones.', price: 0, individualPrice: 2, image: '/images/parts/membrane-clear.png' },
@@ -142,30 +122,25 @@ export const membranes: MembraneOption[] = [
   { id: 'membrane-oem', label: 'OEM Rubber Membranes', description: 'The most squishy ones.', price: 0, individualPrice: 2, image: '/images/parts/membrane-oem.png' },
 ];
 
-// ==================
 // Stick Caps
-// ==================
 
 export const stickCaps: StickCapOption[] = [
-  { id: 'gc-cap-new', label: 'OEM GameCube Stick Cap (New)', description: 'OEM GameCube stick cap in like-new condition.', price: 4, individualPrice: 5, image: '/images/parts/gc-cap-new.png' },
+  { id: 'gc-cap-good', label: 'OEM GameCube Stick Cap (good)', description: 'OEM GameCube stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/gc-cap-good.png' },
   { id: 'gc-cap-okay', label: 'OEM GameCube Stick Cap (Okay)', description: 'OEM GameCube stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/gc-cap-okay.png' },
   { id: 'gc-cap-poor', label: 'OEM GameCube Stick Cap (Poor)', description: 'OEM GameCube stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/gc-cap-poor.png' },
   { id: 'gc-cap-tpu', label: 'OEM GameCube Stick Cap with 3D Printed TPU Top', description: 'OEM GameCube stick cap fitted with a 3D printed TPU top.', price: 5, individualPrice: 6, image: '/images/parts/gc-cap-tpu.png' },
-  { id: 'wii-cap-new', label: 'OEM Wii Classic Stick Cap (New)', description: 'OEM stick cap in like-new condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-new.png' },
-  { id: 'wii-cap-okay', label: 'OEM Wii Classic Stick Cap (Okay)', description: 'OEM stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/wii-cap-okay.png' },
-  { id: 'wii-cap-poor', label: 'OEM Wii Classic Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
-  { id: 'wii-cap-black-new', label: 'OEM Wii Classic Stick Cap - Black (New)', description: 'OEM black stick cap in like-new condition.', price: 6, individualPrice: 7, image: '/images/parts/wii-cap-new.png' },
-  { id: 'wii-cap-black-okay', label: 'OEM Wii Classic Stick Cap - Black (Okay)', description: 'OEM black stick cap in okay condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-okay.png' },
-  { id: 'wii-cap-black-poor', label: 'OEM Wii Classic Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 3, individualPrice: 4, image: '/images/parts/wii-cap-poor.png' },
-  { id: 'wii-u-cap', label: 'OEM Wii U Stick Cap', description: 'OEM Wii U stick cap.', price: 4, individualPrice: 5, image: '/images/parts/wii-u-cap.png' },
+  { id: 'wii-cap-good', label: 'OEM Wii Stick Cap (good)', description: 'OEM stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-good.png' },
+  { id: 'wii-cap-okay', label: 'OEM Wii Stick Cap (Okay)', description: 'OEM stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/wii-cap-okay.png' },
+  { id: 'wii-cap-poor', label: 'OEM Wii Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
+  { id: 'wii-cap-black-good', label: 'OEM Wii Stick Cap - Black (good)', description: 'OEM black stick cap in good condition.', price: 6, individualPrice: 7, image: '/images/parts/wii-cap-good.png' },
+  { id: 'wii-cap-black-okay', label: 'OEM Wii Stick Cap - Black (Okay)', description: 'OEM black stick cap in okay condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-okay.png' },
+  { id: 'wii-cap-black-poor', label: 'OEM Wii Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 3, individualPrice: 4, image: '/images/parts/wii-cap-poor.png' },
   { id: 'extremerate-cap', label: 'Extremerate 3rd Party Stick Cap', description: 'Third party stick cap by Extremerate.', price: 2, individualPrice: 3, image: '/images/parts/extremerate-cap.png' },
   { id: 'jcd-cap', label: 'JCD 3rd Party Stick Cap', description: 'Third party stick cap by JCD.', price: 2, individualPrice: 3, image: '/images/parts/jcd-cap.png' },
   { id: 'other-3rd-party-cap', label: 'Other 3rd Party Stick Cap', description: 'Other generic third party stick cap.', price: 1, individualPrice: 2, image: '/images/parts/other-3rd-party-cap.png' },
 ];
 
-// ==================
 // Individual Parts
-// ==================
 
 export const parts: PartItem[] = [
   {
@@ -191,9 +166,7 @@ export const parts: PartItem[] = [
   { id: 'switch-mount-3d', label: '3D Printed Switch Mount', description: '3D printed mount for the mechanical switch.', price: 0, individualPrice: 2 },
 ];
 
-// ==================
 // Derived Collections
-// ==================
 
 export const allItems: CatalogItem[] = [
   ...products,
@@ -227,9 +200,7 @@ export const individualItems: CatalogItem[] = [
 /** All parts */
 export const otherParts = parts;
 
-// ==================
 // Parts Catalog (for the /parts page)
-// ==================
 
 export const catalog: CatalogCategory[] = [
   {
@@ -250,7 +221,7 @@ export const catalog: CatalogCategory[] = [
     id: 'stick-caps',
     label: 'Stick Caps',
     description: 'Replacement stick caps in various conditions and styles.',
-    image: '/images/parts/gc-cap-new.png',
+    image: '/images/parts/gc-cap-good.png',
     subtypes: stickCaps,
   },
   {

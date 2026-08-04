@@ -84,11 +84,9 @@ export default function VariantSelector<T extends CatalogItem>({
     }
   };
 
-  const getPriceDisplay = (facetKey: string, facetValue: string) => {
-    // Find items that match this facet value, and attempt to match higher-priority facets if possible.
-    // For simplicity, we find all items matching this facet value + the currently active OTHER facets.
-    // If none match, we just fallback to all items matching this facet value.
-    
+  type PriceFragment = { text: string; className: string };
+
+  const getPriceDisplay = (facetKey: string, facetValue: string): PriceFragment[] | null => {
     let matchingItems = items.filter(item => {
       if (disabledFn(item) || isOutOfStock(item.id)) return false;
       if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) return false;
@@ -115,12 +113,31 @@ export default function VariantSelector<T extends CatalogItem>({
     const maxDiff = Math.max(...prices) - basePrice;
 
     if (minDiff === maxDiff) {
-      if (minDiff === 0) return '';
-      return minDiff > 0 ? `+$${formatPrice(minDiff)}` : `-$${formatPrice(Math.abs(minDiff))}`;
+      if (minDiff === 0) return null;
+      return [{
+        text: minDiff > 0 ? `+$${formatPrice(minDiff)}` : `-$${formatPrice(Math.abs(minDiff))}`,
+        className: minDiff > 0 ? 'price-increase' : 'price-decrease'
+      }];
     } else {
-      const minStr = minDiff > 0 ? `+$${formatPrice(minDiff)}` : minDiff < 0 ? `-$${formatPrice(Math.abs(minDiff))}` : `$0`;
-      const maxStr = maxDiff > 0 ? `+$${formatPrice(maxDiff)}` : maxDiff < 0 ? `-$${formatPrice(Math.abs(maxDiff))}` : `$0`;
-      return `${minStr} - ${maxStr}`;
+      const minSign = minDiff > 0 ? '+' : minDiff < 0 ? '-' : '';
+      const maxSign = maxDiff > 0 ? '+' : maxDiff < 0 ? '-' : '';
+      const minVal = formatPrice(Math.abs(minDiff));
+      const maxVal = formatPrice(Math.abs(maxDiff));
+      
+      return [
+        {
+          text: `$${minSign}${minVal}`,
+          className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : ''
+        },
+        {
+          text: ' to ',
+          className: ''
+        },
+        {
+          text: `${maxSign}${maxVal}`,
+          className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : ''
+        }
+      ];
     }
   };
 
@@ -128,9 +145,22 @@ export default function VariantSelector<T extends CatalogItem>({
     <div className="config-section">
       <h3 className="section-title">{title}</h3>
       <div className="variant-selector" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {facets.map((facet) => {
+        {facets.map((facet, facetIndex) => {
+          const relevantItems = items.filter(item => {
+            for (let i = 0; i < facetIndex; i++) {
+              const previousFacet = facets[i];
+              if (activeFacets[previousFacet.key]) {
+                const itemVal = previousFacet.getValue(item);
+                if (itemVal && itemVal !== activeFacets[previousFacet.key]) {
+                  return false;
+                }
+              }
+            }
+            return true;
+          });
+
           const uniqueValues = Array.from(new Set(
-            items.map(i => facet.getValue(i)).filter(Boolean) as string[]
+            relevantItems.map(i => facet.getValue(i)).filter(Boolean) as string[]
           ));
           
           if (uniqueValues.length <= 1) return null;
@@ -141,12 +171,8 @@ export default function VariantSelector<T extends CatalogItem>({
               <div className="variant-options" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {uniqueValues.map(val => {
                   const isActive = activeFacets[facet.key] === val;
-                  const priceStr = getPriceDisplay(facet.key, val);
+                  const priceFragments = getPriceDisplay(facet.key, val);
                   const isValidAtAll = items.some(i => facet.getValue(i) === val && !disabledFn(i) && !isOutOfStock(i.id));
-                  
-                  let priceClass = '';
-                  if (priceStr?.includes('-') && !priceStr.includes(' - ')) priceClass = 'price-decrease';
-                  else if (priceStr !== '') priceClass = 'price-increase';
 
                   return (
                     <button
@@ -160,7 +186,13 @@ export default function VariantSelector<T extends CatalogItem>({
                     >
                       <div className="item-label" style={{ fontSize: '0.95rem' }}>
                         {val}
-                        {priceStr && <span className={`item-price ${priceClass}`} style={{ marginLeft: '0.5rem' }}>{priceStr}</span>}
+                        {priceFragments && (
+                          <span className="item-price" style={{ marginLeft: '0.5rem' }}>
+                            {priceFragments.map((frag, idx) => (
+                              <span key={idx} className={frag.className}>{frag.text}</span>
+                            ))}
+                          </span>
+                        )}
                       </div>
                     </button>
                   );
