@@ -13,6 +13,17 @@ const ControllerVisualizer: React.FC = () => {
   
   const triggerClass = hasTriggerPlugs ? 'has-plugs' : hasKalihChoco ? 'has-choco' : '';
 
+  // Calculate plug color
+  let plugColor = shellColor; // OEM default
+  let isParacord = false;
+
+  if (config.cable === 'cable-3rd-party-3m') {
+    plugColor = 'var(--shell-indigo)';
+  } else if (config.cable === 'cable-paracord-3m') {
+    plugColor = '#222'; // black
+    isParacord = true;
+  }
+
   return (
     <div className="visualizer-wrapper">
       <div className={`controller-map ${config.buttons ? `theme-${config.buttons}` : ''}`}>
@@ -25,6 +36,16 @@ const ControllerVisualizer: React.FC = () => {
           className="controller-body" 
           style={{ backgroundColor: shellColor }}
         >
+          {/* Cord */}
+          {config.cable && (
+            <div className="cord-container">
+              <div className={`cord ${isParacord ? 'paracord' : ''}`}></div>
+              <div className="plug" style={{ backgroundColor: plugColor }}>
+                <div className="plug-details"></div>
+              </div>
+            </div>
+          )}
+
           {/* Left Pod */}
           <div className="controller-pod-left" style={{ backgroundColor: shellColor }}></div>
           

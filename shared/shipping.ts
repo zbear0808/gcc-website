@@ -1,4 +1,4 @@
-import { CheckoutPayload, ParcelDimensions } from './types';
+import type { CheckoutPayload, ParcelDimensions } from './types';
 import { allItems } from './catalog';
 import { extractRequestedItems } from './pricing';
 

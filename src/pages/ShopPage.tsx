@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
-import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, mods, addons, stickCaps } from '@shared/catalog';
+import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps } from '@shared/catalog';
 import { calculateTotal, getItemPrice } from '@shared/pricing';
-import type { TriggerSide } from '@shared/types';
 import ControllerVisualizer from '@/components/ControllerVisualizer';
 import ConfigSection from '@/components/ConfigSection';
 import VariantSelector from '@/components/VariantSelector';
