@@ -48,18 +48,32 @@ export default function PartsPage() {
   };
 
   const electronicsIds = [
-    'board-only', 'cables', 'rumble-motors', 'slider-pots', 'stickbox', 
-    'stickbox-pot', 'magnet-mount', 'dh1212-magnet', '6-pin-ribbon-cable', 
+    'board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable', 
     'trigger-paddle-pcbs'
   ];
   
   const shellsAndButtonsIds = [
-    'shells', 'buttons', 'wii-caps', 'membranes', 'z-buttons'
+    'shells', 'buttons', 'wii-caps', 'membranes', 'z-buttons', 'stick-caps'
+  ];
+
+  const mechanicalTriggerIds = [
+    'switch-kailh-choco', 'jst-pigtail-header', 'switch-mount-3d'
+  ];
+
+  const stickboxIds = [
+    'stickbox', 'stickbox-t1-t2', 'magnet-mount', 'dh1212-magnet', 'stickbox-pot'
   ];
 
   const electronics = fullCatalog.filter(c => electronicsIds.includes(c.id));
   const shellsAndButtons = fullCatalog.filter(c => shellsAndButtonsIds.includes(c.id));
-  const others = fullCatalog.filter(c => !electronicsIds.includes(c.id) && !shellsAndButtonsIds.includes(c.id));
+  const mechanicalTriggers = fullCatalog.filter(c => mechanicalTriggerIds.includes(c.id));
+  const stickboxes = fullCatalog.filter(c => stickboxIds.includes(c.id));
+  const others = fullCatalog.filter(c => 
+    !electronicsIds.includes(c.id) && 
+    !shellsAndButtonsIds.includes(c.id) &&
+    !mechanicalTriggerIds.includes(c.id) &&
+    !stickboxIds.includes(c.id)
+  );
 
   return (
     <div className="parts-page">
@@ -70,14 +84,24 @@ export default function PartsPage() {
         {shellsAndButtons.map(renderCategory)}
       </div>
 
+      <h2>Stickboxes</h2>
+      <div className="catalog-grid">
+        {stickboxes.map(renderCategory)}
+      </div>
+
       <h2>Electronic Components & Internals</h2>
       <div className="catalog-grid">
         {electronics.map(renderCategory)}
       </div>
 
+      <h2>Mechanical Trigger Mod</h2>
+      <div className="catalog-grid">
+        {mechanicalTriggers.map(renderCategory)}
+      </div>
+
       {others.length > 0 && (
         <>
-          <h2 style={{ marginTop: '3rem' }}>Other Parts</h2>
+          <h2>Other Parts</h2>
           <div className="catalog-grid">
             {others.map(renderCategory)}
           </div>

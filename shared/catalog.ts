@@ -151,18 +151,24 @@ export const parts: PartItem[] = [
     image: '/images/products/board-only.png',
     weight: 2,
   },
+  { id: 'board-oem', label: 'OEM Board', description: 'Original GameCube controller board.', price: 0, individualPrice: 8, image: '/images/products/board-only.png' },
   { id: 'notch-ruler', label: 'Notch Ruler', description: 'Guide tool to help with creating firefox and wavedash notches.', price: 0, individualPrice: 2, image: '/images/parts/notch-ruler.png' },
   { id: 'stickbox', label: 'T3 Stickbox', description: 'OEM T3 stickboxes cleaned with ipa and relubed with Shin Etsu silicone lubricant.', price: 0, individualPrice: 12, image: '/images/parts/stickbox.png' },
+  { id: 'stickbox-t1-t2', label: 'T1/T2 Stickbox', description: 'Old T1 and T2 OEM stickboxes.', price: 0, individualPrice: 2, image: '/images/parts/stickbox.png' },
   { id: 'stickbox-pot', label: 'Stickbox Potentiometers UNTESTED (Pack of 8)', description: "Untested OEM Noble brand potentiometers for stickboxes, can't guarantee that they can pivot, but from a random batch I tested most could.", individualPrice: 2, price: 0, image: '/images/parts/stickbox-pot.png' },
   { id: 'magnet-mount', label: 'Magnet Mounts (Pack of 4)', description: 'Mounts for magnets used with Hall effect sensors.', price: 0, individualPrice: 2, image: '/images/parts/magnet-mount.png' },
   { id: 'dh1212-magnet', label: 'DH1212 Magnets (Pack of 4)', description: 'Magnets for use with Hall effect sensors.', price: 1, individualPrice: 2, image: '/images/parts/dh1212-magnet.png' },
   { id: '6-pin-ribbon-cable', label: '6 pin ribbon cable', description: 'Ribbon cable for connecting the main board to the C stick daughter board.', price: 0, individualPrice: 1, image: '/images/parts/ribbon-cable.png' },
   { id: 'trigger-paddle-pcbs', label: 'Trigger Paddle PCBs (Pack of 2)', description: 'PCBs for custom trigger paddles.', price: 0, individualPrice: 1, image: '/images/parts/trigger-paddle.png' },
-  { id: 'trigger-plugs-tall', label: 'Tall Trigger Plugs', description: 'Tall trigger plugs for shorter trigger pull.', price: 0, individualPrice: 3, image: '/images/addons/trigger-plugs.png' },
-  { id: 'trigger-plugs-short', label: 'Short Trigger Plugs', description: 'Short trigger plugs for slightly shorter trigger pull.', price: 0, individualPrice: 3, image: '/images/addons/trigger-plugs.png' },
   { id: 'switch-kailh-choco', label: 'Kailh Choco Mechanical Switch', description: 'Individual Kailh Choco mechanical switch for custom triggers.', price: 0, individualPrice: 2, image: '/images/addons/kalih-choco.png' },
   { id: 'jst-pigtail-header', label: '2-Pin JST Pigtail and Header', description: '2-pin JST pigtail and header combo for mechanical switch wiring.', price: 0, individualPrice: 1 },
   { id: 'switch-mount-3d', label: '3D Printed Switch Mount', description: '3D printed mount for the mechanical switch.', price: 0, individualPrice: 2 },
+];
+
+// Trigger Plugs
+export const triggerPlugs: PartItem[] = [
+  { id: 'trigger-plugs-tall', label: 'Tall Trigger Plugs', description: 'Tall trigger plugs for shorter trigger pull.', price: 0, individualPrice: 3, image: '/images/addons/trigger-plugs.png' },
+  { id: 'trigger-plugs-short', label: 'Short Trigger Plugs', description: 'Short trigger plugs for slightly shorter trigger pull.', price: 0, individualPrice: 3, image: '/images/addons/trigger-plugs.png' },
 ];
 
 // Derived Collections
@@ -174,6 +180,7 @@ export const allItems: CatalogItem[] = [
   ...(mods as unknown as CatalogItem[]),
   ...(addons as unknown as CatalogItem[]),
   ...parts,
+  ...triggerPlugs,
   ...cables,
   ...rumbles,
   ...sliderPots,
@@ -188,6 +195,7 @@ export const individualItems: CatalogItem[] = [
   ...shells,
   ...buttons,
   ...parts,
+  ...triggerPlugs,
   ...rumbles,
   ...cables,
   ...sliderPots,
@@ -257,6 +265,13 @@ export const catalog: CatalogCategory[] = [
     description: 'Rubber membranes for the A, B, X, Y, Start, and D-Pad buttons.',
     image: '/images/parts/membrane-clear.png',
     subtypes: membranes,
+  },
+  {
+    id: 'trigger-plugs',
+    label: 'Trigger Plugs',
+    description: 'Trigger plugs for shorter trigger pull.',
+    image: '/images/addons/trigger-plugs.png',
+    subtypes: triggerPlugs,
   },
 ];
 
