@@ -4,6 +4,40 @@ import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import { calculateTotal, getItem, formatPrice } from '@shared/pricing';
 import '@/assets/styles/pages/cart.css';
+import { TrashIcon } from '@/components/Icons';
+import type { ConfiguratorState } from '@shared/types';
+
+const renderBuildOptions = (build: ConfiguratorState) => {
+  const options = [];
+  
+  if (build.shell) options.push(`Shell: ${getItem(build.shell)?.label || build.shell}`);
+  if (build.buttons) options.push(`Buttons: ${getItem(build.buttons)?.label || build.buttons}`);
+  if (build.cable) options.push(`Cable: ${getItem(build.cable)?.label || build.cable}`);
+  if (build.rumble) options.push(`Rumble: ${getItem(build.rumble)?.label || build.rumble}`);
+  if (build.sliderPots) options.push(`Slider Pots: ${getItem(build.sliderPots)?.label || build.sliderPots}`);
+  if (build.zButton) options.push(`Z Button: ${getItem(build.zButton)?.label || build.zButton}`);
+  if (build.membrane) options.push(`Membranes: ${getItem(build.membrane)?.label || build.membrane}`);
+  if (build.stickCap) options.push(`Stick Cap: ${getItem(build.stickCap)?.label || build.stickCap}`);
+
+  if (build.notchesFirefox) options.push(`Notches: Firefox (${build.notchStyle || 'standard'})`);
+  if (build.notchesWavedash) options.push(`Notches: Wavedash (${build.notchStyle || 'standard'})`);
+  
+  if (build.triggerPlugs) {
+    const side = build.triggerPlugSide === 'l' ? 'Left' : build.triggerPlugSide === 'r' ? 'Right' : 'Both';
+    const length = build.triggerPlugLength || 'short';
+    options.push(`Trigger Plugs: ${side} (${length})`);
+  }
+  
+  if (build.kalihChoco) {
+    const side = build.kalihChocoSide === 'l' ? 'Left' : build.kalihChocoSide === 'r' ? 'Right' : 'Both';
+    options.push(`Kalih Choco Triggers: ${side}`);
+  }
+  
+  if (build.springCut) options.push(`Spring Cut`);
+  if (build.wornShell) options.push(`Worn Shell`);
+
+  return options;
+};
 
 export default function CartPage() {
   const store = useStore();
@@ -61,9 +95,16 @@ export default function CartPage() {
                 <h3>{product?.label ?? 'Custom Build'}</h3>
                 <p>Configured {build.product === 'full-build' ? 'Controller' : 'Kit'}</p>
                 <p>${formatPrice(buildPrice)}</p>
+                <ul className="cart-item-options">
+                  {renderBuildOptions(build).map((opt, i) => (
+                    <li key={i}>{opt}</li>
+                  ))}
+                </ul>
               </div>
               <div className="cart-controls">
-                <button onClick={() => store.removeCustomBuild(idx)}>Remove</button>
+                <button aria-label="Remove" onClick={() => store.removeCustomBuild(idx)}>
+                  <TrashIcon />
+                </button>
               </div>
             </div>
           );

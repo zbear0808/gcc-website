@@ -157,6 +157,7 @@ export default function ShopPage() {
                   value={config.shell}
                   onChange={store.setShell}
                   basePrice={getItemPrice(config.shell ?? '')}
+                  getStock={(id) => store.inventory[id] || 0}
                 />
 
                 {['indigo', 'black', 'platinum'].includes(config.shell ?? '') && (
@@ -180,6 +181,7 @@ export default function ShopPage() {
                   value={config.buttons} 
                   onChange={store.setButtons} 
                   basePrice={getItemPrice(config.buttons ?? '')} 
+                  getStock={(id) => store.inventory[id] || 0}
                 />
 
                 <ConfigSection
@@ -218,7 +220,7 @@ export default function ShopPage() {
                 selectedId={config.rumble}
                 onSelect={store.setRumble}
                 basePrice={getItemPrice(config.rumble ?? '')}
-                descriptionPosition="outside"
+                descriptionPosition="none"
                 buttonSize="small"
               />
             )}
@@ -248,6 +250,7 @@ export default function ShopPage() {
               value={config.stickCap}
               onChange={store.setStickCap}
               basePrice={getItemPrice(config.stickCap ?? '')}
+              getStock={(id) => store.inventory[id] || 0}
             />
 
             {isFullBuild && (
@@ -265,6 +268,7 @@ export default function ShopPage() {
                     }));
                   }}
                   basePrice={notchOptions.find(n => n.id === selectedNotch)?.price || 0}
+                  hideStock={true}
                 />
 
                 {(config.notchesFirefox || config.notchesWavedash) && (
@@ -275,6 +279,7 @@ export default function ShopPage() {
                     onSelect={(id) => store.setNotchStyle(id as any)}
                     basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
                     variant="sub"
+                    hideStock={true}
                   />
                 )}
 

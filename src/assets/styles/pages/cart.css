@@ -64,6 +64,18 @@
   font-weight: 600;
 }
 
+.cart-item-options {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #a1a1aa);
+}
+
+.cart-item-options li {
+  margin-bottom: 0.25rem;
+}
+
 .cart-controls {
   display: flex;
   align-items: center;

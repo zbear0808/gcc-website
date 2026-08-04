@@ -23,6 +23,7 @@ interface ConfigSectionProps {
   variant?: 'default' | 'sub';
   descriptionPosition?: 'inside' | 'outside' | 'none';
   buttonSize?: 'default' | 'small';
+  hideStock?: boolean;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -41,6 +42,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   variant = 'default',
   descriptionPosition = 'inside',
   buttonSize = 'default',
+  hideStock = false,
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -94,10 +96,12 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
           <div className="item-description">{item.description}</div>
         )}
         
-        <div className="item-meta">
-          <span className="stock-count">{stock} in stock</span>
-          {outOfStock && <span className="out-of-stock-badge">Out of Stock</span>}
-        </div>
+        {!hideStock && (
+          <div className="item-meta">
+            <span className="stock-count">{stock} in stock</span>
+            {outOfStock && <span className="out-of-stock-badge">Out of Stock</span>}
+          </div>
+        )}
       </button>
     );
   };

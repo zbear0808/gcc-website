@@ -17,6 +17,7 @@ interface VariantSelectorProps<T extends CatalogItem> {
   basePrice?: number;
   disabledFn?: (item: T) => boolean;
   isOutOfStock?: (id: string) => boolean;
+  getStock?: (id: string) => number;
 }
 
 export default function VariantSelector<T extends CatalogItem>({
@@ -28,6 +29,7 @@ export default function VariantSelector<T extends CatalogItem>({
   basePrice = 0,
   disabledFn = () => false,
   isOutOfStock = () => false,
+  getStock,
 }: VariantSelectorProps<T>) {
   
   const selectedItem = useMemo(() => items.find((i) => i.id === value), [items, value]);
@@ -174,6 +176,21 @@ export default function VariantSelector<T extends CatalogItem>({
                   const priceFragments = getPriceDisplay(facet.key, val);
                   const isValidAtAll = items.some(i => facet.getValue(i) === val && !disabledFn(i) && !isOutOfStock(i.id));
 
+                  const exactMatchingItems = items.filter(item => {
+                    if (facet.getValue(item) !== val) return false;
+                    for (const f of facets) {
+                      if (f.key !== facet.key && activeFacets[f.key]) {
+                         const fVal = f.getValue(item);
+                         if (fVal && fVal !== activeFacets[f.key]) return false;
+                      }
+                    }
+                    return true;
+                  });
+                  
+                  const isLeaf = exactMatchingItems.length === 1;
+                  const stock = isLeaf && getStock ? getStock(exactMatchingItems[0].id) : undefined;
+                  const isLeafOutOfStock = isLeaf && isOutOfStock(exactMatchingItems[0].id);
+
                   return (
                     <button
                       key={val}
@@ -194,6 +211,12 @@ export default function VariantSelector<T extends CatalogItem>({
                           </span>
                         )}
                       </div>
+                      {stock !== undefined && (
+                        <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
+                          <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
+                          {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
+                        </div>
+                      )}
                     </button>
                   );
                 })}

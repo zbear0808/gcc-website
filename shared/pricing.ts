@@ -310,8 +310,6 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
     if (config.sliderPots) items.push(config.sliderPots);
     if (config.zButton) items.push(config.zButton);
     if (config.stickCap) items.push(config.stickCap);
-    if (config.notchesFirefox) items.push('notchesFirefox');
-    if (config.notchesWavedash) items.push('notchesWavedash');
     if (config.triggerPlugs) items.push(`trigger-plugs-${config.triggerPlugLength ?? 'tall'}`);
     if (config.kalihChoco) items.push(`kalih-choco-${config.kalihChocoSide ?? 'both'}`);
     if (config.springCut) items.push('springCut');

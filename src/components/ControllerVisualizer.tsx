@@ -9,9 +9,11 @@ const ControllerVisualizer: React.FC = () => {
   const hasFirefox = config.notchesFirefox || false;
   const hasWavedash = config.notchesWavedash || false;
   const hasTriggerPlugs = config.triggerPlugs || false;
+  const triggerPlugSide = config.triggerPlugSide || 'both';
   const hasKalihChoco = config.kalihChoco || false;
   
-  const triggerClass = hasTriggerPlugs ? 'has-plugs' : hasKalihChoco ? 'has-choco' : '';
+  const leftTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'l') ? 'has-plugs' : hasKalihChoco ? 'has-choco' : '';
+  const rightTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'r') ? 'has-plugs' : hasKalihChoco ? 'has-choco' : '';
 
   // Calculate plug color
   let plugColor = shellColor; // OEM default
@@ -28,9 +30,9 @@ const ControllerVisualizer: React.FC = () => {
     <div className="visualizer-wrapper">
       <div className={`controller-map ${config.buttons ? `theme-${config.buttons}` : ''}`}>
         {/* Left Trigger */}
-        <div className={`trigger trigger-l ${triggerClass}`}></div>
+        <div className={`trigger trigger-l ${leftTriggerClass}`}></div>
         {/* Right Trigger */}
-        <div className={`trigger trigger-r ${triggerClass}`}></div>
+        <div className={`trigger trigger-r ${rightTriggerClass}`}></div>
 
         <div 
           className="controller-body" 

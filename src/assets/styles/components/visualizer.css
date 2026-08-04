@@ -59,7 +59,7 @@
 .trigger { position: absolute; top: 30px; width: 60px; height: 30px; background-color: #888; border-radius: 10px 10px 0 0; transition: all var(--transition-standard); z-index: 1; }
 .trigger-l { left: 50%; margin-left: -100px; }
 .trigger-r { left: 50%; margin-left: 40px; }
-.trigger.has-plugs { top: 40px; height: 20px; background-color: #ff3333 !important; }
+.trigger.has-plugs { top: 40px; height: 20px; }
 
 /* Cord Visualizer */
 .cord-container {
