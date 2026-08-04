@@ -19,7 +19,7 @@ interface AppStore {
   setShell: (shellId: string) => void;
   setButtons: (buttonId: string) => void;
   setCable: (cableId: string) => void;
-  setRumble: (rumbleId: string) => void;
+  setRumble: (rumbleId?: string) => void;
   setSliderPots: (id: string) => void;
   setZButton: (id: string) => void;
   setMembrane: (id: string) => void;
@@ -228,7 +228,6 @@ export const useStore = create<AppStore>()(
   getStock: (itemId) => get().inventory[itemId] ?? 0,
 
   isOutOfStock: (itemId) => {
-    if (itemId === 'rumble-none') return false;
     return (get().inventory[itemId] ?? 0) <= 0;
   },
 

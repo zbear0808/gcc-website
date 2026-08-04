@@ -83,24 +83,21 @@ export default function ShopPage() {
   const { config } = store;
 
   const notchOptions = [
-    { id: 'none', label: 'None', price: 0 },
     { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20 },
     { id: 'notchesFirefox', label: 'Firefox Notches', price: 40 },
   ];
-  const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : 'none';
+  const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
 
   const triggerModOptions = [
-    { id: 'none', label: 'Standard Triggers', price: 0 },
     { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0 },
     { id: 'kalihChoco', label: 'Kalih Choco Switch', price: (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30 },
   ];
-  const selectedTriggerMod = config.kalihChoco ? 'kalihChoco' : config.triggerPlugs ? 'triggerPlugs' : 'none';
+  const selectedTriggerMod = config.kalihChoco ? 'kalihChoco' : config.triggerPlugs ? 'triggerPlugs' : undefined;
 
   const springOptions = [
-    { id: 'none', label: 'Standard Springs', price: 0 },
     { id: 'springCut', label: 'Cut Springs', price: 0 },
   ];
-  const selectedSpring = config.springCut ? 'springCut' : 'none';
+  const selectedSpring = config.springCut ? 'springCut' : undefined;
 
   const notchStyles = [
     { id: 'deep', label: 'Deep Grooves (Default)', price: 0 },
@@ -130,7 +127,7 @@ export default function ShopPage() {
           <ControllerVisualizer />
         </div>
         <div className="config-panel">
-          <h2>Select Product</h2>
+          <h2 className="product-section-title">Select Product</h2>
           <div className="product-selector">
             {products.filter(p => p.id !== 'board-only').map(p => (
               <button
@@ -139,7 +136,7 @@ export default function ShopPage() {
                 onClick={() => store.setProduct(p.id)}
               >
                 <div className="product-btn-label">{p.label}</div>
-                <div className="product-btn-price">${p.price}</div>
+                <div className="product-btn-price">From ${p.price}</div>
                 {config.product === p.id && (
                   <div className="product-btn-desc">{p.description}</div>
                 )}
@@ -213,17 +210,16 @@ export default function ShopPage() {
               </div>
             )}
 
-            {isFullBuild && (
-              <ConfigSection
-                title="Rumble Motor"
-                items={rumbles}
-                selectedId={config.rumble}
-                onSelect={store.setRumble}
-                basePrice={getItemPrice(config.rumble ?? '')}
-                descriptionPosition="none"
-                buttonSize="small"
-              />
-            )}
+            <ConfigSection
+              title="Rumble Motor"
+              items={rumbles}
+              selectedId={config.rumble}
+              isToggleable={true}
+              onSelect={(id) => store.setRumble(config.rumble === id ? undefined : id)}
+              basePrice={getItemPrice(config.rumble ?? '')}
+              descriptionPosition="none"
+              buttonSize="small"
+            />
 
             <ConfigSection
               title="Slider Pots"
@@ -243,15 +239,17 @@ export default function ShopPage() {
               descriptionPosition="none"
               buttonSize="small"
             />
-            <VariantSelector
-              title="Stick Caps"
-              items={stickCaps}
-              facets={stickCapFacets}
-              value={config.stickCap}
-              onChange={store.setStickCap}
-              basePrice={getItemPrice(config.stickCap ?? '')}
-              getStock={(id) => store.inventory[id] || 0}
-            />
+            {isFullBuild && (
+              <VariantSelector
+                title="Stick Caps"
+                items={stickCaps}
+                facets={stickCapFacets}
+                value={config.stickCap}
+                onChange={store.setStickCap}
+                basePrice={getItemPrice(config.stickCap ?? '')}
+                getStock={(id) => store.inventory[id] || 0}
+              />
+            )}
 
             {isFullBuild && (
               <>
@@ -259,15 +257,26 @@ export default function ShopPage() {
                   title="Notches"
                   items={notchOptions}
                   selectedId={selectedNotch}
+                  isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => ({
-                      ...prev,
-                      notchesFirefox: id === 'notchesFirefox',
-                      notchesWavedash: id === 'notchesWavedash',
-                      notchStyle: id === 'none' ? undefined : prev.notchStyle
-                    }));
+                    store.setConfig(prev => {
+                      if (selectedNotch === id) {
+                        return {
+                          ...prev,
+                          notchesFirefox: false,
+                          notchesWavedash: false,
+                          notchStyle: undefined
+                        };
+                      }
+                      return {
+                        ...prev,
+                        notchesFirefox: id === 'notchesFirefox',
+                        notchesWavedash: id === 'notchesWavedash',
+                        notchStyle: prev.notchStyle
+                      };
+                    });
                   }}
-                  basePrice={notchOptions.find(n => n.id === selectedNotch)?.price || 0}
+                  basePrice={0}
                   hideStock={true}
                 />
 
@@ -287,14 +296,24 @@ export default function ShopPage() {
                   title="Trigger Modifications"
                   items={triggerModOptions}
                   selectedId={selectedTriggerMod}
+                  isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => ({
-                      ...prev,
-                      kalihChoco: id === 'kalihChoco',
-                      triggerPlugs: id === 'triggerPlugs',
-                    }));
+                    store.setConfig(prev => {
+                      if (selectedTriggerMod === id) {
+                        return {
+                          ...prev,
+                          kalihChoco: false,
+                          triggerPlugs: false
+                        };
+                      }
+                      return {
+                        ...prev,
+                        kalihChoco: id === 'kalihChoco',
+                        triggerPlugs: id === 'triggerPlugs',
+                      };
+                    });
                   }}
-                  basePrice={triggerModOptions.find(t => t.id === selectedTriggerMod)?.price || 0}
+                  basePrice={0}
                 />
 
                 {config.triggerPlugs && (
@@ -333,13 +352,15 @@ export default function ShopPage() {
                   title="Spring Modifications"
                   items={springOptions}
                   selectedId={selectedSpring}
+                  isToggleable={true}
                   onSelect={(id) => {
                     store.setConfig(prev => ({
                       ...prev,
-                      springCut: id === 'springCut'
+                      springCut: selectedSpring === id ? false : id === 'springCut'
                     }));
                   }}
                   basePrice={0}
+                  hideStock={true}
                 />
               </>
             )}

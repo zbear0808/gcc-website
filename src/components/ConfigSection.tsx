@@ -24,6 +24,7 @@ interface ConfigSectionProps {
   descriptionPosition?: 'inside' | 'outside' | 'none';
   buttonSize?: 'default' | 'small';
   hideStock?: boolean;
+  isToggleable?: boolean;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -43,6 +44,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   descriptionPosition = 'inside',
   buttonSize = 'default',
   hideStock = false,
+  isToggleable = false,
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -83,7 +85,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     return (
       <button
         key={item.id}
-        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''} ${buttonSize === 'small' ? 'small-btn' : ''}`}
+        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''} ${buttonSize === 'small' ? 'small-btn' : ''} ${isToggleable ? 'toggleable-btn' : ''}`}
         onClick={() => !disabled && onSelect(item.id)}
         disabled={disabled}
       >

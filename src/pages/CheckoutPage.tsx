@@ -220,9 +220,11 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 export default function CheckoutPage() {
   const store = useStore();
   const [clientSecret, setClientSecret] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchIntent = async () => {
+      setError(null);
       try {
         const res = await fetch(`${API_BASE}/api/create-payment-intent`, {
           method: 'POST',
@@ -232,14 +234,45 @@ export default function CheckoutPage() {
             customBuilds: store.customBuilds
           })
         });
-        const data = await res.json();
+        
+        const text = await res.text();
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (parseError) {
+          console.error('Failed to parse response JSON:', text);
+          setError(`Server error (${res.status}): The backend returned an invalid response.`);
+          return;
+        }
+        
+        if (!res.ok) {
+          setError(data.error || `Failed to initialize checkout (Status: ${res.status})`);
+          return;
+        }
+        
         setClientSecret(data.client_secret);
-      } catch (e) {
+      } catch (e: any) {
         console.error('Failed to create payment intent', e);
+        setError(e.message || 'Network error occurred while trying to initialize checkout');
       }
     };
     fetchIntent();
   }, [store.cart, store.customBuilds]);
+
+  if (error) {
+    return (
+      <div className="checkout-page" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: 'white', color: 'black', borderRadius: '8px', textAlign: 'center' }}>
+        <h2 style={{ color: '#d32f2f', marginBottom: '1rem' }}>Checkout Error</h2>
+        <p style={{ marginBottom: '2rem' }}>{error}</p>
+        <button 
+          onClick={() => window.history.back()}
+          style={{ padding: '0.75rem 1.5rem', background: 'var(--accent, #007bff)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   if (!clientSecret) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Checkout...</div>;
 

@@ -27,15 +27,15 @@ export const products: Product[] = [
     image: '/images/products/diy-kit.png',
     weight: 10,
   },
-  {
-    id: '0-solder-diy-kit',
-    label: '0-Solder DIY Kit',
-    description:
-      'Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. All components are pre-soldered, you just need to mount the stickboxes and magnets and calibrate.',
-    price: 79,
-    image: '/images/products/diy-kit-no-solder.png',
-    weight: 10,
-  },
+  // {
+  //   id: '0-solder-diy-kit',
+  //   label: '0-Solder DIY Kit',
+  //   description:
+  //     'Board with slider pots, T3 stickboxes, DH1212 magnets + mounts, Z button, GCC cable, notch ruler, trigger plugs, cell motor, 6 pin ribbon cable, and trigger paddle PCBs. All components are pre-soldered, you just need to mount the stickboxes and magnets and calibrate.',
+  //   price: 79,
+  //   image: '/images/products/diy-kit-no-solder.png',
+  //   weight: 10,
+  // },
   {
     id: 'full-build',
     label: 'PhobGCC Full Build',
@@ -79,7 +79,7 @@ export const shells: ShellOption[] = [
 
 export const cables: CableOption[] = [
   { id: 'cable-3rd-party-3m', label: '3rd Party 3m', description: 'Brand new. Has an indigo plug and no metal shielding under the rubber sleeve.', price: 0, individualPrice: 3, image: '/images/parts/cable-3rd-party.png', weight: 2 },
-  { id: 'cable-paracord-3m', label: 'Detachable Black Paracord 3m', description: 'Brand new with metal shielding. Uses a JST header.', price: 15, individualPrice: 22, image: '/images/parts/cable-paracord.png', weight: 2 },
+  { id: 'cable-paracord-3m', label: 'Black Paracord 3m', description: 'Brand new with metal shielding. Uses a JST header.', price: 15, individualPrice: 22, image: '/images/parts/cable-paracord.png', weight: 2 },
   { id: 'cable-oem', label: 'OEM Cable', description: 'All used. 2m, or 3m for Smash Ultimate Black.', price: 0, image: '/images/parts/cable-oem.png', weight: 2 },
 ];
 
@@ -95,7 +95,6 @@ export const buttons: ButtonOption[] = [
 // Rumble Motors
 
 export const rumbles: RumbleOption[] = [
-  { id: 'rumble-none', label: 'No Rumble Motor', price: 0, image: '/images/parts/rumble-none.png' },
   { id: 'rumble-oem', label: 'OEM Rumble Motor', price: 3, individualPrice: 3, image: '/images/parts/rumble-oem.png' },
   { id: 'rumble-non-oem', label: 'Non-OEM Rumble Motor', price: 2, individualPrice: 1, image: '/images/parts/rumble-non-oem.png' },
 ];
@@ -103,8 +102,8 @@ export const rumbles: RumbleOption[] = [
 // Slider Potentiometers
 
 export const sliderPots: SliderPotOption[] = [
-  { id: 'slider-pot-alps', label: 'Alps Slider Potentiometers (Pack of 2)', description: 'OEM. Uses deox fader lube.', price: 0, individualPrice: 12, image: '/images/parts/slider-pot.png' },
-  { id: 'slider-pot-noble', label: 'Noble Slider Potentiometers (Pack of 2)', description: 'OEM. Uses deox fader lube.', price: 2, individualPrice: 14, image: '/images/parts/slider-pot.png' },
+  { id: 'slider-pot-alps', label: 'Alps Slider Potentiometers', description: 'Pack of 2. OEM. With fresh deox fader lube.', price: 0, individualPrice: 12, image: '/images/parts/slider-pot.png' },
+  { id: 'slider-pot-noble', label: 'Noble Slider Potentiometers', description: 'Pack of 2. OEM. With fresh deox fader lube.', price: 2, individualPrice: 14, image: '/images/parts/slider-pot.png' },
 ];
 
 // Z Buttons
@@ -229,7 +228,7 @@ export const catalog: CatalogCategory[] = [
     label: 'Rumble Motors',
     description: 'Rumble motors for your controller.',
     image: '/images/parts/rumble-motors.png',
-    subtypes: rumbles.filter((r) => r.id !== 'rumble-none'),
+    subtypes: rumbles,
   },
   {
     id: 'cables',

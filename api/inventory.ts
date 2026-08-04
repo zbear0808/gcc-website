@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
-import { allItems } from '../../shared/catalog';
+import { allItems } from '../shared/catalog';
 
 const redis = process.env.UPSTASH_REDIS_REST_URL
   ? new Redis({

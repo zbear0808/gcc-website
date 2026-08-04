@@ -312,7 +312,6 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
     if (config.stickCap) items.push(config.stickCap);
     if (config.triggerPlugs) items.push(`trigger-plugs-${config.triggerPlugLength ?? 'tall'}`);
     if (config.kalihChoco) items.push(`kalih-choco-${config.kalihChocoSide ?? 'both'}`);
-    if (config.springCut) items.push('springCut');
   } else if (isDiyKit(config)) {
     if (config.cable) items.push(config.cable);
     if (config.sliderPots) items.push(config.sliderPots);
