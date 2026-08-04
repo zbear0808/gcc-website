@@ -13,8 +13,8 @@
 .notch-indicator { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: 50%; transition: all var(--transition-standard); pointer-events: none; -webkit-mask-image: radial-gradient(circle, transparent 34px, black 35px); mask-image: radial-gradient(circle, transparent 34px, black 35px); }
 .stick-left.notch-style-subtle .notch-indicator { -webkit-mask-image: radial-gradient(circle, transparent 36px, black 37px); mask-image: radial-gradient(circle, transparent 36px, black 37px); }
 .stick-left.has-firefox .notch-indicator { background: conic-gradient(from 0deg, transparent 13deg, rgba(0,0,0,0.45) 13deg, rgba(0,0,0,0.45) 17deg, transparent 17deg, transparent 73deg, rgba(0,0,0,0.45) 73deg, rgba(0,0,0,0.45) 77deg, transparent 77deg, transparent 103deg, rgba(0,0,0,0.45) 103deg, rgba(0,0,0,0.45) 107deg, transparent 107deg, transparent 163deg, rgba(0,0,0,0.45) 163deg, rgba(0,0,0,0.45) 167deg, transparent 167deg, transparent 193deg, rgba(0,0,0,0.45) 193deg, rgba(0,0,0,0.45) 197deg, transparent 197deg, transparent 253deg, rgba(0,0,0,0.45) 253deg, rgba(0,0,0,0.45) 257deg, transparent 257deg, transparent 283deg, rgba(0,0,0,0.45) 283deg, rgba(0,0,0,0.45) 287deg, transparent 287deg, transparent 343deg, rgba(0,0,0,0.45) 343deg, rgba(0,0,0,0.45) 347deg, transparent 347deg); }
-.stick-left.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, rgba(0,0,0,0.45) 108deg, rgba(0,0,0,0.45) 112deg, transparent 112deg, transparent 248deg, rgba(0,0,0,0.45) 248deg, rgba(0,0,0,0.45) 252deg, transparent 252deg); }
-.stick-left.has-firefox.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, rgba(0,0,0,0.45) 108deg, rgba(0,0,0,0.45) 112deg, transparent 112deg, transparent 248deg, rgba(0,0,0,0.45) 248deg, rgba(0,0,0,0.45) 252deg, transparent 252deg), conic-gradient(from 0deg, transparent 13deg, rgba(0,0,0,0.45) 13deg, rgba(0,0,0,0.45) 17deg, transparent 17deg, transparent 73deg, rgba(0,0,0,0.45) 73deg, rgba(0,0,0,0.45) 77deg, transparent 77deg, transparent 103deg, rgba(0,0,0,0.45) 103deg, rgba(0,0,0,0.45) 107deg, transparent 107deg, transparent 163deg, rgba(0,0,0,0.45) 163deg, rgba(0,0,0,0.45) 167deg, transparent 167deg, transparent 193deg, rgba(0,0,0,0.45) 193deg, rgba(0,0,0,0.45) 197deg, transparent 197deg, transparent 253deg, rgba(0,0,0,0.45) 253deg, rgba(0,0,0,0.45) 257deg, transparent 257deg, transparent 283deg, rgba(0,0,0,0.45) 283deg, rgba(0,0,0,0.45) 287deg, transparent 287deg, transparent 343deg, rgba(0,0,0,0.45) 343deg, rgba(0,0,0,0.45) 347deg, transparent 347deg); }
+.stick-left.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, rgba(0,0,0,0.45) 108deg, rgba(0,0,0,0.45) 112deg, transparent 112deg, transparent 168deg, rgba(0,0,0,0.45) 168deg, rgba(0,0,0,0.45) 172deg, transparent 172deg, transparent 188deg, rgba(0,0,0,0.45) 188deg, rgba(0,0,0,0.45) 192deg, transparent 192deg, transparent 248deg, rgba(0,0,0,0.45) 248deg, rgba(0,0,0,0.45) 252deg, transparent 252deg); }
+.stick-left.has-firefox.has-wavedash .notch-indicator { background: conic-gradient(from 0deg, transparent 108deg, rgba(0,0,0,0.45) 108deg, rgba(0,0,0,0.45) 112deg, transparent 112deg, transparent 168deg, rgba(0,0,0,0.45) 168deg, rgba(0,0,0,0.45) 172deg, transparent 172deg, transparent 188deg, rgba(0,0,0,0.45) 188deg, rgba(0,0,0,0.45) 192deg, transparent 192deg, transparent 248deg, rgba(0,0,0,0.45) 248deg, rgba(0,0,0,0.45) 252deg, transparent 252deg), conic-gradient(from 0deg, transparent 13deg, rgba(0,0,0,0.45) 13deg, rgba(0,0,0,0.45) 17deg, transparent 17deg, transparent 73deg, rgba(0,0,0,0.45) 73deg, rgba(0,0,0,0.45) 77deg, transparent 77deg, transparent 103deg, rgba(0,0,0,0.45) 103deg, rgba(0,0,0,0.45) 107deg, transparent 107deg, transparent 163deg, rgba(0,0,0,0.45) 163deg, rgba(0,0,0,0.45) 167deg, transparent 167deg, transparent 193deg, rgba(0,0,0,0.45) 193deg, rgba(0,0,0,0.45) 197deg, transparent 197deg, transparent 253deg, rgba(0,0,0,0.45) 253deg, rgba(0,0,0,0.45) 257deg, transparent 257deg, transparent 283deg, rgba(0,0,0,0.45) 283deg, rgba(0,0,0,0.45) 287deg, transparent 287deg, transparent 343deg, rgba(0,0,0,0.45) 343deg, rgba(0,0,0,0.45) 347deg, transparent 347deg); }
 .button-group { position: absolute; top: 10px; left: 50%; margin-left: 30px; width: 100px; height: 100px; z-index: 3; }
 .btn-v { position: absolute; border-radius: 50%; background-color: #888; transition: all var(--transition-standard); display: flex; justify-content: center; align-items: center; font-family: var(--font-inter); font-weight: bold; font-size: 14px; color: #333; }
 .btn-x, .btn-y { font-size: 11px; }
@@ -115,4 +115,130 @@
   height: 6px;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 2px;
+}
+
+/* PCB Visualizer (For DIY Kits) */
+.phob-pcb {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 220px;
+  z-index: 2;
+}
+
+.pcb-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pcb-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pcb-chip {
+  position: absolute;
+  top: 25px;
+  left: 130px;
+  width: 20px;
+  height: 20px;
+  background-color: #222;
+  border-radius: 3px;
+}
+
+.pcb-chip-small {
+  position: absolute;
+  top: 55px;
+  left: 95px;
+  width: 16px;
+  height: 16px;
+  background-color: #333;
+  border-radius: 2px;
+}
+
+.pcb-start-pad {
+  position: absolute;
+  top: 65px;
+  left: 132px;
+  width: 16px;
+  height: 12px;
+  border: 2px solid #d4af37;
+  border-radius: 2px;
+}
+
+.pcb-stick-box-left {
+  position: absolute;
+  top: 38px;
+  left: 38px;
+  width: 44px;
+  height: 44px;
+  background-color: #aaa;
+  border: 2px solid #888;
+  border-radius: 4px;
+}
+
+.pcb-daughterboard {
+  position: absolute;
+  top: 140px;
+  left: 110px;
+  width: 60px;
+  height: 60px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  z-index: 2;
+}
+
+.pcb-ribbon-cable {
+  position: absolute;
+  top: 105px;
+  left: 132px;
+  width: 16px;
+  height: 45px;
+  background-color: #e0e0e0;
+  border-left: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #ccc 2px, #ccc 4px);
+  z-index: -1;
+}
+
+.pcb-stick-box-c {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background-color: #aaa;
+  border: 2px solid #888;
+  border-radius: 4px;
+}
+
+.pcb-button-pad {
+  position: absolute;
+  border-radius: 50%;
+  background: repeating-linear-gradient(45deg, #d4af37, #d4af37 2px, #f0f0f0 2px, #f0f0f0 4px);
+  border: 1px solid #d4af37;
+}
+
+.pad-a { top: 119px; left: 209px; width: 22px; height: 22px; }
+.pad-b { top: 137px; left: 187px; width: 16px; height: 16px; }
+.pad-x { top: 97px; left: 237px; width: 16px; height: 16px; }
+.pad-y { top: 92px; left: 212px; width: 16px; height: 16px; }
+.pad-dup { top: 115px; left: 53px; width: 14px; height: 14px; }
+.pad-ddown { top: 151px; left: 53px; width: 14px; height: 14px; }
+.pad-dleft { top: 133px; left: 35px; width: 14px; height: 14px; }
+.pad-dright { top: 133px; left: 71px; width: 14px; height: 14px; }
+
+.pcb-cord {
+  top: -65px;
 }
