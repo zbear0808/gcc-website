@@ -278,3 +278,35 @@
 .sub-btn .item-price {
   font-size: 0.75rem;
 }
+
+.section-description-outside {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--color-success);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  color: var(--color-white);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.active-item-description {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.config-item-btn.small-btn {
+  padding: 0.75rem;
+  gap: 0.25rem;
+}
+
+.config-item-btn.small-btn .item-label {
+  font-size: 0.9rem;
+}
+
+.config-item-btn.small-btn .item-price {
+  font-size: 0.8rem;
+}
+
+.config-item-btn.small-btn .item-meta {
+  margin-top: 0.25rem;
+}

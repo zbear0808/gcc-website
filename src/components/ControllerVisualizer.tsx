@@ -62,7 +62,7 @@ const ControllerVisualizer: React.FC = () => {
           <div className="d-pad"></div>
           
           {/* Left Stick */}
-          <div className={`stick stick-left ${hasFirefox ? 'has-firefox' : ''} ${hasWavedash ? 'has-wavedash' : ''}`}>
+          <div className={`stick stick-left ${hasFirefox ? 'has-firefox' : ''} ${hasWavedash ? 'has-wavedash' : ''} notch-style-${config.notchStyle || 'deep'}`}>
             <div className="notch-indicator"></div>
           </div>
           

@@ -21,6 +21,8 @@ interface ConfigSectionProps {
   groups?: Group[];
   basePrice?: number;
   variant?: 'default' | 'sub';
+  descriptionPosition?: 'inside' | 'outside' | 'none';
+  buttonSize?: 'default' | 'small';
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -37,6 +39,8 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   groups,
   basePrice,
   variant = 'default',
+  descriptionPosition = 'inside',
+  buttonSize = 'default',
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -77,7 +81,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     return (
       <button
         key={item.id}
-        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''}`}
+        className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''} ${buttonSize === 'small' ? 'small-btn' : ''}`}
         onClick={() => !disabled && onSelect(item.id)}
         disabled={disabled}
       >
@@ -86,7 +90,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
           {priceText && <span className={`item-price${priceClass}`}>{priceText}</span>}
         </div>
         
-        {item.description && isActive && (
+        {item.description && isActive && descriptionPosition === 'inside' && (
           <div className="item-description">{item.description}</div>
         )}
         
@@ -125,6 +129,27 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
       ) : (
         <div className={`config-items-grid ${variant === 'sub' ? 'sub-grid' : ''}`}>
           {items.map(renderItem)}
+        </div>
+      )}
+      
+      {descriptionPosition === 'outside' && (
+        <div className="section-description-outside">
+          {items.map(item => {
+            let isActive = false;
+            if (selectedId !== undefined) {
+              isActive = selectedId === item.id;
+            } else if (isMulti) {
+              const multiValues = category && config ? config[category] as unknown as string[] : [];
+              isActive = Array.isArray(multiValues) && multiValues.includes(item.id);
+            } else if (category && config) {
+              isActive = config[category] === item.id;
+            }
+            return isActive && item.description ? (
+              <div key={item.id} className="active-item-description">
+                {item.description}
+              </div>
+            ) : null;
+          })}
         </div>
       )}
     </div>

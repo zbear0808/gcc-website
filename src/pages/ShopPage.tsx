@@ -188,6 +188,8 @@ export default function ShopPage() {
                   selectedId={config.membrane}
                   onSelect={store.setMembrane}
                   basePrice={getItemPrice(config.membrane ?? '')}
+                  descriptionPosition="outside"
+                  buttonSize="small"
                 />
               </>
             )}
@@ -199,6 +201,8 @@ export default function ShopPage() {
               onSelect={store.setCable}
               disabledFn={(item) => item.id === 'oem-cable' && (isDIY || selectedShell?.type !== 'oem')}
               basePrice={getItemPrice(config.cable ?? '')}
+              descriptionPosition="outside"
+              buttonSize="small"
             />
 
             {config.cable === 'cable-oem' && (
@@ -214,6 +218,8 @@ export default function ShopPage() {
                 selectedId={config.rumble}
                 onSelect={store.setRumble}
                 basePrice={getItemPrice(config.rumble ?? '')}
+                descriptionPosition="outside"
+                buttonSize="small"
               />
             )}
 
@@ -223,6 +229,8 @@ export default function ShopPage() {
               selectedId={config.sliderPots}
               onSelect={store.setSliderPots}
               basePrice={getItemPrice(config.sliderPots ?? '')}
+              descriptionPosition="outside"
+              buttonSize="small"
             />
             <ConfigSection
               title="Z Button"
@@ -230,6 +238,8 @@ export default function ShopPage() {
               selectedId={config.zButton}
               onSelect={store.setZButton}
               basePrice={getItemPrice(config.zButton ?? '')}
+              descriptionPosition="none"
+              buttonSize="small"
             />
             <VariantSelector
               title="Stick Caps"

@@ -79,8 +79,8 @@ export const shells: ShellOption[] = [
 
 export const cables: CableOption[] = [
   { id: 'cable-3rd-party-3m', label: '3rd Party 3m', description: 'Brand new. Has an indigo plug and no metal shielding under the rubber sleeve.', price: 0, individualPrice: 3, image: '/images/parts/cable-3rd-party.png', weight: 2 },
-  { id: 'cable-paracord-3m', label: 'Detachable Black Paracord 3m (JST header)', description: 'Brand new with metal shielding.', price: 15, individualPrice: 22, image: '/images/parts/cable-paracord.png', weight: 2 },
-  { id: 'cable-oem', label: 'OEM Cable (2m, or 3m for Smash Ultimate Black)', description: 'All used.', price: 0, image: '/images/parts/cable-oem.png', weight: 2 },
+  { id: 'cable-paracord-3m', label: 'Detachable Black Paracord 3m', description: 'Brand new with metal shielding. Uses a JST header.', price: 15, individualPrice: 22, image: '/images/parts/cable-paracord.png', weight: 2 },
+  { id: 'cable-oem', label: 'OEM Cable', description: 'All used. 2m, or 3m for Smash Ultimate Black.', price: 0, image: '/images/parts/cable-oem.png', weight: 2 },
 ];
 
 // Buttons
@@ -103,8 +103,8 @@ export const rumbles: RumbleOption[] = [
 // Slider Potentiometers
 
 export const sliderPots: SliderPotOption[] = [
-  { id: 'slider-pot-alps', label: 'Alps Slider Potentiometers (Pack of 2)', description: 'Replacement slide potentiometers for triggers. All slider potentiometers are relubricated with deox fader lubricant before shipping.', price: 0, individualPrice: 12, image: '/images/parts/slider-pot.png' },
-  { id: 'slider-pot-noble', label: 'Noble Slider Potentiometers (Pack of 2)', description: 'Replacement slide potentiometers for triggers. All slider potentiometers are relubricated with deox fader lubricant before shipping.', price: 2, individualPrice: 14, image: '/images/parts/slider-pot.png' },
+  { id: 'slider-pot-alps', label: 'Alps Slider Potentiometers (Pack of 2)', description: 'OEM. Uses deox fader lube.', price: 0, individualPrice: 12, image: '/images/parts/slider-pot.png' },
+  { id: 'slider-pot-noble', label: 'Noble Slider Potentiometers (Pack of 2)', description: 'OEM. Uses deox fader lube.', price: 2, individualPrice: 14, image: '/images/parts/slider-pot.png' },
 ];
 
 // Z Buttons
