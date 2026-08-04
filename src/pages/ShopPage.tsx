@@ -5,6 +5,7 @@ import { calculateTotal, getItemPrice } from '@shared/pricing';
 import type { TriggerSide } from '@shared/types';
 import ControllerVisualizer from '@/components/ControllerVisualizer';
 import ConfigSection from '@/components/ConfigSection';
+import VariantSelector from '@/components/VariantSelector';
 import '@/assets/styles/pages/shop.css';
 
 const triggers = [
@@ -13,18 +14,77 @@ const triggers = [
   { id: 'both', label: 'Both' },
 ];
 
+const shellFacets = [
+  { key: 'brand', label: 'Brand', getValue: (s: any) => s.type === 'oem' ? 'Nintendo (OEM)' : 'Extremerate' },
+  { key: 'color', label: 'Color/Style', getValue: (s: any) => s.label }
+];
+
+const buttonFacets = [
+  { key: 'brand', label: 'Brand', getValue: (b: any) => b.type === 'oem' ? 'Nintendo (OEM)' : 'Extremerate' },
+  { key: 'color', label: 'Color', getValue: (b: any) => b.label.replace(' Buttons', '').replace(' Button', '') }
+];
+
+const stickCapFacets = [
+  {
+    key: 'brand',
+    label: 'Brand',
+    getValue: (c: any) => {
+      if (c.id.includes('extremerate')) return 'Extremerate';
+      if (c.id.includes('jcd')) return 'JCD';
+      if (c.id.includes('3rd-party')) return 'Other 3rd Party';
+      return 'Nintendo (OEM)';
+    }
+  },
+  {
+    key: 'type',
+    label: 'Type',
+    getValue: (c: any) => {
+      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap') && !c.id.startsWith('wii-u')) return null;
+      if (c.id.includes('gc-cap')) return 'GameCube';
+      if (c.id.includes('wii-cap')) return 'Wii Classic';
+      if (c.id.includes('wii-u')) return 'Wii U';
+      return null;
+    }
+  },
+  {
+    key: 'color',
+    label: 'Color',
+    getValue: (c: any) => {
+      if (!c.id.startsWith('gc-cap') && !c.id.startsWith('wii-cap') && !c.id.startsWith('wii-u')) return null;
+      if (c.id.includes('tpu')) return null;
+      if (c.id.includes('black')) return 'Black';
+      if (c.id.includes('wii-cap')) return 'White';
+      if (c.id.includes('gc-cap')) return 'Grey';
+      return null;
+    }
+  },
+  {
+    key: 'condition',
+    label: 'Condition',
+    getValue: (c: any) => {
+      if (c.id.includes('new')) return 'New';
+      if (c.id.includes('okay')) return 'Okay';
+      if (c.id.includes('poor')) return 'Poor';
+      return null;
+    }
+  },
+  {
+    key: 'variant',
+    label: 'Variant',
+    getValue: (c: any) => {
+      if (c.id.includes('tpu')) return 'TPU Top';
+      if (c.id.includes('gc-cap')) return 'Standard';
+      return null;
+    }
+  }
+];
+
 export default function ShopPage() {
   const store = useStore();
 
   const { config } = store;
   const isFullBuild = config.product === 'full-build';
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
-
-  const oemShells = shells.filter(s => s.type === 'oem');
-  const extremerateShells = shells.filter(s => s.type === 'extremerate');
-
-  const oemButtons = buttons.filter(b => b.type === 'oem');
-  const extremerateButtons = buttons.filter(b => b.type === 'extremerate');
 
   const selectedShell = shells.find(s => s.id === config.shell);
 
@@ -64,11 +124,12 @@ export default function ShopPage() {
           <>
             {isFullBuild && (
               <>
-                <ConfigSection
-                  title="Shell (OEM)"
-                  items={oemShells}
-                  selectedId={config.shell}
-                  onSelect={store.setShell}
+                <VariantSelector
+                  title="Shell"
+                  items={shells}
+                  facets={shellFacets}
+                  value={config.shell}
+                  onChange={store.setShell}
                   basePrice={getItemPrice(config.shell ?? '')}
                 />
 
@@ -85,16 +146,15 @@ export default function ShopPage() {
                     </p>
                   </div>
                 )}
-                <ConfigSection
-                  title="Shell (Extremerate)"
-                  items={extremerateShells}
-                  selectedId={config.shell}
-                  onSelect={store.setShell}
-                  basePrice={getItemPrice(config.shell ?? '')}
-                />
 
-                <ConfigSection title="Buttons (OEM)" items={oemButtons} selectedId={config.buttons} onSelect={store.setButtons} basePrice={getItemPrice(config.buttons ?? '')} />
-                <ConfigSection title="Buttons (Extremerate)" items={extremerateButtons} selectedId={config.buttons} onSelect={store.setButtons} basePrice={getItemPrice(config.buttons ?? '')} />
+                <VariantSelector 
+                  title="Buttons" 
+                  items={buttons} 
+                  facets={buttonFacets} 
+                  value={config.buttons} 
+                  onChange={store.setButtons} 
+                  basePrice={getItemPrice(config.buttons ?? '')} 
+                />
 
                 <ConfigSection
                   title="Rubber Membranes"
@@ -145,11 +205,12 @@ export default function ShopPage() {
               onSelect={store.setZButton}
               basePrice={getItemPrice(config.zButton ?? '')}
             />
-            <ConfigSection
+            <VariantSelector
               title="Stick Caps"
               items={stickCaps}
-              selectedId={config.stickCap}
-              onSelect={store.setStickCap}
+              facets={stickCapFacets}
+              value={config.stickCap}
+              onChange={store.setStickCap}
               basePrice={getItemPrice(config.stickCap ?? '')}
             />
 
