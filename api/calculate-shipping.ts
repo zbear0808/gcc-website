@@ -2,7 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import EasyPostClient from '@easypost/api';
 import { calculateParcel } from '../shared/shipping';
 
-const easypost = new EasyPostClient(process.env.EASYPOST_API_KEY as string);
+const easypostApiKey = process.env.EASYPOST_API_KEY || 'fake_key';
+const easypost = new EasyPostClient(easypostApiKey);
 
 function setCors(res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -21,8 +21,8 @@ const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="header-content">
-        <button 
-          className="mobile-menu-btn" 
+        <button
+          className="mobile-menu-btn"
           onClick={toggleSidebar}
           aria-label="Menu"
         >
@@ -46,8 +46,8 @@ const Header: React.FC = () => {
         </button>
 
         <div className="header-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <h1 className="header-name trichromatic" data-text="GCC Shop">
-            GCC Shop
+          <h1 className="header-name trichromatic" data-text="Zu Builds">
+            Zu Builds
           </h1>
         </div>
 
@@ -64,8 +64,8 @@ const Header: React.FC = () => {
           ))}
         </nav>
 
-        <div 
-          className="cart-icon-container" 
+        <div
+          className="cart-icon-container"
           onClick={() => navigate('/cart')}
           style={{ cursor: 'pointer' }}
         >

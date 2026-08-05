@@ -17,29 +17,29 @@ const RouteTitleHandler = () => {
   const location = useLocation();
 
   useEffect(() => {
-    let title = 'GCC Shop';
+    let title = 'Zu Builds';
     switch (location.pathname) {
       case '/':
-        title = 'GCC Shop | Builds';
+        title = 'Zu Builds | Builds';
         break;
       case '/parts':
-        title = 'GCC Shop | Parts';
+        title = 'Zu Builds | Parts';
         break;
       case '/faq':
-        title = 'GCC Shop | FAQ';
+        title = 'Zu Builds | FAQ';
         break;
       case '/cart':
-        title = 'GCC Shop | Cart';
+        title = 'Zu Builds | Cart';
         break;
       case '/checkout':
-        title = 'GCC Shop | Checkout';
+        title = 'Zu Builds | Checkout';
         break;
       case '/admin':
-        title = 'GCC Shop | Admin';
+        title = 'Zu Builds | Admin';
         break;
       default:
         if (location.pathname.startsWith('/product/')) {
-          title = 'GCC Shop | Product';
+          title = 'Zu Builds | Product';
         }
         break;
     }

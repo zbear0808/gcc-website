@@ -127,7 +127,7 @@ export const stickCaps: StickCapOption[] = [
   { id: 'gc-cap-good', label: 'OEM GameCube Stick Cap (good)', description: 'OEM GameCube stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/gc-cap-good.png' },
   { id: 'gc-cap-okay', label: 'OEM GameCube Stick Cap (Okay)', description: 'OEM GameCube stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/gc-cap-okay.png' },
   { id: 'gc-cap-poor', label: 'OEM GameCube Stick Cap (Poor)', description: 'OEM GameCube stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/gc-cap-poor.png' },
-  { id: 'gc-cap-tpu', label: 'OEM GameCube Stick Cap with 3D Printed TPU Top', description: 'OEM GameCube stick cap fitted with a 3D printed TPU top.', price: 5, individualPrice: 6, image: '/images/parts/gc-cap-tpu.png' },
+  { id: 'gc-cap-tpu', label: 'TPU Cap', description: 'OEM GameCube stick cap fitted with a 3D printed TPU top.', price: 5, individualPrice: 6, image: '/images/parts/gc-cap-tpu.png' },
   { id: 'wii-cap-good', label: 'OEM Wii Stick Cap (good)', description: 'OEM stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-good.png' },
   { id: 'wii-cap-okay', label: 'OEM Wii Stick Cap (Okay)', description: 'OEM stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/wii-cap-okay.png' },
   { id: 'wii-cap-poor', label: 'OEM Wii Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
@@ -163,6 +163,7 @@ export const parts: PartItem[] = [
   { id: 'switch-kailh-choco', label: 'Kailh Choco Mechanical Switch', description: 'Individual Kailh Choco mechanical switch for custom triggers.', price: 0, individualPrice: 2, image: '/images/addons/kalih-choco.png' },
   { id: 'jst-pigtail-header', label: '2-Pin JST Pigtail and Header', description: '2-pin JST pigtail and header combo for mechanical switch wiring.', price: 0, individualPrice: 1 },
   { id: 'switch-mount-3d', label: '3D Printed Switch Mount', description: '3D printed mount for the mechanical switch.', price: 0, individualPrice: 2 },
+  { id: 'screwdriver-set', label: 'Tri-wing + JIS Screwdriver Set', description: 'Includes both a tri-wing and JIS screwdriver needed to open GameCube controllers.', price: 0, individualPrice: 4, image: '/images/parts/screwdrivers.png' },
 ];
 
 // Trigger Plugs
@@ -226,7 +227,7 @@ export const catalog: CatalogCategory[] = [
   },
   {
     id: 'stick-caps',
-    label: 'Stick Caps',
+    label: 'Sticks',
     description: 'Replacement stick caps in various conditions and styles.',
     image: '/images/parts/gc-cap-good.png',
     subtypes: stickCaps,

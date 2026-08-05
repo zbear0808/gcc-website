@@ -49,11 +49,11 @@ export default function PartsPage() {
 
   const electronicsIds = [
     'board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable', 
-    'trigger-paddle-pcbs'
+    'trigger-paddle-pcbs', 'z-buttons'
   ];
   
   const shellsAndButtonsIds = [
-    'shells', 'buttons', 'wii-caps', 'membranes', 'z-buttons', 'stick-caps'
+    'shells', 'buttons', 'wii-caps', 'membranes', 'stick-caps'
   ];
 
   const mechanicalTriggerIds = [
@@ -79,17 +79,17 @@ export default function PartsPage() {
     <div className="parts-page">
       <h1>Parts & Components</h1>
       
-      <h2>Shells & Buttons</h2>
+      <h2>Cosmetic Parts</h2>
       <div className="catalog-grid">
         {shellsAndButtons.map(renderCategory)}
       </div>
 
-      <h2>Stickboxes</h2>
+      <h2>Stickbox Parts</h2>
       <div className="catalog-grid">
         {stickboxes.map(renderCategory)}
       </div>
 
-      <h2>Electronic Components & Internals</h2>
+      <h2>Electronic Parts</h2>
       <div className="catalog-grid">
         {electronics.map(renderCategory)}
       </div>

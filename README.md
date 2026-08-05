@@ -1,4 +1,4 @@
-# GCC Shop
+# Zu Builds
 
 Modern e-commerce platform for custom GameCube Controllers (GCC).
 
@@ -60,6 +60,7 @@ npm run build
 Copy `.env.example` to `.env` and fill in the values:
 - `STRIPE_SECRET_KEY`: Your Stripe secret key
 - `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook signing secret
+- `VITE_STRIPE_PUBLIC_KEY`: Your Stripe publishable key (starts with pk_test_ or pk_live_)
 - `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`: Your Upstash Redis credentials
 - `ADMIN_SECRET`: Secret token for the `/admin` inventory update endpoint
 - `USE_FALLBACK_INVENTORY`: Set to "true" to skip Redis locally and mock inventory
