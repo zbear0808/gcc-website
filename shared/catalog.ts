@@ -90,6 +90,7 @@ export const buttons: ButtonOption[] = [
   { id: 'gray-buttons', label: 'Gray Buttons', type: 'extremerate', price: 0, individualPrice: 3, image: '/images/buttons/gray.png' },
   { id: 'white-buttons', label: 'White Buttons', type: 'extremerate', price: 7, individualPrice: 10, image: '/images/buttons/white.png' },
   { id: 'chrome-buttons', label: 'Chrome Buttons', type: 'extremerate', price: 7, individualPrice: 10, image: '/images/buttons/chrome.png' },
+  { id: 'clear-buttons', label: 'Clear Buttons', type: 'extremerate', price: 3, individualPrice: 5, image: '/images/buttons/clear.png' },
 ];
 
 // Rumble Motors

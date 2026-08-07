@@ -3,7 +3,11 @@ import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
 import { sanitizeConfig, getLineItems, getPartsLineItems, extractRequestedItems } from '../shared/pricing';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+console.log("=== VERCEL EVALUATING API ROUTE ===");
+console.log("Keys in process.env:", Object.keys(process.env).filter(k => k.includes('STRIPE')));
+console.log("STRIPE_SECRET_KEY value:", process.env.STRIPE_SECRET_KEY ? "EXISTS" : "MISSING");
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
   apiVersion: '2023-10-16' as any,
 });
 
