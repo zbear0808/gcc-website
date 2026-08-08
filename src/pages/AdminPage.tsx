@@ -1,101 +1,149 @@
-import { useState, useEffect } from 'react';
-import { fullCatalog, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, mods, products } from '@shared/catalog';
-import '@/assets/styles/pages/admin.css';
-
-const API_BASE = import.meta.env.VITE_API_URL || '';
-
-// Reconstruct all items flat list
-const allItems = [
-  ...shells,
-  ...buttons,
-  ...cables,
-  ...rumbles,
-  ...sliderPots,
-  ...zButtons,
-  ...membranes,
-  ...mods,
-    ...products,
-  ...fullCatalog.flatMap(category => category.subtypes)
-].filter((item, index, self) => self.findIndex(i => i.id === item.id) === index); // Unique items
+import React, { useState } from 'react';
+import './AdminPage.css';
+import type { RedisOrder } from '@shared/types';
 
 export default function AdminPage() {
-  const [inventory, setInventory] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [orders, setOrders] = useState<RedisOrder[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/inventory`)
-      .then(res => res.json())
-      .then(data => {
-        setInventory(data);
-        setLoading(false);
-      })
-      .catch(e => {
-        console.error(e);
-        setMessage('Failed to load inventory');
-        setLoading(false);
-      });
-  }, []);
+  const login = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const handleChange = (id: string, value: string) => {
-    const num = parseInt(value, 10);
-    if (!isNaN(num) && num >= 0) {
-      setInventory(prev => ({ ...prev, [id]: num }));
-    } else if (value === '') {
-      // allow empty temporarily
-      const newInv = { ...inventory };
-      delete newInv[id];
-      setInventory(newInv);
-    }
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    setMessage('');
     try {
-      const response = await fetch(`${API_BASE}/api/inventory`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(inventory),
+      const res = await fetch('/api/admin/orders', {
+        headers: { Authorization: `Bearer ${password}` }
       });
-      if (response.ok) {
-        setMessage('Inventory saved successfully!');
+      if (res.ok) {
+        const data = await res.json();
+        setOrders(data.orders);
+        setIsAuthenticated(true);
       } else {
-        setMessage('Failed to save inventory.');
+        setError('Invalid password');
       }
-    } catch (e) {
-      console.error(e);
-      setMessage('Error saving inventory.');
-    } finally {
-      setSaving(false);
+    } catch (err) {
+      setError('Failed to fetch orders');
     }
+    setLoading(false);
   };
 
-  if (loading) return <div>Loading...</div>;
+  const fulfillOrder = async (orderId: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/fulfill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${password}`
+        },
+        body: JSON.stringify({ orderId })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Update the order in the list
+        setOrders(prev => prev.map(o => (o as any).id === orderId ? data.order : o));
+      } else {
+        const data = await res.json();
+        alert(`Fulfillment failed: ${data.error}`);
+      }
+    } catch (err) {
+      alert('Network error during fulfillment');
+    }
+    setLoading(false);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="admin-login-container">
+        <h2>Admin Login</h2>
+        <form onSubmit={login}>
+          <input 
+            type="password" 
+            placeholder="Enter Admin Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit" disabled={loading}>Login</button>
+        </form>
+        {error && <p className="error">{error}</p>}
+      </div>
+    );
+  }
+
+  const paidOrders = orders.filter(o => o.status === 'paid');
+  const shippedOrders = orders.filter(o => o.status === 'shipped');
 
   return (
-    <div className="admin-page">
-      <h1>Inventory Admin</h1>
-      {message && <div className="admin-message">{message}</div>}
-      
-      <div className="admin-grid">
-        {allItems.map(item => (
-          <div key={item.id} className="admin-item">
-            <label>{item.label}</label>
-            <input 
-              type="number" 
-              min="0"
-              value={inventory[item.id] !== undefined ? inventory[item.id] : 0}
-              onChange={(e) => handleChange(item.id, e.target.value)}
-            />
-          </div>
-        ))}
+    <div className="admin-container">
+      <div className="admin-header">
+        <h2>Admin Dashboard</h2>
+        <button className="refresh-btn" onClick={() => window.location.reload()} disabled={loading}>Refresh Orders</button>
       </div>
 
-      <button onClick={handleSave} disabled={saving}>
-        {saving ? 'Saving...' : 'Save Inventory'}
-      </button>
+      <section>
+        <h3>Paid Orders (Ready to Ship)</h3>
+        {paidOrders.length === 0 ? <p>No paid orders pending.</p> : (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date Paid</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paidOrders.map(order => (
+                <tr key={(order as any).id}>
+                  <td>{(order as any).id}</td>
+                  <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
+                  <td>{order.email || 'N/A'}</td>
+                  <td>
+                    <button onClick={() => fulfillOrder((order as any).id)} disabled={loading}>
+                      Buy Label & Fulfill
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      <section>
+        <h3>Shipped Orders</h3>
+        {shippedOrders.length === 0 ? <p>No shipped orders.</p> : (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date Paid</th>
+                <th>Tracking</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shippedOrders.map(order => (
+                <tr key={(order as any).id}>
+                  <td>{(order as any).id}</td>
+                  <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
+                  <td>
+                    {order.trackingUrl ? (
+                      <a href={order.trackingUrl} target="_blank" rel="noreferrer">
+                        {order.trackingNumber || 'Track'}
+                      </a>
+                    ) : 'N/A'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
     </div>
   );
 }

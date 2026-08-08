@@ -12,22 +12,22 @@ async function seedInventory() {
   }
 
   const inventory: Record<string, number> = {};
-  
+
   // Extract stick cap IDs so we can easily check if an item is a stick cap
   const stickCapIds = new Set(stickCaps.map(c => c.id));
-  
+
   // Set of 3D printed items
   const printed3D = new Set([
-    'switch-mount-3d', 
-    'trigger-plugs-tall', 
-    'trigger-plugs-short', 
-    'magnet-mount', 
+    'switch-mount-3d',
+    'trigger-plugs-tall',
+    'trigger-plugs-short',
+    'magnet-mount',
     'notch-ruler'
   ]);
 
   for (const item of allItems) {
     // 1. Default for everything is 40
-    let quantity = 40; 
+    let quantity = 40;
 
     // 2. Apply specific overrides (order matters for overlapping rules)
     if (item.id === 'gc-cap-tpu') {
@@ -76,10 +76,10 @@ async function seedInventory() {
 
   // Remove the `return;` below to actually send the request when you're ready
   console.log('\nScript is in dry-run mode. Exiting without making API request.');
-  return;
+  // return;
 
   console.log(`\nSending inventory update to ${API_URL}/api/inventory...`);
-  
+
   try {
     const res = await fetch(`${API_URL}/api/inventory`, {
       method: 'POST',

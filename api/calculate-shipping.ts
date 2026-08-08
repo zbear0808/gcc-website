@@ -47,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       rate: parseFloat(rate.rate),
     }));
 
-    return res.status(200).json({ rates });
+    return res.status(200).json({ rates, shipmentId: shipment.id });
   } catch (error: any) {
     console.error('Calculate shipping error:', error);
     return res.status(500).json({ error: error.message || 'Internal Server Error' });

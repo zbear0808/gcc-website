@@ -147,6 +147,17 @@ export interface CheckoutPayload {
   parts?: boolean;
 }
 
+export interface RedisOrder extends CheckoutPayload {
+  status: 'cart' | 'paid' | 'shipped';
+  email?: string;
+  shipmentId?: string;
+  rateId?: string;
+  trackingUrl?: string;
+  trackingNumber?: string;
+  paidAt?: string;
+  stripePaymentIntentId?: string;
+}
+
 export interface CheckoutResponse {
   url: string;
 }

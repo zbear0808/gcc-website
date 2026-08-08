@@ -29,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { config, customBuilds, cart, parts } = req.body || {};
+    const { config, customBuilds, cart, parts, shipmentId, rateId, email } = req.body || {};
     
     let validConfig = config;
     if (config) {
@@ -74,8 +74,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const orderId = randomUUID();
-    const orderPayload = { config: validConfig, customBuilds, cart, parts };
-    await redis.set(`order:${orderId}`, JSON.stringify(orderPayload), { ex: 604800 }); // 7-day TTL
+    const orderPayload = { 
+      config: validConfig, customBuilds, cart, parts,
+      status: 'cart',
+      shipmentId, rateId, email
+    };
+    await redis.set(`cart:${orderId}`, JSON.stringify(orderPayload), { ex: 604800 }); // 7-day TTL
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,

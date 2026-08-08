@@ -49,7 +49,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const orderId = paymentIntent.metadata?.order_id;
 
       if (orderId && redis) {
-        const raw = await redis.get<string>(`order:${orderId}`);
+        let raw = await redis.get<string>(`cart:${orderId}`);
+        // Fallback for in-flight orders from before the cart: migration
+        if (!raw) {
+          raw = await redis.get<string>(`order:${orderId}`);
+        }
         if (raw) {
           const payload = typeof raw === 'string' ? JSON.parse(raw) : raw;
           const requestedItems = extractRequestedItems(payload);
@@ -59,8 +63,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           });
           await Promise.all(promises);
 
-          // Persist the order key indefinitely after successful processing
-          await redis.persist(`order:${orderId}`);
+          // Update status and move to paid_order prefix
+          payload.status = 'paid';
+          payload.paidAt = new Date().toISOString();
+          payload.stripePaymentIntentId = paymentIntent.id;
+          
+          await redis.set(`paid_order:${orderId}`, JSON.stringify(payload));
+          
+          // Clean up the old keys
+          await redis.del(`cart:${orderId}`);
+          await redis.del(`order:${orderId}`);
         }
       }
     }
