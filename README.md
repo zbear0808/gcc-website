@@ -8,7 +8,8 @@ This project has been rewritten as a Vite + React + TypeScript Single Page Appli
 - **Frontend**: Vite, React, React Router v7, Zustand for state management.
 - **Backend**: Vercel Serverless Functions (`api/` directory).
 - **Database**: Upstash Redis (for inventory tracking).
-- **Payments**: Stripe Checkout.
+- **Payments**: Stripe Payment Intents & Elements (custom checkout flow).
+- **Shipping**: EasyPost (for real-time shipping rates).
 - **Styling**: Vanilla CSS with custom properties and glassmorphism. No tailwind.
 
 ## Development
@@ -61,6 +62,8 @@ Copy `.env.example` to `.env` and fill in the values:
 - `STRIPE_SECRET_KEY`: Your Stripe secret key
 - `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook signing secret
 - `VITE_STRIPE_PUBLIC_KEY`: Your Stripe publishable key (starts with pk_test_ or pk_live_)
+- `EASYPOST_API_KEY`: Your EasyPost API key for shipping calculations
+- `SHIPPING_ORIGIN_ZIP`: The origin zip code for calculating shipping rates
 - `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`: Your Upstash Redis credentials
 - `ADMIN_SECRET`: Secret token for the `/admin` inventory update endpoint
 - `USE_FALLBACK_INVENTORY`: Set to "true" to skip Redis locally and mock inventory

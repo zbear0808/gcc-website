@@ -5,14 +5,7 @@ import { calculateParcel } from '../shared/shipping';
 const easypostApiKey = process.env.EASYPOST_API_KEY || 'fake_key';
 const easypost = new EasyPostClient(easypostApiKey);
 
-function setCors(res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  setCors(res);
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }

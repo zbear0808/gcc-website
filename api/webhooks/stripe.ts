@@ -11,10 +11,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2023-10-16' as any,
 });
 
-const redis = process.env.UPSTASH_REDIS_REST_URL
+const redis = process.env.KV_REST_API_URL
   ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN as string,
     })
   : null;
 
@@ -44,19 +44,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const rawBody = await getRawBody(req);
     const event = stripe.webhooks.constructEvent(rawBody, sig as string, endpointSecret);
 
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const metadata = session.metadata;
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      const orderId = paymentIntent.metadata?.order_id;
 
-      if (metadata && metadata.payload) {
-        const payload = JSON.parse(metadata.payload);
-        const requestedItems = extractRequestedItems(payload);
+      if (orderId && redis) {
+        const raw = await redis.get<string>(`order:${orderId}`);
+        if (raw) {
+          const payload = typeof raw === 'string' ? JSON.parse(raw) : raw;
+          const requestedItems = extractRequestedItems(payload);
 
-        if (redis) {
           const promises = Object.entries(requestedItems).map(([id, qty]) => {
             return redis.hincrby('inventory', id, -(qty as number));
           });
           await Promise.all(promises);
+
+          // Clean up the order key after successful processing
+          await redis.del(`order:${orderId}`);
         }
       }
     }

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
+import { randomUUID } from 'crypto';
 import { Redis } from '@upstash/redis';
 import { sanitizeConfig, getLineItems, getPartsLineItems, extractRequestedItems } from '../shared/pricing';
 
@@ -11,21 +12,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
   apiVersion: '2023-10-16' as any,
 });
 
-const redis = process.env.UPSTASH_REDIS_REST_URL
+const redis = process.env.KV_REST_API_URL
   ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN as string,
     })
   : null;
 
-function setCors(res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  setCors(res);
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -81,11 +75,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return acc + (item.price_data.unit_amount * item.quantity);
     }, 0);
 
+    // Store full order payload in Redis to avoid Stripe's 500-char metadata limit
+    if (!redis) {
+      return res.status(500).json({ error: 'Order storage is unavailable. Please try again later.' });
+    }
+
+    const orderId = randomUUID();
+    const orderPayload = { config: validConfig, customBuilds, cart, parts };
+    await redis.set(`order:${orderId}`, JSON.stringify(orderPayload), { ex: 604800 }); // 7-day TTL
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'usd',
       metadata: {
-        payload: JSON.stringify({ config: validConfig, customBuilds, cart, parts }),
+        order_id: orderId,
         base_amount: amount.toString()
       }
     });

@@ -75,6 +75,24 @@
   margin: 0;
 }
 
+.catalog-info-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.catalog-info-bottom .stock-count {
+  font-size: 0.9rem;
+  color: var(--color-gray-hover);
+}
+
+.catalog-info-bottom .out-of-stock {
+  font-size: 0.9rem;
+  color: var(--color-error);
+  font-weight: bold;
+}
+
 .cart-summary {
   position: fixed;
   bottom: 0;

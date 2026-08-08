@@ -36,12 +36,21 @@ export default function PartsPage() {
       priceDisplay = minPrice === maxPrice ? `$${minPrice}` : `From $${minPrice}`;
     }
 
+    const totalStock = category.subtypes.reduce((sum, item) => sum + (store.inventory[item.id] || 0), 0);
+
     return (
       <div key={category.id} className="catalog-card" onClick={() => navigate(`/product/${category.id}`)}>
         <img src={category.image} alt={category.label} />
         <div className="catalog-info">
           <h3>{category.label}</h3>
-          <p className="price">{priceDisplay}</p>
+          <div className="catalog-info-bottom">
+            <p className="price">{priceDisplay}</p>
+            {totalStock > 0 ? (
+              <span className="stock-count">{totalStock} in stock</span>
+            ) : (
+              <span className="out-of-stock">Out of stock</span>
+            )}
+          </div>
         </div>
       </div>
     );

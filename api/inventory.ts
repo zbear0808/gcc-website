@@ -2,21 +2,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Redis } from '@upstash/redis';
 import { allItems } from '../shared/catalog';
 
-const redis = process.env.UPSTASH_REDIS_REST_URL
+const redis = process.env.KV_REST_API_URL
   ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN as string,
     })
   : null;
 
-function setCors(res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-secret');
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  setCors(res);
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
