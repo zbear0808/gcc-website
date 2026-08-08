@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { ConfiguratorState, Cart, Inventory, TriggerSide, TriggerPlugLength } from '@shared/types';
 import { sanitizeConfig, calculatePartsTotal } from '@shared/pricing';
 import { allItems } from '@shared/catalog';
+import { toggleModLogic, updateCartQuantityLogic } from './logic';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -110,28 +111,7 @@ export const useStore = create<AppStore>()(
     })),
 
   toggleMod: (modId) =>
-    set((state) => {
-      const current = state.config[modId as keyof ConfiguratorState] as boolean | undefined;
-      const newVal = !current;
-      let updated = { ...state.config, [modId]: newVal };
-
-      // Firefox and wavedash notches are mutually exclusive
-      if (modId === 'notchesFirefox' && newVal) {
-        updated = { ...updated, notchesWavedash: false };
-      }
-      if (modId === 'notchesWavedash' && newVal) {
-        updated = { ...updated, notchesFirefox: false };
-      }
-
-      if (modId === 'triggerPlugs' && newVal) {
-        updated = { ...updated, kalihChoco: false };
-      }
-      if (modId === 'kalihChoco' && newVal) {
-        updated = { ...updated, triggerPlugs: false };
-      }
-
-      return { config: sanitizeConfig(updated) };
-    }),
+    set((state) => ({ config: toggleModLogic(state.config, modId) })),
 
   setNotchStyle: (style) =>
     set((state) => ({
@@ -179,13 +159,9 @@ export const useStore = create<AppStore>()(
     })),
 
   updateCartQuantity: (itemId, delta) =>
-    set((state) => {
-      const current = state.cart[itemId] ?? 0;
-      // Default stock to a high number if inventory data is missing to prevent accidentally zeroing out items
-      const stock = state.inventory[itemId] ?? 99;
-      const newVal = Math.min(stock, Math.max(0, current + delta));
-      return { cart: { ...state.cart, [itemId]: newVal } };
-    }),
+    set((state) => ({
+      cart: updateCartQuantityLogic(state.cart, state.inventory, itemId, delta),
+    })),
 
   clearCart: () => set({ cart: {}, customBuilds: [], config: sanitizeConfig({ product: 'full-build' }) }),
 

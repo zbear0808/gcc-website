@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { randomUUID } from 'crypto';
 import { Redis } from '@upstash/redis';
 import { sanitizeConfig, getLineItems, getPartsLineItems, extractRequestedItems } from '../shared/pricing';
+import { validateInventory, calculateStripeAmount } from '../shared/order-logic';
 
 console.log("=== VERCEL EVALUATING API ROUTE ===");
 console.log("Keys in process.env:", Object.keys(process.env).filter(k => k.includes('STRIPE')));
@@ -38,7 +39,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const requestedItems = extractRequestedItems({ config: validConfig, customBuilds, cart, parts });
 
     if (redis || process.env.USE_FALLBACK_INVENTORY) {
-      const outOfStock = [];
       let inventoryData: Record<string, number> = {};
       
       if (redis) {
@@ -49,12 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      for (const [itemId, qty] of Object.entries(requestedItems)) {
-        const available = inventoryData[itemId] !== undefined ? Number(inventoryData[itemId]) : 0;
-        if (available < (qty as number)) {
-          outOfStock.push(itemId);
-        }
-      }
+      const outOfStock = validateInventory(requestedItems, inventoryData);
 
       if (outOfStock.length > 0) {
         return res.status(400).json({ error: 'One or more items are out of stock.', outOfStock });
@@ -71,9 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'No items in cart' });
     }
 
-    const amount = lineItems.reduce((acc: number, item: any) => {
-      return acc + (item.price_data.unit_amount * item.quantity);
-    }, 0);
+    const amount = calculateStripeAmount(lineItems);
 
     // Store full order payload in Redis to avoid Stripe's 500-char metadata limit
     if (!redis) {

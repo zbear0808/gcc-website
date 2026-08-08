@@ -59,8 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           });
           await Promise.all(promises);
 
-          // Clean up the order key after successful processing
-          await redis.del(`order:${orderId}`);
+          // Persist the order key indefinitely after successful processing
+          await redis.persist(`order:${orderId}`);
         }
       }
     }
