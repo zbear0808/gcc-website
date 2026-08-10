@@ -1,13 +1,36 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import { formatPrice } from '@shared/pricing';
 import '@/assets/styles/pages/parts.css';
 
+const CollapsibleSection = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="collapsible-section">
+      <h2
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', userSelect: 'none' }}
+      >
+        <span style={{ fontSize: '0.6em', transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+        {title}
+      </h2>
+      {isOpen && (
+        <div className="catalog-grid">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 export default function PartsPage() {
   const navigate = useNavigate();
   const store = useStore();
-  
+
   const cartTotal = () => {
     // @ts-ignore: if cartTotal exists on store, use it, else compute manually
     if (typeof store.cartTotal === 'function') {
@@ -28,7 +51,7 @@ export default function PartsPage() {
     const validPrices = category.subtypes.map(i => i.individualPrice ?? i.price ?? 0).filter(p => p > 0);
     const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
     const maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0;
-    
+
     let priceDisplay = '';
     if (validPrices.length === 0) {
       priceDisplay = 'Not available individually';
@@ -59,10 +82,10 @@ export default function PartsPage() {
   };
 
   const electronicsIds = [
-    'board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable', 
+    'board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable',
     'trigger-paddle-pcbs', 'z-buttons'
   ];
-  
+
   const shellsAndButtonsIds = [
     'shells', 'buttons', 'wii-caps', 'membranes', 'stick-caps'
   ];
@@ -79,8 +102,8 @@ export default function PartsPage() {
   const shellsAndButtons = fullCatalog.filter(c => shellsAndButtonsIds.includes(c.id));
   const mechanicalTriggers = fullCatalog.filter(c => mechanicalTriggerIds.includes(c.id));
   const stickboxes = fullCatalog.filter(c => stickboxIds.includes(c.id));
-  const others = fullCatalog.filter(c => 
-    !electronicsIds.includes(c.id) && 
+  const others = fullCatalog.filter(c =>
+    !electronicsIds.includes(c.id) &&
     !shellsAndButtonsIds.includes(c.id) &&
     !mechanicalTriggerIds.includes(c.id) &&
     !stickboxIds.includes(c.id)
@@ -89,34 +112,27 @@ export default function PartsPage() {
   return (
     <div className="parts-page">
       <h1>Parts & Components</h1>
-      
-      <h2>Cosmetic Parts</h2>
-      <div className="catalog-grid">
+
+      <CollapsibleSection title="Cosmetic Parts">
         {shellsAndButtons.map(renderCategory)}
-      </div>
+      </CollapsibleSection>
 
-      <h2>Stickbox Parts</h2>
-      <div className="catalog-grid">
+      <CollapsibleSection title="Stickbox Parts">
         {stickboxes.map(renderCategory)}
-      </div>
+      </CollapsibleSection>
 
-      <h2>Electronic Parts</h2>
-      <div className="catalog-grid">
+      <CollapsibleSection title="Electronic Parts">
         {electronics.map(renderCategory)}
-      </div>
+      </CollapsibleSection>
 
-      <h2>Mechanical Trigger Mod</h2>
-      <div className="catalog-grid">
+      <CollapsibleSection title="Mechanical Trigger Mod">
         {mechanicalTriggers.map(renderCategory)}
-      </div>
+      </CollapsibleSection>
 
       {others.length > 0 && (
-        <>
-          <h2>Other Parts</h2>
-          <div className="catalog-grid">
-            {others.map(renderCategory)}
-          </div>
-        </>
+        <CollapsibleSection title="Other Parts">
+          {others.map(renderCategory)}
+        </CollapsibleSection>
       )}
 
       <div className="cart-summary">

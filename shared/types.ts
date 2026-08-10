@@ -63,6 +63,8 @@ export interface MembraneOption extends CatalogItem {}
 
 export interface StickCapOption extends CatalogItem {}
 
+export interface TriggerPaddlePcbOption extends CatalogItem {}
+
 export interface ModOption {
   id: string;
   label: string;
