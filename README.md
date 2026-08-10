@@ -69,6 +69,20 @@ Copy `.env.example` to `.env` and fill in the values:
 - `USE_FALLBACK_INVENTORY`: Set to "true" to skip Redis locally and mock inventory
 - `VITE_API_URL`: (Production Render deployment only) URL of your Vercel deployment (e.g. `https://your-vercel-project.vercel.app`)
 
+### Pushing Environment Variables to Vercel
+
+If you want to sync your local `.env` variables up to your Vercel project in bulk, you can run the provided utility script. It uses the Vercel CLI to programmatically upload every variable non-interactively.
+
+```bash
+# Push variables to the development environment
+node scripts/push-env.js development
+
+# Push variables to preview or production
+node scripts/push-env.js preview
+node scripts/push-env.js production
+```
+*Note: Make sure your Vercel CLI is linked to your project first (e.g. by running `vercel link`).*
+
 ## Deployment
 
 The project is designed to be deployed with:
