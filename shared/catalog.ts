@@ -52,7 +52,7 @@ export const products: Product[] = [
 export const mods: ModOption[] = [
   { id: 'notchesFirefox', label: 'Firefox Notches', price: 40, image: '/images/mods/firefox.png', requiresInventory: false },
   { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20, image: '/images/mods/wavedash.png', requiresInventory: false },
-  { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', description: 'Uses 2 pin jst connectors instead of soldered on wires.', price: 10, image: '/images/parts/trigger-paddle.png', requiresInventory: false },
+  { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', description: 'Uses 2 pin jst connectors instead of soldered on wires.', price: 6, image: '/images/parts/trigger-paddle.png', requiresInventory: false },
 ];
 
 // Addons (Full Build only)
@@ -129,14 +129,14 @@ export const membranes: MembraneOption[] = [
 export const stickCaps: StickCapOption[] = [
   { id: 'gc-cap-good', label: 'OEM GameCube Stick Cap (good)', description: 'OEM GameCube stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/gc-cap-good.png' },
   { id: 'gc-cap-okay', label: 'OEM GameCube Stick Cap (Okay)', description: 'OEM GameCube stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/gc-cap-okay.png' },
-  { id: 'gc-cap-poor', label: 'OEM GameCube Stick Cap (Poor)', description: 'OEM GameCube stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/gc-cap-poor.png' },
+  { id: 'gc-cap-poor', label: 'OEM GameCube Stick Cap (Poor)', description: 'OEM GameCube stick cap in poor condition.', price: 0, individualPrice: 2, image: '/images/parts/gc-cap-poor.png' },
   { id: 'gc-cap-tpu', label: 'TPU Cap', description: 'OEM GameCube stick cap fitted with a 3D printed TPU top.', price: 5, individualPrice: 6, image: '/images/parts/gc-cap-tpu.png' },
   { id: 'wii-cap-good', label: 'OEM Wii Stick Cap (good)', description: 'OEM stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-good.png' },
   { id: 'wii-cap-okay', label: 'OEM Wii Stick Cap (Okay)', description: 'OEM stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/wii-cap-okay.png' },
-  { id: 'wii-cap-poor', label: 'OEM Wii Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 1, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
+  { id: 'wii-cap-poor', label: 'OEM Wii Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 0, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
   { id: 'wii-cap-black-good', label: 'OEM Wii Stick Cap - Black (good)', description: 'OEM black stick cap in good condition.', price: 6, individualPrice: 7, image: '/images/parts/wii-cap-good.png' },
   { id: 'wii-cap-black-okay', label: 'OEM Wii Stick Cap - Black (Okay)', description: 'OEM black stick cap in okay condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-okay.png' },
-  { id: 'wii-cap-black-poor', label: 'OEM Wii Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 3, individualPrice: 4, image: '/images/parts/wii-cap-poor.png' },
+  { id: 'wii-cap-black-poor', label: 'OEM Wii Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 2, individualPrice: 4, image: '/images/parts/wii-cap-poor.png' },
   { id: 'extremerate-cap', label: 'Extremerate 3rd Party Stick Cap', description: 'Third party stick cap by Extremerate.', price: 2, individualPrice: 3, image: '/images/parts/extremerate-cap.png' },
   { id: 'jcd-cap', label: 'JCD 3rd Party Stick Cap', description: 'Third party stick cap by JCD.', price: 2, individualPrice: 3, image: '/images/parts/jcd-cap.png' },
   { id: 'other-3rd-party-cap', label: 'Other 3rd Party Stick Cap', description: 'Other generic third party stick cap.', price: 1, individualPrice: 2, image: '/images/parts/other-3rd-party-cap.png' },

@@ -59,7 +59,7 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
       ...result,
       shell: result.shell ?? 'indigo',
       buttons: result.buttons ?? 'oem-buttons',
-      rumble: result.rumble ?? 'rumble-oem',
+      rumble: 'rumble' in result ? result.rumble : 'rumble-oem',
       cable: result.cable ?? 'cable-paracord-3m',
       sliderPots: result.sliderPots ?? 'slider-pot-alps',
       zButton: result.zButton ?? 'tactile-z',

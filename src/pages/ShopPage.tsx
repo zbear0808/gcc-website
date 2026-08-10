@@ -203,7 +203,7 @@ export default function ShopPage() {
               items={cables}
               selectedId={config.cable}
               onSelect={store.setCable}
-              disabledFn={(item) => item.id === 'oem-cable' && (isDIY || selectedShell?.type !== 'oem')}
+              disabledFn={(item) => item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')}
               basePrice={getItemPrice(config.cable ?? '')}
               descriptionPosition="outside"
               buttonSize="small"
