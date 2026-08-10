@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: 'Is there a warranty?',
-    a: "Yes, you get 10 days to bring up any issues with it. I'll only cover defects from my manufacturing and / or any damage suffered during shipping.\nIt's only such a short window since I hand test each controller for at least 30 minutes to ensure everything is working properly."
+    a: "Yes, you get 10 days to bring up any issues with it. I'll only cover defects from my manufacturing and / or any damage suffered during shipping.\nIt's only such a short window since I hand test each controller for at least 30 minutes to ensure everything is working properly.\nAdditionally, for 6 months I will make any repairs to controllers for free, but the purchaser will have to pay for shipping and any replacement parts. You won't be charged for any labor, relubing, gluing, or maintenance cleaning."
   },
   {
     q: 'Is there a warranty on OEM parts?',
