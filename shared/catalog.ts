@@ -13,6 +13,7 @@ import type {
   StickCapOption,
   CatalogCategory,
   TriggerPaddlePcbOption,
+  CatalogItem,
 } from './types';
 
 // Products
