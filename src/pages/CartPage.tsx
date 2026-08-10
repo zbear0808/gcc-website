@@ -34,6 +34,7 @@ const renderBuildOptions = (build: ConfiguratorState) => {
   }
   
   if (build.springCut) options.push(`Spring Cut`);
+  if (build.detachableTriggerPaddle) options.push(`Detachable Trigger Paddle Mod`);
   if (build.wornShell) options.push(`Worn Shell`);
 
   return options;

@@ -18,13 +18,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       if (redis) {
         const inventory = await redis.hgetall('inventory');
-        return res.status(200).json(inventory || {});
+        const filteredInventory: Record<string, number> = {};
+        for (const [id, qty] of Object.entries(inventory || {})) {
+          const item = allItems.find(i => i.id === id);
+          if (item?.requiresInventory !== false) {
+            filteredInventory[id] = Number(qty);
+          }
+        }
+        return res.status(200).json(filteredInventory);
       } else {
         // Fallback for local development
         if (process.env.NODE_ENV !== 'production') {
           const fallback: Record<string, number> = {};
           for (const item of allItems) {
-            fallback[item.id] = 10;
+            if (item.requiresInventory !== false) {
+              fallback[item.id] = 10;
+            }
           }
           return res.status(200).json(fallback);
         } else {

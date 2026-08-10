@@ -19,7 +19,10 @@ export function toggleModLogic(currentConfig: ConfiguratorState, modId: string):
     updated = { ...updated, kalihChoco: false };
   }
   if (modId === 'kalihChoco' && newVal) {
-    updated = { ...updated, triggerPlugs: false };
+    updated = { ...updated, triggerPlugs: false, detachableTriggerPaddle: false };
+  }
+  if (modId === 'detachableTriggerPaddle' && newVal) {
+    updated = { ...updated, kalihChoco: false };
   }
 
   return sanitizeConfig(updated);

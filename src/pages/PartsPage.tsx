@@ -45,10 +45,12 @@ export default function PartsPage() {
           <h3>{category.label}</h3>
           <div className="catalog-info-bottom">
             <p className="price">{priceDisplay}</p>
-            {totalStock > 0 ? (
-              <span className="stock-count">{totalStock} in stock</span>
-            ) : (
+            {totalStock <= 0 ? (
               <span className="out-of-stock">Out of stock</span>
+            ) : totalStock <= 10 ? (
+              <span className="low-stock">Low stock</span>
+            ) : (
+              <span className="stock-count">In stock</span>
             )}
           </div>
         </div>

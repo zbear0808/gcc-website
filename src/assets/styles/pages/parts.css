@@ -93,6 +93,12 @@
   font-weight: bold;
 }
 
+.catalog-info-bottom .low-stock {
+  font-size: 0.9rem;
+  color: var(--color-warning, #f59e0b);
+  font-weight: bold;
+}
+
 .cart-summary {
   position: fixed;
   bottom: 0;

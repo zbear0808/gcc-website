@@ -99,6 +99,11 @@ export default function ShopPage() {
   ];
   const selectedSpring = config.springCut ? 'springCut' : undefined;
 
+  const detachableTriggerOptions = [
+    { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', price: 10 },
+  ];
+  const selectedDetachableTrigger = config.detachableTriggerPaddle ? 'detachableTriggerPaddle' : undefined;
+
   const notchStyles = [
     { id: 'deep', label: 'Deep Grooves (Default)', price: 0 },
     { id: 'subtle', label: 'Subtle Notches', price: 15 },
@@ -310,6 +315,7 @@ export default function ShopPage() {
                         ...prev,
                         kalihChoco: id === 'kalihChoco',
                         triggerPlugs: id === 'triggerPlugs',
+                        ...(id === 'kalihChoco' ? { detachableTriggerPaddle: false } : {})
                       };
                     });
                   }}
@@ -357,6 +363,22 @@ export default function ShopPage() {
                     store.setConfig(prev => ({
                       ...prev,
                       springCut: selectedSpring === id ? false : id === 'springCut'
+                    }));
+                  }}
+                  basePrice={0}
+                  hideStock={true}
+                />
+
+                <ConfigSection
+                  title="Detachable Trigger Paddle"
+                  items={detachableTriggerOptions}
+                  selectedId={selectedDetachableTrigger}
+                  isToggleable={true}
+                  onSelect={(id) => {
+                    store.setConfig(prev => ({
+                      ...prev,
+                      detachableTriggerPaddle: selectedDetachableTrigger === id ? false : id === 'detachableTriggerPaddle',
+                      ...(selectedDetachableTrigger !== id && id === 'detachableTriggerPaddle' ? { kalihChoco: false } : {})
                     }));
                   }}
                   basePrice={0}

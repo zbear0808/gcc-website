@@ -52,7 +52,13 @@ export default function ProductPage() {
 
           <div className="price">${item.individualPrice ?? item.price ?? 0}</div>
           <div className="stock">
-            {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+            {stock <= 0 ? (
+              <span className="out-of-stock">Out of stock</span>
+            ) : stock <= 10 ? (
+              <span className="low-stock">Low stock</span>
+            ) : (
+              <span className="stock-count">In stock</span>
+            )}
           </div>
 
           <div className="cart-controls">

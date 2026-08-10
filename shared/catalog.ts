@@ -49,16 +49,17 @@ export const products: Product[] = [
 // Modifications (Full Build only)
 
 export const mods: ModOption[] = [
-  { id: 'notchesFirefox', label: 'Firefox Notches', price: 40, image: '/images/mods/firefox.png' },
-  { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20, image: '/images/mods/wavedash.png' },
+  { id: 'notchesFirefox', label: 'Firefox Notches', price: 40, image: '/images/mods/firefox.png', requiresInventory: false },
+  { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20, image: '/images/mods/wavedash.png', requiresInventory: false },
+  { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', description: 'Uses 2 pin jst connectors instead of soldered on wires.', price: 10, image: '/images/parts/trigger-paddle.png', requiresInventory: false },
 ];
 
 // Addons (Full Build only)
 
 export const addons: AddonOption[] = [
-  { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png' },
+  { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png', requiresInventory: false },
   { id: 'kalihChoco', label: 'Kalih Choco Switch Mechanical Trigger', price: 0, image: '/images/addons/kalih-choco.png' },
-  { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png' },
+  { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png', requiresInventory: false },
 ];
 
 // Shells

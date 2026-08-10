@@ -93,6 +93,16 @@
   margin-bottom: 3rem;
 }
 
+.stock .out-of-stock {
+  color: var(--color-error);
+  font-weight: bold;
+}
+
+.stock .low-stock {
+  color: var(--color-warning, #f59e0b);
+  font-weight: bold;
+}
+
 .cart-controls {
   display: flex;
   align-items: center;

@@ -19,6 +19,7 @@ export interface CatalogItem {
   individualPrice?: number;
   image?: string;
   weight?: number; // Weight in ounces
+  requiresInventory?: boolean;
 }
 
 // ==================
@@ -65,8 +66,10 @@ export interface StickCapOption extends CatalogItem {}
 export interface ModOption {
   id: string;
   label: string;
+  description?: string;
   price: number;
   image: string;
+  requiresInventory?: boolean;
 }
 
 export interface AddonOption {
@@ -74,6 +77,7 @@ export interface AddonOption {
   label: string;
   price: number;
   image: string;
+  requiresInventory?: boolean;
 }
 
 export interface PartItem extends CatalogItem {}
@@ -106,6 +110,7 @@ export interface ConfiguratorState {
   stickCap?: string;
   notchesFirefox?: boolean;
   notchesWavedash?: boolean;
+  detachableTriggerPaddle?: boolean;
   notchStyle?: 'deep' | 'subtle';
   triggerPlugs?: boolean;
   kalihChoco?: boolean;
