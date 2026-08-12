@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { CatalogItem } from '@shared/types';
 import { formatPrice } from '@shared/pricing';
+import Tooltip from '@/components/Tooltip';
 
 export interface Facet<T> {
   key: string;
@@ -15,7 +16,7 @@ interface VariantSelectorProps<T extends CatalogItem> {
   value?: string;
   onChange: (id: string) => void;
   basePrice?: number;
-  disabledFn?: (item: T) => boolean;
+  disabledFn?: (item: T) => boolean | string;
   isOutOfStock?: (id: string) => boolean;
   getStock?: (id: string) => number;
   priceKey?: 'price' | 'individualPrice';
@@ -196,33 +197,46 @@ export default function VariantSelector<T extends CatalogItem>({
                   const stock = isLeaf && getStock ? getStock(exactMatchingItems[0].id) : undefined;
                   const isLeafOutOfStock = isLeaf && isOutOfStock(exactMatchingItems[0].id);
 
+                  let disabledReason = null;
+                  if (!isValidAtAll) {
+                    const matchingItems = exactMatchingItems.length > 0 ? exactMatchingItems : items.filter(i => facet.getValue(i) === val);
+                    const disabledItem = matchingItems.find(i => {
+                      const reason = disabledFn(i);
+                      return reason && typeof reason === 'string';
+                    });
+                    if (disabledItem) {
+                      disabledReason = disabledFn(disabledItem) as string;
+                    }
+                  }
+
                   return (
-                    <button
-                      key={val}
-                      className={`config-item-btn ${isActive ? 'active' : ''} ${!isValidAtAll ? 'disabled' : ''}`}
-                      onClick={() => {
-                        if (isValidAtAll) handleFacetSelect(facet.key, val);
-                      }}
-                      disabled={!isValidAtAll}
-                      style={{ padding: '0.5rem 1rem', minHeight: 'auto', flex: '0 0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center' }}
-                    >
-                      <div className="item-label" style={{ fontSize: '0.95rem' }}>
-                        {val}
-                        {priceFragments && (
-                          <span className="item-price" style={{ marginLeft: '0.5rem' }}>
-                            {priceFragments.map((frag, idx) => (
-                              <span key={idx} className={frag.className}>{frag.text}</span>
-                            ))}
-                          </span>
-                        )}
-                      </div>
-                      {stock !== undefined && (
-                        <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
-                          <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
-                          {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
+                    <Tooltip key={val} content={disabledReason}>
+                      <button
+                        className={`config-item-btn ${isActive ? 'active' : ''} ${!isValidAtAll ? 'disabled' : ''}`}
+                        onClick={() => {
+                          if (isValidAtAll) handleFacetSelect(facet.key, val);
+                        }}
+                        disabled={!isValidAtAll}
+                        style={{ padding: '0.5rem 1rem', minHeight: 'auto', flex: '0 0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+                      >
+                        <div className="item-label" style={{ fontSize: '0.95rem' }}>
+                          {val}
+                          {priceFragments && (
+                            <span className="item-price" style={{ marginLeft: '0.5rem' }}>
+                              {priceFragments.map((frag, idx) => (
+                                <span key={idx} className={frag.className}>{frag.text}</span>
+                              ))}
+                            </span>
+                          )}
                         </div>
-                      )}
-                    </button>
+                        {stock !== undefined && (
+                          <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
+                            <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
+                            {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
+                          </div>
+                        )}
+                      </button>
+                    </Tooltip>
                   );
                 })}
               </div>

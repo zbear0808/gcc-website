@@ -137,7 +137,7 @@ export default function ShopPage() {
               items={cables}
               selectedId={config.cable}
               onSelect={store.setCable}
-              disabledFn={(item) => item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')}
+              disabledFn={(item) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false}
               basePrice={getItemPrice(config.cable ?? '')}
               descriptionPosition="outside"
               buttonSize="small"
