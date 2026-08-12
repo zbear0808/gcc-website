@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
@@ -27,9 +27,28 @@ export default function ProductPage() {
   const stock = store.inventory[item.id] || 0;
   const inCart = store.cart[item.id] || 0;
 
+  const galleryImages = useMemo(() => {
+    const images = new Set<string>();
+    if (category.image) images.add(category.image);
+    category.subtypes.forEach(sub => {
+      if (sub.image) images.add(sub.image);
+    });
+    return Array.from(images);
+  }, [category]);
+
+  const [activeImage, setActiveImage] = useState(galleryImages[0]);
+
   useEffect(() => {
     setQuantityToAdd(1);
   }, [selectedItem]);
+
+  useEffect(() => {
+    if (item.image) {
+      setActiveImage(item.image);
+    } else {
+      setActiveImage(category.image);
+    }
+  }, [item, category]);
 
   const handleAddToCart = () => {
     if (stock >= inCart + quantityToAdd) {
@@ -45,8 +64,24 @@ export default function ProductPage() {
         Back to Parts
       </button>
       <div className="product-details">
-        {/* Assuming image might be on item or category */}
-        <img src={item.image || category.image} alt={item.label} />
+        <div className="product-gallery">
+          <div className="main-image-container">
+            <img src={activeImage} alt={item.label} />
+          </div>
+          {galleryImages.length > 1 && (
+            <div className="thumbnail-row">
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  className={`thumbnail-btn ${activeImage === img ? 'active' : ''}`}
+                  onClick={() => setActiveImage(img)}
+                >
+                  <img src={img} alt={`Thumbnail ${idx + 1}`} />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="product-info">
           <h2>{category.label}</h2>
           <p>{category.description}</p>
