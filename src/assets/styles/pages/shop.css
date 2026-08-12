@@ -8,7 +8,7 @@
 
 .shop-layout {
   display: grid;
-  grid-template-columns: 1fr 500px;
+  grid-template-columns: 1fr 1fr;
   flex: 1;
   max-width: 1800px;
   margin: 0 auto;

@@ -14,7 +14,7 @@ const renderBuildOptions = (build: ConfiguratorState) => {
   if (build.buttons) options.push(`Buttons: ${getItem(build.buttons)?.label || build.buttons}`);
   if (build.cable) options.push(`Cable: ${getItem(build.cable)?.label || build.cable}`);
   if (build.rumble) options.push(`Rumble: ${getItem(build.rumble)?.label || build.rumble}`);
-  if (build.sliderPots) options.push(`Slider Pots: ${getItem(build.sliderPots)?.label || build.sliderPots}`);
+  if (build.sliderPots) options.push(`Slider Potentiometers: ${getItem(build.sliderPots)?.label || build.sliderPots}`);
   if (build.zButton) options.push(`Z Button: ${getItem(build.zButton)?.label || build.zButton}`);
   if (build.membrane) options.push(`Membranes: ${getItem(build.membrane)?.label || build.membrane}`);
   if (build.stickCap) options.push(`Stick Cap: ${getItem(build.stickCap)?.label || build.stickCap}`);

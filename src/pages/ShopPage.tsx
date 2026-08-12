@@ -161,7 +161,7 @@ export default function ShopPage() {
             />
 
             <ConfigSection
-              title="Slider Pots"
+              title="Slider Potentiometers"
               items={sliderPots}
               selectedId={config.sliderPots}
               onSelect={store.setSliderPots}

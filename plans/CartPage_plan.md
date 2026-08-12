@@ -81,7 +81,7 @@ const buildOptionFormatters: Partial<Record<keyof ConfiguratorState, (build: Con
   buttons: (_, val) => `Buttons: ${getItem(val)?.label || val}`,
   cable: (_, val) => `Cable: ${getItem(val)?.label || val}`,
   rumble: (_, val) => `Rumble: ${getItem(val)?.label || val}`,
-  sliderPots: (_, val) => `Slider Pots: ${getItem(val)?.label || val}`,
+  sliderPots: (_, val) => `Slider Potentiometers: ${getItem(val)?.label || val}`,
   zButton: (_, val) => `Z Button: ${getItem(val)?.label || val}`,
   membrane: (_, val) => `Membranes: ${getItem(val)?.label || val}`,
   stickCap: (_, val) => `Stick Cap: ${getItem(val)?.label || val}`,
