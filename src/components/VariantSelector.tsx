@@ -114,7 +114,7 @@ export default function VariantSelector<T extends CatalogItem>({
     if (matchingItems.length === 0) return null;
 
     const prices = matchingItems.map(i => {
-      const p = priceKey === 'individualPrice' ? (i as any).individualPrice ?? i.price : i.price;
+      const p = priceKey === 'individualPrice' ? i.individualPrice ?? i.price : i.price;
       return typeof p === 'number' ? p : 0;
     });
     const minDiff = Math.min(...prices) - basePrice;

@@ -53,7 +53,7 @@ export default function AdminPage() {
       if (res.ok) {
         const data = await res.json();
         // Update the order in the list
-        setOrders(prev => prev.map(o => (o as any).id === orderId ? data.order : o));
+        setOrders(prev => prev.map(o => o.id === orderId ? data.order : o));
       } else {
         const data = await res.json();
         alert(`Fulfillment failed: ${data.error}`);
@@ -167,12 +167,12 @@ export default function AdminPage() {
             </thead>
             <tbody>
               {paidOrders.map(order => (
-                <tr key={(order as any).id}>
-                  <td>{(order as any).id}</td>
+                <tr key={order.id}>
+                  <td>{order.id}</td>
                   <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
                   <td>{order.email || 'N/A'}</td>
                   <td>
-                    <button onClick={() => fulfillOrder((order as any).id)} disabled={loading}>
+                    <button onClick={() => fulfillOrder(order.id)} disabled={loading}>
                       Buy Label & Fulfill
                     </button>
                   </td>
@@ -196,8 +196,8 @@ export default function AdminPage() {
             </thead>
             <tbody>
               {shippedOrders.map(order => (
-                <tr key={(order as any).id}>
-                  <td>{(order as any).id}</td>
+                <tr key={order.id}>
+                  <td>{order.id}</td>
                   <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
                   <td>
                     {order.trackingUrl ? (

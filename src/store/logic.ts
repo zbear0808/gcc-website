@@ -1,8 +1,8 @@
 import type { ConfiguratorState, Cart, Inventory } from '@shared/types';
 import { sanitizeConfig } from '@shared/pricing';
 
-export function toggleModLogic(currentConfig: ConfiguratorState, modId: string): ConfiguratorState {
-  const current = currentConfig[modId as keyof ConfiguratorState] as boolean | undefined;
+export function toggleModLogic(currentConfig: ConfiguratorState, modId: keyof ConfiguratorState): ConfiguratorState {
+  const current = currentConfig[modId] as boolean | undefined;
   const newVal = !current;
   let updated = { ...currentConfig, [modId]: newVal };
 

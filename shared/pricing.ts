@@ -97,7 +97,7 @@ export function calculateTotal(config: ConfiguratorState): number {
   if (isFullBuild(sanitized)) {
     const modsTotal = mods
       .filter((m) => sanitized[m.id as keyof ConfiguratorState])
-      .reduce((sum, m) => sum + m.price, 0);
+      .reduce((sum, m) => sum + (m.price ?? 0), 0);
 
     const addonsTotal = addons
       .filter((a) => sanitized[a.id as keyof ConfiguratorState])

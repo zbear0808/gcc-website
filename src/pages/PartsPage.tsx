@@ -32,7 +32,6 @@ export default function PartsPage() {
   const store = useStore();
 
   const cartTotal = () => {
-    // @ts-ignore: if cartTotal exists on store, use it, else compute manually
     if (typeof store.cartTotal === 'function') {
       return store.cartTotal();
     }

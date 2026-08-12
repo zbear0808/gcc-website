@@ -224,7 +224,7 @@ export default function ShopPage() {
                     title="Notch Style"
                     items={notchStyles}
                     selectedId={config.notchStyle || 'deep'}
-                    onSelect={(id) => store.setNotchStyle(id as any)}
+                    onSelect={(id) => store.setNotchStyle(id as 'deep' | 'subtle')}
                     basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
                     variant="sub"
                     hideStock={true}
@@ -262,7 +262,7 @@ export default function ShopPage() {
                       title="Trigger Side"
                       items={triggers}
                       selectedId={config.triggerPlugSide || 'both'}
-                      onSelect={(id) => store.setTriggerSide(id as any)}
+                      onSelect={(id) => store.setTriggerSide(id as import('@shared/types').TriggerSide)}
                       basePrice={0}
                       variant="sub"
                     />
@@ -270,7 +270,7 @@ export default function ShopPage() {
                       title="Trigger Plug Length"
                       items={triggerPlugLengths}
                       selectedId={config.triggerPlugLength || 'tall'}
-                      onSelect={(id) => store.setTriggerLength(id as any)}
+                      onSelect={(id) => store.setTriggerLength(id as import('@shared/types').TriggerPlugLength)}
                       basePrice={0}
                       variant="sub"
                     />
@@ -282,7 +282,7 @@ export default function ShopPage() {
                     title="kailh Choco Side"
                     items={triggers}
                     selectedId={config.kailhChocoSide || 'both'}
-                    onSelect={(id) => store.setkailhChocoSide(id as any)}
+                    onSelect={(id) => store.setkailhChocoSide(id as import('@shared/types').TriggerSide)}
                     basePrice={0}
                     variant="sub"
                   />

@@ -37,7 +37,7 @@ export default function ProductPage() {
     <div className="product-page">
       <button className="back-link" onClick={() => navigate('/parts')}>Back to Parts</button>
       <div className="product-details">
-        {/* @ts-ignore - Assuming image might be on item or category */}
+        {/* Assuming image might be on item or category */}
         <img src={item.image || category.image} alt={item.label} />
         <div className="product-info">
           <h2>{category.label}</h2>
@@ -47,7 +47,7 @@ export default function ProductPage() {
             category.id === 'shells' ? (
               <VariantSelector
                 title="Options"
-                items={category.subtypes as any[]}
+                items={category.subtypes as import('@shared/types').ShellOption[]}
                 facets={shellFacets}
                 value={selectedItem}
                 onChange={setSelectedItem}
@@ -58,7 +58,7 @@ export default function ProductPage() {
             ) : category.id === 'buttons' ? (
               <VariantSelector
                 title="Options"
-                items={category.subtypes as any[]}
+                items={category.subtypes as import('@shared/types').ButtonOption[]}
                 facets={buttonFacets}
                 value={selectedItem}
                 onChange={setSelectedItem}
@@ -69,7 +69,7 @@ export default function ProductPage() {
             ) : category.id === 'stick-caps' ? (
               <VariantSelector
                 title="Options"
-                items={category.subtypes as any[]}
+                items={category.subtypes as import('@shared/types').StickCapOption[]}
                 facets={stickCapFacets}
                 value={selectedItem}
                 onChange={setSelectedItem}
@@ -80,7 +80,7 @@ export default function ProductPage() {
             ) : (
               <ConfigSection
                 title="Options"
-                items={category.subtypes as any[]}
+                items={category.subtypes}
                 selectedId={selectedItem}
                 onSelect={setSelectedItem}
                 basePrice={item.individualPrice ?? item.price ?? 0}

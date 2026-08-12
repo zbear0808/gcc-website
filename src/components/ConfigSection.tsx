@@ -60,13 +60,14 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     if (selectedId !== undefined) {
       isActive = selectedId === item.id;
     } else if (isMulti) {
-      const multiValues = category && config ? config[category] as unknown as string[] : [];
-      isActive = Array.isArray(multiValues) && multiValues.includes(item.id);
+      const val = category && config ? config[category] : undefined;
+      const multiValues = (Array.isArray(val) ? val : []) as string[];
+      isActive = multiValues.includes(item.id);
     } else if (category && config) {
       isActive = config[category] === item.id;
     }
 
-    const p = priceKey === 'individualPrice' ? (item as any).individualPrice ?? item.price : item.price;
+    const p = priceKey === 'individualPrice' ? item.individualPrice ?? item.price : item.price;
     const itemPrice = typeof p === 'number' ? p : 0;
 
     let diff = itemPrice;
@@ -154,8 +155,9 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
             if (selectedId !== undefined) {
               isActive = selectedId === item.id;
             } else if (isMulti) {
-              const multiValues = category && config ? config[category] as unknown as string[] : [];
-              isActive = Array.isArray(multiValues) && multiValues.includes(item.id);
+              const val = category && config ? config[category] : undefined;
+              const multiValues = (Array.isArray(val) ? val : []) as string[];
+              isActive = multiValues.includes(item.id);
             } else if (category && config) {
               isActive = config[category] === item.id;
             }

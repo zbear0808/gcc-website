@@ -25,7 +25,7 @@ interface AppStore {
   setZButton: (id: string) => void;
   setMembrane: (id: string) => void;
   setStickCap: (id: string) => void;
-  toggleMod: (modId: string) => void;
+  toggleMod: (modId: keyof ConfiguratorState) => void;
   setNotchStyle: (style: 'deep' | 'subtle') => void;
   setTriggerSide: (side: TriggerSide) => void;
   setTriggerLength: (length: TriggerPlugLength) => void;

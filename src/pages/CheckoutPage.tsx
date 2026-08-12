@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { loadStripe, type StripeElementsOptions } from '@stripe/stripe-js';
+import { loadStripe, type StripeElementsOptions, type StripeAddressElementChangeEvent, type StripeExpressCheckoutElementShippingAddressChangeEvent, type StripeExpressCheckoutElementShippingRateChangeEvent } from '@stripe/stripe-js';
 import {
   Elements,
   ExpressCheckoutElement,
@@ -28,10 +28,10 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const onShippingAddressChange = async (event: any) => {
+  const onShippingAddressChange = async (event: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
     const { address } = event;
     if (!address.postal_code) {
-      event.resolve({ applePay: { shippingMethods: [] } });
+      event.resolve({ applePay: { shippingMethods: [] } } as any);
       return;
     }
 
@@ -59,20 +59,20 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
       event.resolve({
         applePay: { shippingMethods: applePayRates }
-      });
+      } as any);
     } catch (e) {
       event.reject();
     }
   };
 
-  const onShippingRateChange = async (event: any) => {
+  const onShippingRateChange = async (event: StripeExpressCheckoutElementShippingRateChangeEvent) => {
     try {
       const res = await fetch(`${API_BASE}/api/update-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          payment_intent_id: event.paymentIntent?.id,
-          selected_shipping_rate: event.shippingRate.identifier
+          payment_intent_id: clientSecret.split('_secret')[0],
+          selected_shipping_rate: event.shippingRate.id
         })
       });
       const data = await res.json();
@@ -82,13 +82,13 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
           amount: data.amount,
           label: 'Total'
         }
-      });
+      } as any);
     } catch (e) {
       event.reject();
     }
   };
 
-  const handleAddressChange = async (event: any) => {
+  const handleAddressChange = async (event: StripeAddressElementChangeEvent) => {
     if (event.complete && event.value.address.postal_code) {
       const res = await fetch(`${API_BASE}/api/calculate-shipping`, {
         method: 'POST',
@@ -251,9 +251,9 @@ export default function CheckoutPage() {
         }
         
         setClientSecret(data.client_secret);
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error('Failed to create payment intent', e);
-        setError(e.message || 'Network error occurred while trying to initialize checkout');
+        setError(e instanceof Error ? e.message : 'Network error occurred while trying to initialize checkout');
       }
     };
     fetchIntent();
