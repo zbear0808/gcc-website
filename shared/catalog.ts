@@ -50,8 +50,8 @@ export const products: Product[] = [
 // Modifications (Full Build only)
 
 export const mods: ModOption[] = [
-  { id: 'notchesFirefox', label: 'Firefox Notches', price: 40, image: '/images/mods/firefox.png', requiresInventory: false },
-  { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20, image: '/images/mods/wavedash.png', requiresInventory: false },
+  { id: 'notchesFirefox', label: 'Firefox', price: 40, image: '/images/mods/firefox.png', requiresInventory: false },
+  { id: 'notchesWavedash', label: 'Wavedash', price: 20, image: '/images/mods/wavedash.png', requiresInventory: false },
   { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', description: 'Uses 2 pin jst connectors instead of soldered on wires.', price: 6, image: '/images/parts/trigger-paddle.png', requiresInventory: false },
 ];
 

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
-import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps } from '@shared/catalog';
+import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps, mods, addons } from '@shared/catalog';
 import { calculateTotal, getItemPrice } from '@shared/pricing';
 import ControllerVisualizer from '@/components/ControllerVisualizer';
 import ConfigSection from '@/components/ConfigSection';
@@ -20,26 +20,22 @@ export default function ShopPage() {
   const store = useStore();
   const { config } = store;
 
-  const notchOptions = [
-    { id: 'notchesWavedash', label: 'Wavedash Notches', price: 20 },
-    { id: 'notchesFirefox', label: 'Firefox Notches', price: 40 },
-  ];
+  const notchOptions = mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
 
-  const triggerModOptions = [
-    { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0 },
-    { id: 'kalihChoco', label: 'Kalih Choco Switch', price: (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30 },
-  ];
+  const triggerModOptions = addons
+    .filter(a => a.id === 'triggerPlugs' || a.id === 'kalihChoco')
+    .map(a =>
+      a.id === 'kalihChoco'
+        ? { ...a, label: 'Kalih Choco Switch', price: (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30 }
+        : a
+    );
   const selectedTriggerMod = config.kalihChoco ? 'kalihChoco' : config.triggerPlugs ? 'triggerPlugs' : undefined;
 
-  const springOptions = [
-    { id: 'springCut', label: 'Cut Springs', price: 0 },
-  ];
+  const springOptions = addons.filter(a => a.id === 'springCut');
   const selectedSpring = config.springCut ? 'springCut' : undefined;
 
-  const detachableTriggerOptions = [
-    { id: 'detachableTriggerPaddle', label: 'Detachable Trigger Paddle Mod', price: 10 },
-  ];
+  const detachableTriggerOptions = mods.filter(m => m.id === 'detachableTriggerPaddle');
   const selectedDetachableTrigger = config.detachableTriggerPaddle ? 'detachableTriggerPaddle' : undefined;
 
   const notchStyles = [
@@ -114,13 +110,13 @@ export default function ShopPage() {
                   </div>
                 )}
 
-                <VariantSelector 
-                  title="Buttons" 
-                  items={buttons} 
-                  facets={buttonFacets} 
-                  value={config.buttons} 
-                  onChange={store.setButtons} 
-                  basePrice={getItemPrice(config.buttons ?? '')} 
+                <VariantSelector
+                  title="Buttons"
+                  items={buttons}
+                  facets={buttonFacets}
+                  value={config.buttons}
+                  onChange={store.setButtons}
+                  basePrice={getItemPrice(config.buttons ?? '')}
                   getStock={(id) => store.inventory[id] || 0}
                 />
 
@@ -184,7 +180,7 @@ export default function ShopPage() {
             />
             {isFullBuild && (
               <VariantSelector
-                title="Stick Caps"
+                title="Sticks"
                 items={stickCaps}
                 facets={stickCapFacets}
                 value={config.stickCap}
