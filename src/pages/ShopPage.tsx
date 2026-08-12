@@ -24,13 +24,13 @@ export default function ShopPage() {
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
 
   const triggerModOptions = addons
-    .filter(a => a.id === 'triggerPlugs' || a.id === 'kalihChoco')
+    .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco')
     .map(a =>
-      a.id === 'kalihChoco'
-        ? { ...a, label: 'Kalih Choco Switch', price: (config.kalihChocoSide ?? 'both') === 'both' ? 40 : 30 }
+      a.id === 'kailhChoco'
+        ? { ...a, label: 'kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
         : a
     );
-  const selectedTriggerMod = config.kalihChoco ? 'kalihChoco' : config.triggerPlugs ? 'triggerPlugs' : undefined;
+  const selectedTriggerMod = config.kailhChoco ? 'kailhChoco' : config.triggerPlugs ? 'triggerPlugs' : undefined;
 
   const springOptions = addons.filter(a => a.id === 'springCut');
   const selectedSpring = config.springCut ? 'springCut' : undefined;
@@ -241,15 +241,15 @@ export default function ShopPage() {
                       if (selectedTriggerMod === id) {
                         return {
                           ...prev,
-                          kalihChoco: false,
+                          kailhChoco: false,
                           triggerPlugs: false
                         };
                       }
                       return {
                         ...prev,
-                        kalihChoco: id === 'kalihChoco',
+                        kailhChoco: id === 'kailhChoco',
                         triggerPlugs: id === 'triggerPlugs',
-                        ...(id === 'kalihChoco' ? { detachableTriggerPaddle: false } : {})
+                        ...(id === 'kailhChoco' ? { detachableTriggerPaddle: false } : {})
                       };
                     });
                   }}
@@ -277,12 +277,12 @@ export default function ShopPage() {
                   </>
                 )}
 
-                {config.kalihChoco && (
+                {config.kailhChoco && (
                   <ConfigSection
-                    title="Kalih Choco Side"
+                    title="kailh Choco Side"
                     items={triggers}
-                    selectedId={config.kalihChocoSide || 'both'}
-                    onSelect={(id) => store.setKalihChocoSide(id as any)}
+                    selectedId={config.kailhChocoSide || 'both'}
+                    onSelect={(id) => store.setkailhChocoSide(id as any)}
                     basePrice={0}
                     variant="sub"
                   />
@@ -312,7 +312,7 @@ export default function ShopPage() {
                     store.setConfig(prev => ({
                       ...prev,
                       detachableTriggerPaddle: selectedDetachableTrigger === id ? false : id === 'detachableTriggerPaddle',
-                      ...(selectedDetachableTrigger !== id && id === 'detachableTriggerPaddle' ? { kalihChoco: false } : {})
+                      ...(selectedDetachableTrigger !== id && id === 'detachableTriggerPaddle' ? { kailhChoco: false } : {})
                     }));
                   }}
                   basePrice={0}

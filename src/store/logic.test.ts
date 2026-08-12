@@ -6,7 +6,7 @@ describe('Store Logic (Pure Functions)', () => {
   describe('toggleModLogic', () => {
     it('toggles a mod on and off', () => {
       const config: ConfiguratorState = { product: 'full-build' };
-      
+
       const enabled = toggleModLogic(config, 'notchesFirefox');
       expect(enabled.notchesFirefox).toBe(true);
 
@@ -16,7 +16,7 @@ describe('Store Logic (Pure Functions)', () => {
 
     it('mutually excludes notchesFirefox and notchesWavedash', () => {
       const config: ConfiguratorState = { product: 'full-build', notchesFirefox: true };
-      
+
       const updated = toggleModLogic(config, 'notchesWavedash');
       expect(updated.notchesWavedash).toBe(true);
       expect(updated.notchesFirefox).toBe(false);
@@ -26,15 +26,15 @@ describe('Store Logic (Pure Functions)', () => {
       expect(reverted.notchesWavedash).toBe(false);
     });
 
-    it('mutually excludes triggerPlugs and kalihChoco', () => {
-      const config: ConfiguratorState = { product: 'full-build', kalihChoco: true };
-      
+    it('mutually excludes triggerPlugs and kailhChoco', () => {
+      const config: ConfiguratorState = { product: 'full-build', kailhChoco: true };
+
       const updated = toggleModLogic(config, 'triggerPlugs');
       expect(updated.triggerPlugs).toBe(true);
-      expect(updated.kalihChoco).toBe(false);
+      expect(updated.kailhChoco).toBe(false);
 
-      const reverted = toggleModLogic(updated, 'kalihChoco');
-      expect(reverted.kalihChoco).toBe(true);
+      const reverted = toggleModLogic(updated, 'kailhChoco');
+      expect(reverted.kailhChoco).toBe(true);
       expect(reverted.triggerPlugs).toBe(false);
     });
   });
@@ -80,7 +80,7 @@ describe('Store Logic (Pure Functions)', () => {
       // 'missing-item' is not in inventory object
       const newCart = updateCartQuantityLogic(cart, inventory, 'missing-item', 10);
       expect(newCart['missing-item']).toBe(10);
-      
+
       // Should stop at 99
       const maxedCart = updateCartQuantityLogic({ 'missing-item': 99 }, inventory, 'missing-item', 1);
       expect(maxedCart['missing-item']).toBe(99);

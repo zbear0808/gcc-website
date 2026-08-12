@@ -8,7 +8,7 @@ describe('Pricing Logic (Pure Functions)', () => {
       const config: ConfiguratorState = {
         product: 'full-build',
       };
-      
+
       const sanitized = sanitizeConfig(config);
       expect(sanitized.shell).toBe('indigo');
       expect(sanitized.buttons).toBe('oem-buttons');
@@ -21,7 +21,7 @@ describe('Pricing Logic (Pure Functions)', () => {
         shell: 'clear', // extremerate shell
         cable: 'cable-oem',
       };
-      
+
       const sanitized = sanitizeConfig(config);
       expect(sanitized.cable).toBe('cable-paracord-3m');
     });
@@ -32,7 +32,7 @@ describe('Pricing Logic (Pure Functions)', () => {
         shell: 'indigo', // oem shell
         cable: 'cable-oem',
       };
-      
+
       const sanitized = sanitizeConfig(config);
       expect(sanitized.cable).toBe('cable-oem');
     });
@@ -43,7 +43,7 @@ describe('Pricing Logic (Pure Functions)', () => {
         shell: 'emerald',
         wornShell: true,
       };
-      
+
       const sanitized = sanitizeConfig(config);
       expect(sanitized.wornShell).toBe(false);
     });
@@ -54,7 +54,7 @@ describe('Pricing Logic (Pure Functions)', () => {
         shell: 'indigo',
         wornShell: true,
       };
-      
+
       const sanitized = sanitizeConfig(config);
       expect(sanitized.wornShell).toBe(true);
     });
@@ -79,7 +79,7 @@ describe('Pricing Logic (Pure Functions)', () => {
         stickCap: 'gc-cap-good', // 4
         notchesFirefox: true, // 40
         notchStyle: 'subtle', // 15 premium
-        kalihChoco: true, // 40 premium (default both)
+        kailhChoco: true, // 40 premium (default both)
       };
       // base(97) + mods(40) + addons(0) + choco(40) + subtle(15)
       // + shell(0) + buttons(0) + rumble(2) + cable(15) + pots(0) + z(0) + membrane(0) + stick(4)

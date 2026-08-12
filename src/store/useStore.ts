@@ -29,7 +29,7 @@ interface AppStore {
   setNotchStyle: (style: 'deep' | 'subtle') => void;
   setTriggerSide: (side: TriggerSide) => void;
   setTriggerLength: (length: TriggerPlugLength) => void;
-  setKalihChocoSide: (side: TriggerSide) => void;
+  setkailhChocoSide: (side: TriggerSide) => void;
 
   // Cart actions
   addCustomBuild: (config: ConfiguratorState) => void;
@@ -58,159 +58,159 @@ export const useStore = create<AppStore>()(
       cart: {},
       inventory: {},
 
-  // ==================
-  // Config Actions
-  // ==================
+      // ==================
+      // Config Actions
+      // ==================
 
-  setConfig: (updater) =>
-    set((state) => ({ config: sanitizeConfig(updater(state.config)) })),
+      setConfig: (updater) =>
+        set((state) => ({ config: sanitizeConfig(updater(state.config)) })),
 
-  setProduct: (productId) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, product: productId }),
-    })),
+      setProduct: (productId) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, product: productId }),
+        })),
 
-  setShell: (shellId) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, shell: shellId }),
-    })),
+      setShell: (shellId) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, shell: shellId }),
+        })),
 
-  setButtons: (buttonId) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, buttons: buttonId }),
-    })),
+      setButtons: (buttonId) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, buttons: buttonId }),
+        })),
 
-  setCable: (cableId) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, cable: cableId }),
-    })),
+      setCable: (cableId) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, cable: cableId }),
+        })),
 
-  setRumble: (rumbleId) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, rumble: rumbleId }),
-    })),
+      setRumble: (rumbleId) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, rumble: rumbleId }),
+        })),
 
-  setSliderPots: (id) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, sliderPots: id }),
-    })),
+      setSliderPots: (id) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, sliderPots: id }),
+        })),
 
-  setZButton: (id) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, zButton: id }),
-    })),
+      setZButton: (id) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, zButton: id }),
+        })),
 
-  setMembrane: (id) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, membrane: id }),
-    })),
+      setMembrane: (id) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, membrane: id }),
+        })),
 
-  setStickCap: (id) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, stickCap: id }),
-    })),
+      setStickCap: (id) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, stickCap: id }),
+        })),
 
-  toggleMod: (modId) =>
-    set((state) => ({ config: toggleModLogic(state.config, modId) })),
+      toggleMod: (modId) =>
+        set((state) => ({ config: toggleModLogic(state.config, modId) })),
 
-  setNotchStyle: (style) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, notchStyle: style }),
-    })),
+      setNotchStyle: (style) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, notchStyle: style }),
+        })),
 
-  setTriggerSide: (side) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, triggerPlugSide: side }),
-    })),
+      setTriggerSide: (side) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, triggerPlugSide: side }),
+        })),
 
-  setTriggerLength: (length) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, triggerPlugLength: length }),
-    })),
+      setTriggerLength: (length) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, triggerPlugLength: length }),
+        })),
 
-  setKalihChocoSide: (side) =>
-    set((state) => ({
-      config: sanitizeConfig({ ...state.config, kalihChocoSide: side }),
-    })),
+      setkailhChocoSide: (side) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, kailhChocoSide: side }),
+        })),
 
-  // ==================
-  // Cart Actions
-  // ==================
+      // ==================
+      // Cart Actions
+      // ==================
 
-  addCustomBuild: (config) =>
-    set((state) => ({ customBuilds: [...state.customBuilds, config] })),
+      addCustomBuild: (config) =>
+        set((state) => ({ customBuilds: [...state.customBuilds, config] })),
 
-  removeCustomBuild: (index) =>
-    set((state) => ({
-      customBuilds: state.customBuilds.filter((_, i) => i !== index),
-    })),
+      removeCustomBuild: (index) =>
+        set((state) => ({
+          customBuilds: state.customBuilds.filter((_, i) => i !== index),
+        })),
 
-  addToCart: (itemId) =>
-    set((state) => ({
-      cart: { ...state.cart, [itemId]: (state.cart[itemId] ?? 0) + 1 },
-    })),
+      addToCart: (itemId) =>
+        set((state) => ({
+          cart: { ...state.cart, [itemId]: (state.cart[itemId] ?? 0) + 1 },
+        })),
 
-  removeFromCart: (itemId) =>
-    set((state) => ({
-      cart: {
-        ...state.cart,
-        [itemId]: Math.max(0, (state.cart[itemId] ?? 0) - 1),
-      },
-    })),
+      removeFromCart: (itemId) =>
+        set((state) => ({
+          cart: {
+            ...state.cart,
+            [itemId]: Math.max(0, (state.cart[itemId] ?? 0) - 1),
+          },
+        })),
 
-  updateCartQuantity: (itemId, delta) =>
-    set((state) => ({
-      cart: updateCartQuantityLogic(state.cart, state.inventory, itemId, delta),
-    })),
+      updateCartQuantity: (itemId, delta) =>
+        set((state) => ({
+          cart: updateCartQuantityLogic(state.cart, state.inventory, itemId, delta),
+        })),
 
-  clearCart: () => set({ cart: {}, customBuilds: [], config: sanitizeConfig({ product: 'full-build' }) }),
+      clearCart: () => set({ cart: {}, customBuilds: [], config: sanitizeConfig({ product: 'full-build' }) }),
 
-  // ==================
-  // Inventory Actions
-  // ==================
+      // ==================
+      // Inventory Actions
+      // ==================
 
-  setInventory: (inventory) => set({ inventory }),
+      setInventory: (inventory) => set({ inventory }),
 
-  loadInventory: async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/inventory`);
-      if (!res.ok) throw new Error('Server not running');
-      const data = await res.json();
-      set({ inventory: data });
-    } catch {
-      console.warn('Failed to fetch inventory from server.');
-      
-      const currentInventory = get().inventory;
-      if (Object.keys(currentInventory).length > 0) {
-        // Retain existing inventory data
-        return;
-      }
+      loadInventory: async () => {
+        try {
+          const res = await fetch(`${API_BASE}/api/inventory`);
+          if (!res.ok) throw new Error('Server not running');
+          const data = await res.json();
+          set({ inventory: data });
+        } catch {
+          console.warn('Failed to fetch inventory from server.');
 
-      if (import.meta.env.DEV) {
-        console.warn('Local development: using fallback inventory.');
-        const fallback: Inventory = {};
-        for (const item of allItems) {
-          fallback[item.id] = 10;
+          const currentInventory = get().inventory;
+          if (Object.keys(currentInventory).length > 0) {
+            // Retain existing inventory data
+            return;
+          }
+
+          if (import.meta.env.DEV) {
+            console.warn('Local development: using fallback inventory.');
+            const fallback: Inventory = {};
+            for (const item of allItems) {
+              fallback[item.id] = 10;
+            }
+            set({ inventory: fallback });
+          }
         }
-        set({ inventory: fallback });
-      }
-    }
-  },
+      },
 
-  // ==================
-  // Helpers
-  // ==================
+      // ==================
+      // Helpers
+      // ==================
 
-  getStock: (itemId) => get().inventory[itemId] ?? 0,
+      getStock: (itemId) => get().inventory[itemId] ?? 0,
 
-  isOutOfStock: (itemId) => {
-    return (get().inventory[itemId] ?? 0) <= 0;
-  },
+      isOutOfStock: (itemId) => {
+        return (get().inventory[itemId] ?? 0) <= 0;
+      },
 
-  cartTotal: () => calculatePartsTotal(get().cart),
+      cartTotal: () => calculatePartsTotal(get().cart),
 
-  cartCount: () =>
-    Object.values(get().cart).reduce((sum, qty) => sum + qty, 0) + get().customBuilds.length,
+      cartCount: () =>
+        Object.values(get().cart).reduce((sum, qty) => sum + qty, 0) + get().customBuilds.length,
     }),
     {
       name: 'gcc-shop-storage',

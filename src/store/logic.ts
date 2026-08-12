@@ -14,15 +14,15 @@ export function toggleModLogic(currentConfig: ConfiguratorState, modId: string):
     updated = { ...updated, notchesFirefox: false };
   }
 
-  // Trigger Plugs and Kalih Choco are mutually exclusive
+  // Trigger Plugs and kailh Choco are mutually exclusive
   if (modId === 'triggerPlugs' && newVal) {
-    updated = { ...updated, kalihChoco: false };
+    updated = { ...updated, kailhChoco: false };
   }
-  if (modId === 'kalihChoco' && newVal) {
+  if (modId === 'kailhChoco' && newVal) {
     updated = { ...updated, triggerPlugs: false, detachableTriggerPaddle: false };
   }
   if (modId === 'detachableTriggerPaddle' && newVal) {
-    updated = { ...updated, kalihChoco: false };
+    updated = { ...updated, kailhChoco: false };
   }
 
   return sanitizeConfig(updated);
@@ -37,10 +37,10 @@ export function updateCartQuantityLogic(
   const current = currentCart[itemId] ?? 0;
   // Default stock to a high number if inventory data is missing to prevent accidentally zeroing out items
   const stock = inventory[itemId] ?? 99;
-  
+
   // Math.max(0, ...) ensures we never go below 0
   // Math.min(stock, ...) ensures we never exceed stock limit
   const newVal = Math.min(stock, Math.max(0, current + delta));
-  
+
   return { ...currentCart, [itemId]: newVal };
 }

@@ -59,7 +59,7 @@ export const mods: ModOption[] = [
 
 export const addons: AddonOption[] = [
   { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png', requiresInventory: false },
-  { id: 'kalihChoco', label: 'Kalih Choco Switch Mechanical Trigger', price: 0, image: '/images/addons/kalih-choco.png' },
+  { id: 'kailhChoco', label: 'kailh Choco Switch Mechanical Trigger', price: 0, image: '/images/addons/kailh-choco.png' },
   { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png', requiresInventory: false },
 ];
 
@@ -162,7 +162,7 @@ export const parts: PartItem[] = [
   { id: 'magnet-mount', label: 'Magnet Mounts (Pack of 4)', description: 'Mounts for magnets used with Hall effect sensors.', price: 0, individualPrice: 2, image: '/images/parts/magnet-mount.png' },
   { id: 'dh1212-magnet', label: 'DH1212 Magnets (Pack of 4)', description: 'Magnets for use with Hall effect sensors.', price: 1, individualPrice: 2, image: '/images/parts/dh1212-magnet.png' },
   { id: '6-pin-ribbon-cable', label: '6 pin ribbon cable', description: 'Ribbon cable for connecting the main board to the C stick daughter board.', price: 0, individualPrice: 1, image: '/images/parts/ribbon-cable.png' },
-  { id: 'switch-kailh-choco', label: 'Kailh Choco Mechanical Switch', description: 'Individual Kailh Choco mechanical switch for custom triggers.', price: 0, individualPrice: 2, image: '/images/addons/kalih-choco.png' },
+  { id: 'switch-kailh-choco', label: 'Kailh Choco Mechanical Switch', description: 'Individual Kailh Choco mechanical switch for custom triggers.', price: 0, individualPrice: 2, image: '/images/addons/kailh-choco.png' },
   { id: 'jst-pigtail-header', label: '2-Pin JST Pigtail and Header', description: '2-pin JST pigtail and header combo for mechanical switch wiring.', price: 0, individualPrice: 1 },
   { id: 'switch-mount-3d', label: '3D Printed Switch Mount', description: '3D printed mount for the mechanical switch.', price: 0, individualPrice: 2 },
   { id: 'screwdriver-set', label: 'Tri-wing + JIS Screwdriver Set', description: 'Includes both a tri-wing and JIS screwdriver needed to open GameCube controllers.', price: 0, individualPrice: 4, image: '/images/parts/screwdrivers.png' },

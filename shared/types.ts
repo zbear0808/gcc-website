@@ -106,8 +106,8 @@ export interface ConfiguratorState {
   detachableTriggerPaddle?: boolean;
   notchStyle?: 'deep' | 'subtle';
   triggerPlugs?: boolean;
-  kalihChoco?: boolean;
-  kalihChocoSide?: TriggerSide;
+  kailhChoco?: boolean;
+  kailhChocoSide?: TriggerSide;
   springCut?: boolean;
   wornShell?: boolean;
   triggerPlugSide?: TriggerSide;

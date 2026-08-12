@@ -9,7 +9,7 @@ import type { ConfiguratorState } from '@shared/types';
 
 const renderBuildOptions = (build: ConfiguratorState) => {
   const options = [];
-  
+
   if (build.shell) options.push(`Shell: ${getItem(build.shell)?.label || build.shell}`);
   if (build.buttons) options.push(`Buttons: ${getItem(build.buttons)?.label || build.buttons}`);
   if (build.cable) options.push(`Cable: ${getItem(build.cable)?.label || build.cable}`);
@@ -21,18 +21,18 @@ const renderBuildOptions = (build: ConfiguratorState) => {
 
   if (build.notchesFirefox) options.push(`Notches: Firefox (${build.notchStyle || 'standard'})`);
   if (build.notchesWavedash) options.push(`Notches: Wavedash (${build.notchStyle || 'standard'})`);
-  
+
   if (build.triggerPlugs) {
     const side = build.triggerPlugSide === 'l' ? 'Left' : build.triggerPlugSide === 'r' ? 'Right' : 'Both';
     const length = build.triggerPlugLength || 'short';
     options.push(`Trigger Plugs: ${side} (${length})`);
   }
-  
-  if (build.kalihChoco) {
-    const side = build.kalihChocoSide === 'l' ? 'Left' : build.kalihChocoSide === 'r' ? 'Right' : 'Both';
-    options.push(`Kalih Choco Triggers: ${side}`);
+
+  if (build.kailhChoco) {
+    const side = build.kailhChocoSide === 'l' ? 'Left' : build.kailhChocoSide === 'r' ? 'Right' : 'Both';
+    options.push(`kailh Choco Triggers: ${side}`);
   }
-  
+
   if (build.springCut) options.push(`Spring Cut`);
   if (build.detachableTriggerPaddle) options.push(`Detachable Trigger Paddle Mod`);
   if (build.wornShell) options.push(`Worn Shell`);
@@ -63,11 +63,11 @@ export default function CartPage() {
     } else {
       partsTotal = cartItems.reduce((acc, item) => acc + (item.displayPrice || 0) * item.qty, 0);
     }
-    
+
     const buildsTotal = store.customBuilds?.reduce((sum, build) => sum + calculateTotal(build), 0) ?? 0;
     return partsTotal + buildsTotal;
   };
-  
+
   const total = cartTotal();
 
   const handleCheckout = () => {
@@ -119,7 +119,7 @@ export default function CartPage() {
             <div className="cart-controls">
               <button onClick={() => store.updateCartQuantity(item.id, -1)}>-</button>
               <span>{item.qty}</span>
-              <button 
+              <button
                 onClick={() => store.updateCartQuantity(item.id, 1)}
                 disabled={item.qty >= (store.inventory[item.id] || 0)}
               >+</button>

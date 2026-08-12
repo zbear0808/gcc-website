@@ -111,13 +111,13 @@ export function calculateTotal(config: ConfiguratorState): number {
       .filter((a) => sanitized[a.id as keyof ConfiguratorState])
       .reduce((sum, a) => sum + (a.price ?? 0), 0);
 
-    let kalihChocoPremium = 0;
-    if (sanitized.kalihChoco) {
-      kalihChocoPremium = (sanitized.kalihChocoSide ?? 'both') === 'both' ? 40 : 30;
+    let kailhChocoPremium = 0;
+    if (sanitized.kailhChoco) {
+      kailhChocoPremium = (sanitized.kailhChocoSide ?? 'both') === 'both' ? 40 : 30;
     }
 
     const wornDiscount = sanitized.wornShell ? -4 : 0;
-    
+
     let subtlePremium = 0;
     if (sanitized.notchStyle === 'subtle' && (sanitized.notchesFirefox || sanitized.notchesWavedash)) {
       subtlePremium = 15;
@@ -127,7 +127,7 @@ export function calculateTotal(config: ConfiguratorState): number {
       base +
       modsTotal +
       addonsTotal +
-      kalihChocoPremium +
+      kailhChocoPremium +
       wornDiscount +
       subtlePremium +
       getItemPrice(sanitized.shell ?? '') +
@@ -217,12 +217,12 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
         const label =
           addon.id === 'triggerPlugs'
             ? `${(sanitized.triggerPlugLength ?? 'tall').charAt(0).toUpperCase() + (sanitized.triggerPlugLength ?? 'tall').slice(1)} Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
-            : addon.id === 'kalihChoco'
-            ? `Kalih Choco Switch Mechanical Trigger (${(sanitized.kalihChocoSide ?? 'both').toUpperCase()})`
-            : undefined;
-        
-        const priceOverride = addon.id === 'kalihChoco'
-          ? ((sanitized.kalihChocoSide ?? 'both') === 'both' ? 40 : 30)
+            : addon.id === 'kailhChoco'
+              ? `kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()})`
+              : undefined;
+
+        const priceOverride = addon.id === 'kailhChoco'
+          ? ((sanitized.kailhChocoSide ?? 'both') === 'both' ? 40 : 30)
           : addon.price;
 
         const item = createStripeLineItem({ ...addon, price: priceOverride } as unknown as CatalogItem, label);
@@ -311,7 +311,7 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
     if (config.zButton) items.push(config.zButton);
     if (config.stickCap) items.push(config.stickCap);
     if (config.triggerPlugs) items.push(`trigger-plugs-${config.triggerPlugLength ?? 'tall'}`);
-    if (config.kalihChoco) items.push(`kalih-choco-${config.kalihChocoSide ?? 'both'}`);
+    if (config.kailhChoco) items.push(`kailh-choco-${config.kailhChocoSide ?? 'both'}`);
   } else if (isDiyKit(config)) {
     if (config.cable) items.push(config.cable);
     if (config.sliderPots) items.push(config.sliderPots);
