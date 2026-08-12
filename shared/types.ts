@@ -51,38 +51,29 @@ export interface ButtonOption extends CatalogItem {
   type: ButtonType;
 }
 
-export interface CableOption extends CatalogItem {}
+export type CableOption = CatalogItem;
 
-export interface RumbleOption extends CatalogItem {}
+export type RumbleOption = CatalogItem;
 
-export interface SliderPotOption extends CatalogItem {}
+export type SliderPotOption = CatalogItem;
 
-export interface ZButtonOption extends CatalogItem {}
+export type ZButtonOption = CatalogItem;
 
-export interface MembraneOption extends CatalogItem {}
+export type MembraneOption = CatalogItem;
 
-export interface StickCapOption extends CatalogItem {}
+export type StickCapOption = CatalogItem;
 
-export interface TriggerPaddlePcbOption extends CatalogItem {}
+export type TriggerPaddlePcbOption = CatalogItem;
 
-export interface ModOption {
-  id: string;
-  label: string;
-  description?: string;
-  price: number;
+export interface ModOption extends CatalogItem {
   image: string;
-  requiresInventory?: boolean;
 }
 
-export interface AddonOption {
-  id: string;
-  label: string;
-  price: number;
+export interface AddonOption extends CatalogItem {
   image: string;
-  requiresInventory?: boolean;
 }
 
-export interface PartItem extends CatalogItem {}
+export type PartItem = CatalogItem;
 
 // ==================
 // Catalog Category
@@ -155,6 +146,7 @@ export interface CheckoutPayload {
 }
 
 export interface RedisOrder extends CheckoutPayload {
+  id: string;
   status: 'cart' | 'paid' | 'shipped';
   email?: string;
   shipmentId?: string;
