@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
@@ -14,6 +14,7 @@ export default function ProductPage() {
   
   const category = fullCatalog.find(c => c.id === id);
   const [selectedItem, setSelectedItem] = useState(category?.subtypes[0]?.id || '');
+  const [quantityToAdd, setQuantityToAdd] = useState(1);
   
   if (!category) return <div>Product not found</div>;
 
@@ -21,9 +22,14 @@ export default function ProductPage() {
   const stock = store.inventory[item.id] || 0;
   const inCart = store.cart[item.id] || 0;
 
-  const handleAdd = () => {
-    if (stock > inCart) {
-      store.addToCart(item.id);
+  useEffect(() => {
+    setQuantityToAdd(1);
+  }, [selectedItem]);
+
+  const handleAddToCart = () => {
+    if (stock >= inCart + quantityToAdd) {
+      store.updateCartQuantity(item.id, quantityToAdd);
+      setQuantityToAdd(1);
     }
   };
 
@@ -96,10 +102,32 @@ export default function ProductPage() {
             )}
           </div>
 
-          <div className="cart-controls">
-            <button onClick={() => store.updateCartQuantity(item.id, -1)} disabled={inCart === 0}>-</button>
-            <span>{inCart} in cart</span>
-            <button onClick={handleAdd} disabled={inCart >= stock || stock === 0}>+</button>
+          <div className="cart-controls-container">
+            <div className="cart-controls">
+              <button 
+                onClick={() => setQuantityToAdd(q => Math.max(1, q - 1))} 
+                disabled={quantityToAdd <= 1}
+              >
+                -
+              </button>
+              <span>{quantityToAdd}</span>
+              <button 
+                onClick={() => setQuantityToAdd(q => q + 1)} 
+                disabled={quantityToAdd >= stock - inCart || stock === 0}
+              >
+                +
+              </button>
+            </div>
+            <button 
+              className="add-to-cart-btn" 
+              onClick={handleAddToCart}
+              disabled={stock === 0 || inCart >= stock}
+            >
+              Add to Cart
+            </button>
+            {inCart > 0 && (
+              <div className="in-cart-note">{inCart} already in cart</div>
+            )}
           </div>
         </div>
       </div>
