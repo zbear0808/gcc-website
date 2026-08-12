@@ -52,14 +52,17 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
     result = {
       ...result,
       shell: result.shell ?? 'indigo',
+      wornShell: result.wornShell ?? true,
       buttons: result.buttons ?? 'oem-buttons',
       rumble: 'rumble' in result ? result.rumble : 'rumble-oem',
       cable: result.cable ?? 'cable-paracord-3m',
       sliderPots: result.sliderPots ?? 'slider-pot-alps',
       zButton: result.zButton ?? 'tactile-z',
       membrane: result.membrane ?? 'membrane-extremerate',
-      stickCap: result.stickCap ?? 'gc-cap-okay',
+      stickCap: result.stickCap ?? 'gc-cap-poor',
       notchStyle: result.notchStyle ?? 'deep',
+      triggerPlugs: result.triggerPlugs ?? true,
+      triggerPlugSide: result.triggerPlugSide ?? 'r',
     };
   } else if (isDiyKit(result)) {
     result = {

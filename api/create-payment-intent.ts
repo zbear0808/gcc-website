@@ -5,9 +5,7 @@ import { Redis } from '@upstash/redis';
 import { sanitizeConfig, getLineItems, getPartsLineItems, extractRequestedItems } from '../shared/pricing';
 import { validateInventory, calculateStripeAmount } from '../shared/order-logic';
 
-console.log("=== VERCEL EVALUATING API ROUTE ===");
-console.log("Keys in process.env:", Object.keys(process.env).filter(k => k.includes('STRIPE')));
-console.log("STRIPE_SECRET_KEY value:", process.env.STRIPE_SECRET_KEY ? "EXISTS" : "MISSING");
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
   apiVersion: '2023-10-16',
@@ -38,17 +36,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const requestedItems = extractRequestedItems({ config: validConfig, customBuilds, cart, parts });
 
-    if (redis || process.env.USE_FALLBACK_INVENTORY) {
-      let inventoryData: Record<string, number> = {};
-      
-      if (redis) {
-        inventoryData = (await redis.hgetall('inventory')) as Record<string, number> || {};
-      } else {
-        for (const item of Object.keys(requestedItems)) {
-          inventoryData[item] = 10;
-        }
-      }
-
+    if (redis) {
+      const inventoryData = (await redis.hgetall('inventory')) as Record<string, number> || {};
       const outOfStock = validateInventory(requestedItems, inventoryData);
 
       if (outOfStock.length > 0) {
@@ -70,7 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Store full order payload in Redis to avoid Stripe's 500-char metadata limit
     if (!redis) {
-      return res.status(500).json({ error: 'Order storage is unavailable. Please try again later.' });
+      console.error('[create-payment-intent] Redis is unavailable — checkout cannot proceed without order storage.');
+      return res.status(503).json({ error: 'Order storage is unavailable. Please try again later.' });
     }
 
     const orderId = randomUUID();

@@ -67,4 +67,81 @@ describe('Order Logic (Pure Functions)', () => {
       expect(total).toBe(0);
     });
   });
+
+  describe('validateInventory - Edge Cases', () => {
+    it('does not flag items with zero or negative requested quantities', () => {
+      const requestedItems = { 'item-a': 0, 'item-b': -2 };
+      const currentInventory = { 'item-a': 0, 'item-b': 0 };
+      const outOfStock = validateInventory(requestedItems, currentInventory);
+      expect(outOfStock).toEqual([]);
+    });
+
+    it('flags items with explicitly zero stock when 1 is requested', () => {
+      const requestedItems = { 'item-a': 1 };
+      const currentInventory = { 'item-a': 0 };
+      const outOfStock = validateInventory(requestedItems, currentInventory);
+      expect(outOfStock).toEqual(['item-a']);
+    });
+
+    it('flags all requested items when inventory is empty', () => {
+      const requestedItems = { 'item-a': 1, 'item-b': 3 };
+      const currentInventory = {};
+      const outOfStock = validateInventory(requestedItems, currentInventory);
+      expect(outOfStock).toContain('item-a');
+      expect(outOfStock).toContain('item-b');
+      expect(outOfStock.length).toBe(2);
+    });
+
+    it('returns empty array when requestedItems is empty', () => {
+      const outOfStock = validateInventory({}, { 'item-a': 10 });
+      expect(outOfStock).toEqual([]);
+    });
+
+    it('passes when requested quantity exactly equals available stock', () => {
+      const requestedItems = { 'item-a': 5 };
+      const currentInventory = { 'item-a': 5 };
+      const outOfStock = validateInventory(requestedItems, currentInventory);
+      expect(outOfStock).toEqual([]);
+    });
+  });
+
+  describe('calculateStripeAmount - Edge Cases', () => {
+    it('handles zero-quantity and zero-amount line items', () => {
+      const lineItems: StripeLineItem[] = [
+        {
+          price_data: { currency: 'usd', product_data: { name: 'Free Gift' }, unit_amount: 0 },
+          quantity: 1,
+        },
+        {
+          price_data: { currency: 'usd', product_data: { name: 'Zero Qty' }, unit_amount: 2500 },
+          quantity: 0,
+        },
+      ];
+      expect(calculateStripeAmount(lineItems)).toBe(0);
+    });
+
+    it('handles negative unit_amount for discount line items', () => {
+      const lineItems: StripeLineItem[] = [
+        {
+          price_data: { currency: 'usd', product_data: { name: 'Widget' }, unit_amount: 2000 },
+          quantity: 1,
+        },
+        {
+          price_data: { currency: 'usd', product_data: { name: 'Discount' }, unit_amount: -500 },
+          quantity: 1,
+        },
+      ];
+      expect(calculateStripeAmount(lineItems)).toBe(1500);
+    });
+
+    it('handles large amounts without precision loss', () => {
+      const lineItems: StripeLineItem[] = [
+        {
+          price_data: { currency: 'usd', product_data: { name: 'Expensive Item' }, unit_amount: 99999 },
+          quantity: 100,
+        },
+      ];
+      expect(calculateStripeAmount(lineItems)).toBe(9999900);
+    });
+  });
 });

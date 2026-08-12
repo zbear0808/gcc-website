@@ -5,6 +5,7 @@ import { fullCatalog } from '@shared/catalog';
 import VariantSelector from '@/components/VariantSelector';
 import ConfigSection from '@/components/ConfigSection';
 import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
+import { BackIcon } from '@/components/Icons';
 import '@/assets/styles/pages/product.css';
 
 export default function ProductPage() {
@@ -39,7 +40,10 @@ export default function ProductPage() {
 
   return (
     <div className="product-page">
-      <button className="back-link" onClick={() => navigate('/parts')}>Back to Parts</button>
+      <button className="back-link" onClick={() => navigate('/parts')}>
+        <BackIcon className="icon" />
+        Back to Parts
+      </button>
       <div className="product-details">
         {/* Assuming image might be on item or category */}
         <img src={item.image || category.image} alt={item.label} />

@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loadStripe, type StripeElementsOptions, type StripeAddressElementChangeEvent, type StripeExpressCheckoutElementShippingAddressChangeEvent, type StripeExpressCheckoutElementShippingRateChangeEvent } from '@stripe/stripe-js';
 import {
   Elements,
@@ -16,17 +17,56 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 type ShippingRate = {
   id: string;
   service: string;
-  rate: string;
+  rateInCents: number;
 };
 
-const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
+interface CheckoutFormProps {
+  clientSecret: string;
+  paymentIntentId: string;
+}
+
+const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const store = useStore();
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [selectedRate, setSelectedRate] = useState<string | null>(null);
+  const [shipmentId, setShipmentId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const fetchShippingRates = async (zip: string, state?: string, country?: string) => {
+    const res = await fetch(`${API_BASE}/api/calculate-shipping`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        zip,
+        state,
+        country: country || 'US',
+        cart: store.cart,
+        customBuilds: store.customBuilds,
+        config: store.config,
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.shipmentId) {
+      setShipmentId(data.shipmentId);
+    }
+    return data;
+  };
+
+  const updatePaymentIntent = async (rateId: string, shipId: string) => {
+    const res = await fetch(`${API_BASE}/api/update-payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        payment_intent_id: paymentIntentId,
+        shipment_id: shipId,
+        rate_id: rateId,
+      })
+    });
+    return res.json();
+  };
 
   const onShippingAddressChange = async (event: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
     const { address } = event;
@@ -36,24 +76,12 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/calculate-shipping`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          zip: address.postal_code,
-          state: address.state,
-          country: address.country,
-          cart: store.cart,
-          customBuilds: store.customBuilds,
-          config: store.config,
-        })
-      });
-      const data = await res.json();
-      
+      const data = await fetchShippingRates(address.postal_code, address.state, address.country);
+
       const applePayRates = (data.rates || []).map((rate: ShippingRate) => ({
         label: rate.service,
-        amount: Math.round(parseFloat(rate.rate) * 100),
-        identifier: rate.id,
+        amount: rate.rateInCents,
+        identifier: `${data.shipmentId}|${rate.id}`,
         detail: 'Standard shipping'
       }));
 
@@ -67,16 +95,14 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
   const onShippingRateChange = async (event: StripeExpressCheckoutElementShippingRateChangeEvent) => {
     try {
-      const res = await fetch(`${API_BASE}/api/update-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payment_intent_id: clientSecret.split('_secret')[0],
-          selected_shipping_rate: event.shippingRate.id
-        })
-      });
-      const data = await res.json();
-      
+      const [shipId, rateId] = (event.shippingRate as any).identifier?.split('|') ?? [];
+      if (!shipId || !rateId) {
+        event.reject();
+        return;
+      }
+
+      const data = await updatePaymentIntent(rateId, shipId);
+
       event.resolve({
         newTotal: {
           amount: data.amount,
@@ -90,41 +116,35 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
   const handleAddressChange = async (event: StripeAddressElementChangeEvent) => {
     if (event.complete && event.value.address.postal_code) {
-      const res = await fetch(`${API_BASE}/api/calculate-shipping`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          zip: event.value.address.postal_code,
-          state: event.value.address.state,
-          country: event.value.address.country,
-          cart: store.cart,
-          customBuilds: store.customBuilds,
-          config: store.config,
-        })
-      });
-      const data = await res.json();
-      setShippingRates(data.rates || []);
-      if (data.rates && data.rates.length > 0) {
-        handleRateSelection(data.rates[0].id);
+      try {
+        const data = await fetchShippingRates(
+          event.value.address.postal_code,
+          event.value.address.state,
+          event.value.address.country,
+        );
+        setShippingRates(data.rates || []);
+        if (data.rates && data.rates.length > 0 && data.shipmentId) {
+          handleRateSelection(data.rates[0].id, data.shipmentId);
+        }
+      } catch (e) {
+        console.error('Failed to fetch shipping rates:', e);
       }
     }
   };
 
-  const handleRateSelection = async (rateId: string) => {
+  const handleRateSelection = async (rateId: string, shipId?: string) => {
     setSelectedRate(rateId);
-    
+    const effectiveShipmentId = shipId || shipmentId;
+
+    if (!effectiveShipmentId) {
+      console.error('No shipment ID available for rate selection');
+      return;
+    }
+
     try {
-      const pi = clientSecret.split('_secret')[0];
-      await fetch(`${API_BASE}/api/update-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payment_intent_id: pi,
-          selected_shipping_rate: rateId
-        })
-      });
+      await updatePaymentIntent(rateId, effectiveShipmentId);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to update payment intent:', e);
     }
   };
 
@@ -149,7 +169,7 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   return (
     <form onSubmit={handleSubmit} className="checkout-form" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div className="express-checkout">
-        <ExpressCheckoutElement 
+        <ExpressCheckoutElement
           onShippingAddressChange={onShippingAddressChange}
           onShippingRateChange={onShippingRateChange}
           onConfirm={async () => {
@@ -175,9 +195,9 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
       <div className="separator" style={{ textAlign: 'center', margin: '1rem 0' }}>Or pay with card</div>
 
-      <AddressElement 
-        options={{ mode: 'shipping' }} 
-        onChange={handleAddressChange} 
+      <AddressElement
+        options={{ mode: 'shipping' }}
+        onChange={handleAddressChange}
       />
 
       {shippingRates.length > 0 && (
@@ -186,14 +206,14 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
           {shippingRates.map(rate => (
             <div key={rate.id} className="shipping-rate-option" style={{ margin: '0.5rem 0' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input 
-                  type="radio" 
-                  name="shippingRate" 
-                  value={rate.id} 
+                <input
+                  type="radio"
+                  name="shippingRate"
+                  value={rate.id}
                   checked={selectedRate === rate.id}
                   onChange={() => handleRateSelection(rate.id)}
                 />
-                {rate.service} - ${rate.rate}
+                {rate.service} - ${(rate.rateInCents / 100).toFixed(2)}
               </label>
             </div>
           ))}
@@ -206,8 +226,8 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
       {errorMessage && <div className="error-message" style={{ color: 'red' }}>{errorMessage}</div>}
 
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         disabled={!stripe || loading || !selectedRate}
         style={{ padding: '1rem', background: 'var(--accent, #007bff)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', opacity: (!stripe || loading || !selectedRate) ? 0.5 : 1 }}
       >
@@ -219,7 +239,9 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
 
 export default function CheckoutPage() {
   const store = useStore();
+  const navigate = useNavigate();
   const [clientSecret, setClientSecret] = useState('');
+  const [paymentIntentId, setPaymentIntentId] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -234,7 +256,7 @@ export default function CheckoutPage() {
             customBuilds: store.customBuilds
           })
         });
-        
+
         const text = await res.text();
         let data;
         try {
@@ -244,13 +266,14 @@ export default function CheckoutPage() {
           setError(`Server error (${res.status}): The backend returned an invalid response.`);
           return;
         }
-        
+
         if (!res.ok) {
           setError(data.error || `Failed to initialize checkout (Status: ${res.status})`);
           return;
         }
-        
+
         setClientSecret(data.client_secret);
+        setPaymentIntentId(data.id);
       } catch (e: unknown) {
         console.error('Failed to create payment intent', e);
         setError(e instanceof Error ? e.message : 'Network error occurred while trying to initialize checkout');
@@ -264,8 +287,8 @@ export default function CheckoutPage() {
       <div className="checkout-page" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: 'white', color: 'black', borderRadius: '8px', textAlign: 'center' }}>
         <h2 style={{ color: '#d32f2f', marginBottom: '1rem' }}>Checkout Error</h2>
         <p style={{ marginBottom: '2rem' }}>{error}</p>
-        <button 
-          onClick={() => window.history.back()}
+        <button
+          onClick={() => navigate(-1)}
           style={{ padding: '0.75rem 1.5rem', background: 'var(--accent, #007bff)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
           Go Back
@@ -285,7 +308,7 @@ export default function CheckoutPage() {
     <div className="checkout-page" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: 'white', color: 'black', borderRadius: '8px' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Checkout</h2>
       <Elements stripe={stripePromise} options={options}>
-        <CheckoutForm clientSecret={clientSecret} />
+        <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
       </Elements>
     </div>
   );

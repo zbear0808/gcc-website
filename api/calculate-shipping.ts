@@ -14,9 +14,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { zip } = req.body || {};
-    if (!zip) {
-      return res.status(400).json({ error: 'Destination zip code is required' });
+    const { zip, country } = req.body || {};
+    if (!zip || !country) {
+      return res.status(400).json({ error: 'Destination zip and country are required' });
     }
 
     const parcel = calculateParcel(req.body);
@@ -24,13 +24,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const shipment = await easypost.Shipment.create({
       to_address: {
         zip,
-        country: 'US',
+        country,
       },
       from_address: {
         zip: process.env.SHIPPING_ORIGIN_ZIP || '98122',
         city: process.env.SHIPPING_ORIGIN_CITY || 'Seattle',
         state: process.env.SHIPPING_ORIGIN_STATE || 'WA',
-        country: 'US',
+        country: process.env.SHIPPING_ORIGIN_COUNTRY || 'US',
       },
       parcel: {
         weight: parcel.weight,
@@ -40,12 +40,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     });
 
-    const rates = shipment.rates.map((rate: any) => ({
-      id: rate.id,
-      service: rate.service,
-      carrier: rate.carrier,
-      rate: parseFloat(rate.rate),
-    }));
+    const rates = shipment.rates.map((rate: any) => {
+      const [dollars, cents = '0'] = String(rate.rate).split('.');
+      const rateInCents = parseInt(dollars, 10) * 100 + parseInt((cents + '00').substring(0, 2), 10);
+      return {
+        id: rate.id,
+        service: rate.service,
+        carrier: rate.carrier,
+        rateInCents,
+      };
+    });
 
     return res.status(200).json({ rates, shipmentId: shipment.id });
   } catch (error: any) {

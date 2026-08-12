@@ -63,11 +63,11 @@ describe('Pricing Logic (Pure Functions)', () => {
   describe('calculateTotal', () => {
     it('calculates the base price of a full build with no mods', () => {
       const config: ConfiguratorState = { product: 'full-build' };
-      // base(97) + indigo(5) + oem-buttons(0) + rumble-oem(3) + cable-paracord-3m(15) 
-      // + slider-pot-alps(0) + tactile-z(0) + membrane-extremerate(0) + gc-cap-okay(2)
-      // 97 + 5 + 3 + 15 + 2 = 122
+      // base(97) + indigo(5) + worn(-4) + oem-buttons(0) + rumble-oem(3) + cable-paracord-3m(15) 
+      // + slider-pot-alps(0) + tactile-z(0) + membrane-extremerate(0) + gc-cap-poor(0) + triggerPlugs(0)
+      // 97 + 5 - 4 + 3 + 15 = 116
       const total = calculateTotal(config);
-      expect(total).toBe(122);
+      expect(total).toBe(116);
     });
 
     it('calculates the correct total with mods, addons, and premiums', () => {
