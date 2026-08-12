@@ -10,7 +10,7 @@ console.log("Keys in process.env:", Object.keys(process.env).filter(k => k.inclu
 console.log("STRIPE_SECRET_KEY value:", process.env.STRIPE_SECRET_KEY ? "EXISTS" : "MISSING");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
-  apiVersion: '2023-10-16' as any,
+  apiVersion: '2023-10-16',
 });
 
 const redis = process.env.KV_REST_API_URL
