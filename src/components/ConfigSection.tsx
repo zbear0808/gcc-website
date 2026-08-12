@@ -2,6 +2,8 @@ import React from 'react';
 import type { CatalogItem, ConfiguratorState } from '@shared/types';
 import { formatPrice } from '@shared/pricing';
 import Tooltip from '@/components/Tooltip';
+import { ExternalLinkIcon } from '@/components/Icons';
+import { getCategoryIdForItem } from '@shared/catalog';
 
 interface Group {
   groupTitle: string;
@@ -27,6 +29,7 @@ interface ConfigSectionProps {
   hideStock?: boolean;
   isToggleable?: boolean;
   priceKey?: 'price' | 'individualPrice';
+  showExternalLinks?: boolean;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -48,6 +51,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   hideStock = false,
   isToggleable = false,
   priceKey = 'price',
+  showExternalLinks = false,
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -91,29 +95,63 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
       priceClass = ' price-increase';
     }
 
+    const itemCategoryId = showExternalLinks ? getCategoryIdForItem(item.id) : undefined;
+
     return (
       <Tooltip key={item.id} content={disabledReason}>
-        <button
-          className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''} ${buttonSize === 'small' ? 'small-btn' : ''} ${isToggleable ? 'toggleable-btn' : ''}`}
-          onClick={() => !disabled && onSelect(item.id)}
-          disabled={disabled}
-        >
-          <div className="item-label">
-            {item.label}
-            {priceText && <span className={`item-price${priceClass}`}>{priceText}</span>}
-          </div>
-          
-          {item.description && isActive && descriptionPosition === 'inside' && (
-            <div className="item-description">{item.description}</div>
-          )}
-          
-          {!hideStock && (
-            <div className="item-meta">
-              <span className="stock-count">{stock} in stock</span>
-              {outOfStock && <span className="out-of-stock-badge">Out of Stock</span>}
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <button
+            className={`config-item-btn ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''} ${variant === 'sub' ? 'sub-btn' : ''} ${buttonSize === 'small' ? 'small-btn' : ''} ${isToggleable ? 'toggleable-btn' : ''}`}
+            onClick={() => !disabled && onSelect(item.id)}
+            disabled={disabled}
+            style={{ flex: 1, paddingRight: itemCategoryId ? '2.5rem' : undefined }}
+          >
+            <div className="item-label">
+              {item.label}
+              {priceText && <span className={`item-price${priceClass}`}>{priceText}</span>}
             </div>
+            
+            {item.description && isActive && descriptionPosition === 'inside' && (
+              <div className="item-description">{item.description}</div>
+            )}
+            
+            {!hideStock && (
+              <div className="item-meta">
+                <span className="stock-count">{stock} in stock</span>
+                {outOfStock && <span className="out-of-stock-badge">Out of Stock</span>}
+              </div>
+            )}
+          </button>
+          {itemCategoryId && (
+            <a
+              href={`/product/${itemCategoryId}?selected=${item.id}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'absolute',
+                top: '0.5rem',
+                right: '0.5rem',
+                color: 'var(--color-gray-hover)',
+                opacity: 0.6,
+                transition: 'opacity 0.2s, color 0.2s',
+                display: 'flex',
+                zIndex: 2,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.color = 'var(--color-white)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.6';
+                e.currentTarget.style.color = 'var(--color-gray-hover)';
+              }}
+              title="View Part Details"
+            >
+              <ExternalLinkIcon width="16" height="16" />
+            </a>
           )}
-        </button>
+        </div>
       </Tooltip>
     );
   };

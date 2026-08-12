@@ -304,3 +304,7 @@ export const fullCatalog: CatalogCategory[] = [
     subtypes: [part],
   })),
 ];
+
+export function getCategoryIdForItem(itemId: string): string | undefined {
+  return fullCatalog.find((c) => c.subtypes.some((s) => s.id === itemId))?.id;
+}

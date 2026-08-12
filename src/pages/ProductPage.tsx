@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import VariantSelector from '@/components/VariantSelector';
@@ -10,10 +10,14 @@ import '@/assets/styles/pages/product.css';
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const store = useStore();
   
   const category = fullCatalog.find(c => c.id === id);
-  const [selectedItem, setSelectedItem] = useState(category?.subtypes[0]?.id || '');
+  const searchParams = new URLSearchParams(location.search);
+  const preselectedId = searchParams.get('selected');
+  const initialItem = category?.subtypes.find(i => i.id === preselectedId)?.id || category?.subtypes[0]?.id || '';
+  const [selectedItem, setSelectedItem] = useState(initialItem);
   const [quantityToAdd, setQuantityToAdd] = useState(1);
   
   if (!category) return <div>Product not found</div>;

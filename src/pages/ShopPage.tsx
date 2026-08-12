@@ -94,6 +94,7 @@ export default function ShopPage() {
                   onChange={store.setShell}
                   basePrice={getItemPrice(config.shell ?? '')}
                   getStock={(id) => store.inventory[id] || 0}
+                  showExternalLinks={true}
                 />
 
                 {['indigo', 'black', 'platinum'].includes(config.shell ?? '') && (
@@ -118,6 +119,7 @@ export default function ShopPage() {
                   onChange={store.setButtons}
                   basePrice={getItemPrice(config.buttons ?? '')}
                   getStock={(id) => store.inventory[id] || 0}
+                  showExternalLinks={true}
                 />
 
                 <ConfigSection
@@ -128,6 +130,7 @@ export default function ShopPage() {
                   basePrice={getItemPrice(config.membrane ?? '')}
                   descriptionPosition="outside"
                   buttonSize="small"
+                  showExternalLinks={true}
                 />
               </>
             )}
@@ -141,6 +144,7 @@ export default function ShopPage() {
               basePrice={getItemPrice(config.cable ?? '')}
               descriptionPosition="outside"
               buttonSize="small"
+              showExternalLinks={true}
             />
 
             {config.cable === 'cable-oem' && (
@@ -158,6 +162,7 @@ export default function ShopPage() {
               basePrice={getItemPrice(config.rumble ?? '')}
               descriptionPosition="none"
               buttonSize="small"
+              showExternalLinks={true}
             />
 
             <ConfigSection
@@ -168,6 +173,7 @@ export default function ShopPage() {
               basePrice={getItemPrice(config.sliderPots ?? '')}
               descriptionPosition="outside"
               buttonSize="small"
+              showExternalLinks={true}
             />
             <ConfigSection
               title="Z Button"
@@ -177,6 +183,7 @@ export default function ShopPage() {
               basePrice={getItemPrice(config.zButton ?? '')}
               descriptionPosition="none"
               buttonSize="small"
+              showExternalLinks={true}
             />
             {isFullBuild && (
               <VariantSelector
@@ -187,6 +194,7 @@ export default function ShopPage() {
                 onChange={store.setStickCap}
                 basePrice={getItemPrice(config.stickCap ?? '')}
                 getStock={(id) => store.inventory[id] || 0}
+                showExternalLinks={true}
               />
             )}
 
@@ -217,6 +225,7 @@ export default function ShopPage() {
                   }}
                   basePrice={0}
                   hideStock={true}
+                  showExternalLinks={true}
                 />
 
                 {(config.notchesFirefox || config.notchesWavedash) && (
@@ -228,6 +237,7 @@ export default function ShopPage() {
                     basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
                     variant="sub"
                     hideStock={true}
+                    showExternalLinks={true}
                   />
                 )}
 
@@ -254,6 +264,7 @@ export default function ShopPage() {
                     });
                   }}
                   basePrice={0}
+                  showExternalLinks={true}
                 />
 
                 {config.triggerPlugs && (
@@ -265,6 +276,7 @@ export default function ShopPage() {
                       onSelect={(id) => store.setTriggerSide(id as import('@shared/types').TriggerSide)}
                       basePrice={0}
                       variant="sub"
+                      showExternalLinks={true}
                     />
                     <ConfigSection
                       title="Trigger Plug Length"
@@ -273,6 +285,7 @@ export default function ShopPage() {
                       onSelect={(id) => store.setTriggerLength(id as import('@shared/types').TriggerPlugLength)}
                       basePrice={0}
                       variant="sub"
+                      showExternalLinks={true}
                     />
                   </>
                 )}
@@ -285,6 +298,7 @@ export default function ShopPage() {
                     onSelect={(id) => store.setkailhChocoSide(id as import('@shared/types').TriggerSide)}
                     basePrice={0}
                     variant="sub"
+                    showExternalLinks={true}
                   />
                 )}
 
@@ -301,6 +315,7 @@ export default function ShopPage() {
                   }}
                   basePrice={0}
                   hideStock={true}
+                  showExternalLinks={true}
                 />
 
                 <ConfigSection
@@ -317,6 +332,7 @@ export default function ShopPage() {
                   }}
                   basePrice={0}
                   hideStock={true}
+                  showExternalLinks={true}
                 />
               </>
             )}

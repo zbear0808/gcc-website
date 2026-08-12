@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import type { CatalogItem } from '@shared/types';
 import { formatPrice } from '@shared/pricing';
 import Tooltip from '@/components/Tooltip';
+import { ExternalLinkIcon } from '@/components/Icons';
+import { getCategoryIdForItem } from '@shared/catalog';
 
 export interface Facet<T> {
   key: string;
@@ -20,6 +22,7 @@ interface VariantSelectorProps<T extends CatalogItem> {
   isOutOfStock?: (id: string) => boolean;
   getStock?: (id: string) => number;
   priceKey?: 'price' | 'individualPrice';
+  showExternalLinks?: boolean;
 }
 
 export default function VariantSelector<T extends CatalogItem>({
@@ -33,6 +36,7 @@ export default function VariantSelector<T extends CatalogItem>({
   isOutOfStock = () => false,
   getStock,
   priceKey = 'price',
+  showExternalLinks = false,
 }: VariantSelectorProps<T>) {
   
   const selectedItem = useMemo(() => items.find((i) => i.id === value), [items, value]);
@@ -209,33 +213,68 @@ export default function VariantSelector<T extends CatalogItem>({
                     }
                   }
 
+                  const itemCategoryId = showExternalLinks && isLeaf ? getCategoryIdForItem(exactMatchingItems[0].id) : undefined;
+                  const itemId = showExternalLinks && isLeaf ? exactMatchingItems[0].id : undefined;
+
                   return (
                     <Tooltip key={val} content={disabledReason}>
-                      <button
-                        className={`config-item-btn ${isActive ? 'active' : ''} ${!isValidAtAll ? 'disabled' : ''}`}
-                        onClick={() => {
-                          if (isValidAtAll) handleFacetSelect(facet.key, val);
-                        }}
-                        disabled={!isValidAtAll}
-                        style={{ padding: '0.5rem 1rem', minHeight: 'auto', flex: '0 0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center' }}
-                      >
-                        <div className="item-label" style={{ fontSize: '0.95rem' }}>
-                          {val}
-                          {priceFragments && (
-                            <span className="item-price" style={{ marginLeft: '0.5rem' }}>
-                              {priceFragments.map((frag, idx) => (
-                                <span key={idx} className={frag.className}>{frag.text}</span>
-                              ))}
-                            </span>
-                          )}
-                        </div>
-                        {stock !== undefined && (
-                          <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
-                            <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
-                            {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
+                      <div style={{ position: 'relative', display: 'flex' }}>
+                        <button
+                          className={`config-item-btn ${isActive ? 'active' : ''} ${!isValidAtAll ? 'disabled' : ''}`}
+                          onClick={() => {
+                            if (isValidAtAll) handleFacetSelect(facet.key, val);
+                          }}
+                          disabled={!isValidAtAll}
+                          style={{ padding: '0.5rem 1rem', minHeight: 'auto', flex: '0 0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center', paddingRight: itemCategoryId ? '2.5rem' : '1rem' }}
+                        >
+                          <div className="item-label" style={{ fontSize: '0.95rem' }}>
+                            {val}
+                            {priceFragments && (
+                              <span className="item-price" style={{ marginLeft: '0.5rem' }}>
+                                {priceFragments.map((frag, idx) => (
+                                  <span key={idx} className={frag.className}>{frag.text}</span>
+                                ))}
+                              </span>
+                            )}
                           </div>
+                          {stock !== undefined && (
+                            <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
+                              <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
+                              {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
+                            </div>
+                          )}
+                        </button>
+                        {itemCategoryId && (
+                          <a
+                            href={`/product/${itemCategoryId}?selected=${itemId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              position: 'absolute',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              right: '0.5rem',
+                              color: 'var(--color-gray-hover)',
+                              opacity: 0.6,
+                              transition: 'opacity 0.2s, color 0.2s',
+                              display: 'flex',
+                              zIndex: 2,
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.opacity = '1';
+                              e.currentTarget.style.color = 'var(--color-white)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.opacity = '0.6';
+                              e.currentTarget.style.color = 'var(--color-gray-hover)';
+                            }}
+                            title="View Part Details"
+                          >
+                            <ExternalLinkIcon width="16" height="16" />
+                          </a>
                         )}
-                      </button>
+                      </div>
                     </Tooltip>
                   );
                 })}
