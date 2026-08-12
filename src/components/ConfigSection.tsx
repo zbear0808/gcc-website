@@ -25,6 +25,7 @@ interface ConfigSectionProps {
   buttonSize?: 'default' | 'small';
   hideStock?: boolean;
   isToggleable?: boolean;
+  priceKey?: 'price' | 'individualPrice';
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
@@ -45,6 +46,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   buttonSize = 'default',
   hideStock = false,
   isToggleable = false,
+  priceKey = 'price',
 }) => {
   const renderItem = (item: CatalogItem) => {
     const outOfStock = isOutOfStock(item.id);
@@ -61,9 +63,12 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
       isActive = config[category] === item.id;
     }
 
-    let diff = item.price;
+    const p = priceKey === 'individualPrice' ? (item as any).individualPrice ?? item.price : item.price;
+    const itemPrice = typeof p === 'number' ? p : 0;
+
+    let diff = itemPrice;
     if (basePrice !== undefined) {
-      diff = item.price - basePrice;
+      diff = itemPrice - basePrice;
     }
 
     let priceText = '';
@@ -77,8 +82,8 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     } else if (diff < 0) {
       priceText = ` -$${formatPrice(Math.abs(diff))}`;
       priceClass = ' price-decrease';
-    } else if (basePrice === undefined && item.price > 0) {
-      priceText = ` +$${formatPrice(item.price)}`;
+    } else if (basePrice === undefined && itemPrice > 0) {
+      priceText = ` +$${formatPrice(itemPrice)}`;
       priceClass = ' price-increase';
     }
 

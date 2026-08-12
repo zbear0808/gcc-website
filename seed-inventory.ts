@@ -62,6 +62,10 @@ async function seedInventory() {
       quantity = 4;
     } else if (item.id === 'wii-cap-black-okay' || item.id === 'wii-cap-black-poor') {
       quantity = 0;
+    } else if (item.id === 'trigger-paddle-star-elecrow') {
+      quantity = 50;
+    } else if (item.id === 'trigger-paddle-oem') {
+      quantity = 45;
     } else if (stickCapIds.has(item.id)) {
       // General rule for stick caps that didn't match the specific cases above
       quantity = 10;

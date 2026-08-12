@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
+import VariantSelector from '@/components/VariantSelector';
+import ConfigSection from '@/components/ConfigSection';
+import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
 import '@/assets/styles/pages/product.css';
 
 export default function ProductPage() {
@@ -35,19 +38,51 @@ export default function ProductPage() {
           <p>{category.description}</p>
           
           {category.subtypes.length > 1 && (
-            <select 
-              value={selectedItem} 
-              onChange={(e) => setSelectedItem(e.target.value)}
-            >
-              {category.subtypes.map(subItem => {
-                const displayPrice = subItem.individualPrice ?? subItem.price ?? 0;
-                return (
-                  <option key={subItem.id} value={subItem.id}>
-                    {subItem.label} - ${displayPrice}
-                  </option>
-                );
-              })}
-            </select>
+            category.id === 'shells' ? (
+              <VariantSelector
+                title="Options"
+                items={category.subtypes as any[]}
+                facets={shellFacets}
+                value={selectedItem}
+                onChange={setSelectedItem}
+                basePrice={item.individualPrice ?? item.price ?? 0}
+                priceKey="individualPrice"
+                getStock={(id) => store.inventory[id] || 0}
+              />
+            ) : category.id === 'buttons' ? (
+              <VariantSelector
+                title="Options"
+                items={category.subtypes as any[]}
+                facets={buttonFacets}
+                value={selectedItem}
+                onChange={setSelectedItem}
+                basePrice={item.individualPrice ?? item.price ?? 0}
+                priceKey="individualPrice"
+                getStock={(id) => store.inventory[id] || 0}
+              />
+            ) : category.id === 'stick-caps' ? (
+              <VariantSelector
+                title="Options"
+                items={category.subtypes as any[]}
+                facets={stickCapFacets}
+                value={selectedItem}
+                onChange={setSelectedItem}
+                basePrice={item.individualPrice ?? item.price ?? 0}
+                priceKey="individualPrice"
+                getStock={(id) => store.inventory[id] || 0}
+              />
+            ) : (
+              <ConfigSection
+                title="Options"
+                items={category.subtypes as any[]}
+                selectedId={selectedItem}
+                onSelect={setSelectedItem}
+                basePrice={item.individualPrice ?? item.price ?? 0}
+                priceKey="individualPrice"
+                getStock={(id) => store.inventory[id] || 0}
+                descriptionPosition="none"
+              />
+            )
           )}
 
           <div className="price">${item.individualPrice ?? item.price ?? 0}</div>

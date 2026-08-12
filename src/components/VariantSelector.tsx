@@ -18,6 +18,7 @@ interface VariantSelectorProps<T extends CatalogItem> {
   disabledFn?: (item: T) => boolean;
   isOutOfStock?: (id: string) => boolean;
   getStock?: (id: string) => number;
+  priceKey?: 'price' | 'individualPrice';
 }
 
 export default function VariantSelector<T extends CatalogItem>({
@@ -30,6 +31,7 @@ export default function VariantSelector<T extends CatalogItem>({
   disabledFn = () => false,
   isOutOfStock = () => false,
   getStock,
+  priceKey = 'price',
 }: VariantSelectorProps<T>) {
   
   const selectedItem = useMemo(() => items.find((i) => i.id === value), [items, value]);
@@ -110,7 +112,10 @@ export default function VariantSelector<T extends CatalogItem>({
 
     if (matchingItems.length === 0) return null;
 
-    const prices = matchingItems.map(i => i.price);
+    const prices = matchingItems.map(i => {
+      const p = priceKey === 'individualPrice' ? (i as any).individualPrice ?? i.price : i.price;
+      return typeof p === 'number' ? p : 0;
+    });
     const minDiff = Math.min(...prices) - basePrice;
     const maxDiff = Math.max(...prices) - basePrice;
 
