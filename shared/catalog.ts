@@ -59,7 +59,7 @@ export const mods: ModOption[] = [
 
 export const addons: AddonOption[] = [
   { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png', requiresInventory: false },
-  { id: 'kailhChoco', label: 'kailh Choco Switch Mechanical Trigger', price: 0, image: '/images/addons/kailh-choco.png' },
+  { id: 'kailhChoco', label: 'kailh Choco Switch Mechanical Trigger', image: '/images/addons/kailh-choco.png' },
   { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png', requiresInventory: false },
 ];
 

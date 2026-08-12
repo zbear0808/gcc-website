@@ -1,30 +1,24 @@
-// ==================
 // Item Category Types
-// ==================
 
 export type ShellType = 'oem' | 'extremerate';
 export type ButtonType = 'oem' | 'extremerate' | 'other-3rd-party';
 export type TriggerSide = 'l' | 'r' | 'both';
 export type TriggerPlugLength = 'tall' | 'short';
 
-// ==================
 // Base Item Interface
-// ==================
 
 export interface CatalogItem {
   id: string;
   label: string;
   description?: string;
-  price: number;
+  price?: number;
   individualPrice?: number;
   image?: string;
   weight?: number; // Weight in ounces
   requiresInventory?: boolean;
 }
 
-// ==================
 // Shipping Types
-// ==================
 
 export interface ParcelDimensions {
   weight: number; // Total weight in ounces
@@ -33,9 +27,7 @@ export interface ParcelDimensions {
   height: number;
 }
 
-// ==================
 // Specific Item Types
-// ==================
 
 export interface Product extends CatalogItem {
   // Products always have description and image
@@ -75,9 +67,7 @@ export interface AddonOption extends CatalogItem {
 
 export type PartItem = CatalogItem;
 
-// ==================
 // Catalog Category
-// ==================
 
 export interface CatalogCategory {
   id: string;
@@ -87,9 +77,7 @@ export interface CatalogCategory {
   subtypes: CatalogItem[];
 }
 
-// ==================
 // Configurator State
-// ==================
 
 export interface ConfiguratorState {
   product?: string;
@@ -114,16 +102,12 @@ export interface ConfiguratorState {
   triggerPlugLength?: TriggerPlugLength;
 }
 
-// ==================
 // Cart & Inventory
-// ==================
 
 export type Cart = Record<string, number>;
 export type Inventory = Record<string, number>;
 
-// ==================
 // Stripe Line Item
-// ==================
 
 export interface StripeLineItem {
   price_data: {
@@ -134,9 +118,7 @@ export interface StripeLineItem {
   quantity: number;
 }
 
-// ==================
 // API Request/Response
-// ==================
 
 export interface CheckoutPayload {
   config?: ConfiguratorState;
@@ -165,9 +147,7 @@ export interface InventoryResponse {
   [itemId: string]: number;
 }
 
-// ==================
 // Config Section Props
-// ==================
 
 export interface ConfigSectionGroup {
   groupTitle: string;

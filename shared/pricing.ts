@@ -7,9 +7,7 @@ import {
   individualItems,
 } from './catalog';
 
-// ==================
 // Item Lookup
-// ==================
 
 const itemLookup = new Map<string, CatalogItem>(
   allItems.map((item) => [item.id, item])
@@ -31,9 +29,7 @@ export function productById(productId: string): CatalogItem | undefined {
   return getItem(productId);
 }
 
-// ==================
 // Product Type Predicates
-// ==================
 
 export function isFullBuild(config: ConfiguratorState): boolean {
   return config.product === 'full-build';
@@ -47,9 +43,7 @@ export function isCustomizable(config: ConfiguratorState): boolean {
   return isFullBuild(config) || isDiyKit(config);
 }
 
-// ==================
 // Config Sanitization
-// ==================
 
 export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
   let result = { ...config };
@@ -94,9 +88,7 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
   return result;
 }
 
-// ==================
 // Price Calculation
-// ==================
 
 export function calculateTotal(config: ConfiguratorState): number {
   const sanitized = sanitizeConfig(config);
@@ -155,9 +147,7 @@ export function calculateTotal(config: ConfiguratorState): number {
   return base;
 }
 
-// ==================
 // Stripe Line Items
-// ==================
 
 export function createStripeLineItem(
   item: CatalogItem,
@@ -255,9 +245,7 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
   return items;
 }
 
-// ==================
 // Individual Items Lookup
-// ==================
 
 const individualItemLookup = new Map<string, CatalogItem>(
   individualItems.map((item) => [item.id, item])
@@ -288,9 +276,7 @@ export function getPartsLineItems(cart: Record<string, number>): StripeLineItem[
   return items;
 }
 
-// ==================
 // Inventory Helpers (used by API)
-// ==================
 
 export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
   const items: string[] = [];

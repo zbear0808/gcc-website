@@ -58,9 +58,7 @@ export const useStore = create<AppStore>()(
       cart: {},
       inventory: {},
 
-      // ==================
       // Config Actions
-      // ==================
 
       setConfig: (updater) =>
         set((state) => ({ config: sanitizeConfig(updater(state.config)) })),
@@ -133,9 +131,7 @@ export const useStore = create<AppStore>()(
           config: sanitizeConfig({ ...state.config, kailhChocoSide: side }),
         })),
 
-      // ==================
       // Cart Actions
-      // ==================
 
       addCustomBuild: (config) =>
         set((state) => ({ customBuilds: [...state.customBuilds, config] })),
@@ -165,9 +161,7 @@ export const useStore = create<AppStore>()(
 
       clearCart: () => set({ cart: {}, customBuilds: [], config: sanitizeConfig({ product: 'full-build' }) }),
 
-      // ==================
       // Inventory Actions
-      // ==================
 
       setInventory: (inventory) => set({ inventory }),
 
@@ -197,9 +191,7 @@ export const useStore = create<AppStore>()(
         }
       },
 
-      // ==================
       // Helpers
-      // ==================
 
       getStock: (itemId) => get().inventory[itemId] ?? 0,
 
