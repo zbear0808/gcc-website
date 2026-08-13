@@ -234,31 +234,7 @@
   margin: 0;
 }
 
-.checkout-btn {
-  width: 100%;
-  padding: 1.25rem;
-  background-color: var(--color-white);
-  color: var(--color-black);
-  border: none;
-  border-radius: var(--border-radius-md);
-  font-family: var(--font-ndot);
-  font-size: 1.25rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
 
-.checkout-btn:hover:not(:disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
-}
-
-.checkout-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .mods-section,
 .triggers-section {

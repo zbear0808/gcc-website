@@ -84,13 +84,13 @@ export default function CartPage() {
 
   return (
     <div className="cart-page">
-      <h2>Your Cart</h2>
+      <h2 className="heading-ndot">Your Cart</h2>
       <div className="cart-items">
         {store.customBuilds?.map((build, idx) => {
           const product = getItem(build.product ?? '');
           const buildPrice = calculateTotal(build);
           return (
-            <div key={`build-${idx}`} className="cart-item">
+            <div key={`build-${idx}`} className="cart-item card-base">
               <div className="cart-item-info">
                 <h3>{product?.label ?? 'Custom Build'}</h3>
                 <p>Configured {build.product === 'full-build' ? 'Controller' : 'Kit'}</p>
@@ -110,7 +110,7 @@ export default function CartPage() {
           );
         })}
         {cartItems.map(item => (
-          <div key={item.id} className="cart-item">
+          <div key={item.id} className="cart-item card-base">
             <div className="cart-item-info">
               <h3>{item.label}</h3>
               <p>${item.displayPrice}</p>

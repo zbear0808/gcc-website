@@ -63,7 +63,7 @@ export default function ProductPage() {
         <BackIcon className="icon" />
         Back to Parts
       </button>
-      <div className="product-details">
+      <div className="product-details card-base">
         <div className="product-gallery">
           <div className="main-image-container">
             <img src={activeImage} alt={item.label} />
@@ -137,16 +137,16 @@ export default function ProductPage() {
           <div className="price">${item.individualPrice ?? item.price ?? 0}</div>
           <div className="stock">
             {stock <= 0 ? (
-              <span className="out-of-stock">Out of stock</span>
+              <span className="text-error">Out of stock</span>
             ) : stock <= 10 ? (
-              <span className="low-stock">Low stock</span>
+              <span className="text-warning">Low stock</span>
             ) : (
               <span className="stock-count">In stock</span>
             )}
           </div>
 
           <div className="cart-controls-container">
-            <div className="cart-controls">
+            <div className="cart-controls cart-controls-large">
               <button 
                 onClick={() => setQuantityToAdd(q => Math.max(1, q - 1))} 
                 disabled={quantityToAdd <= 1}

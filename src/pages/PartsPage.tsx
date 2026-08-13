@@ -11,6 +11,7 @@ const CollapsibleSection = ({ title, children }: { title: string; children: Reac
   return (
     <div className="collapsible-section">
       <h2
+        className="heading-ndot"
         onClick={() => setIsOpen(!isOpen)}
         style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', userSelect: 'none' }}
       >
@@ -61,16 +62,16 @@ export default function PartsPage() {
     const totalStock = category.subtypes.reduce((sum, item) => sum + (store.inventory[item.id] || 0), 0);
 
     return (
-      <div key={category.id} className="catalog-card" onClick={() => navigate(`/product/${category.id}`)}>
+      <div key={category.id} className="catalog-card card-base" onClick={() => navigate(`/product/${category.id}`)}>
         <img src={category.image} alt={category.label} />
         <div className="catalog-info">
           <h3>{category.label}</h3>
           <div className="catalog-info-bottom">
             <p className="price">{priceDisplay}</p>
             {totalStock <= 0 ? (
-              <span className="out-of-stock">Out of stock</span>
+              <span className="text-error">Out of stock</span>
             ) : totalStock <= 10 ? (
-              <span className="low-stock">Low stock</span>
+              <span className="text-warning">Low stock</span>
             ) : (
               <span className="stock-count">In stock</span>
             )}
@@ -110,7 +111,7 @@ export default function PartsPage() {
 
   return (
     <div className="parts-page">
-      <h1>Parts & Components</h1>
+      <h1 className="heading-ndot">Parts Catalog</h1>
 
       <CollapsibleSection title="Cosmetic Parts">
         {shellsAndButtons.map(renderCategory)}

@@ -343,7 +343,7 @@ export default function ShopPage() {
           </div>
 
           <button
-            className="checkout-btn"
+            className="checkout-btn checkout-btn-alt"
             onClick={handleAddToCart}
           >
             Add to Cart

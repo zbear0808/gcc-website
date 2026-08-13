@@ -33,7 +33,7 @@ export default function FaqPage() {
 
   return (
     <div className="faq-page">
-      <h1>Frequently Asked Questions</h1>
+      <h1 className="heading-ndot">Frequently Asked Questions</h1>
       <div className="faq-list">
         {faqs.map((faq, idx) => (
           <div key={idx} className={`faq-item ${openIdx === idx ? 'open' : ''}`}>
