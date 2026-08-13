@@ -7,7 +7,7 @@ import '@/assets/styles/pages/cart.css';
 import { TrashIcon } from '@/components/Icons';
 import type { ConfiguratorState } from '@shared/types';
 
-const renderBuildOptions = (build: ConfiguratorState) => {
+export const renderBuildOptions = (build: ConfiguratorState) => {
   const options = [];
 
   if (build.shell) options.push(`Shell: ${getItem(build.shell)?.label || build.shell}`);

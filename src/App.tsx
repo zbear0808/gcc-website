@@ -13,37 +13,34 @@ import CartPage from '@/pages/CartPage';
 import AdminPage from '@/pages/AdminPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 
+/** Map a route pathname to the appropriate page title. */
+export function getRouteTitle(pathname: string): string {
+  switch (pathname) {
+    case '/':
+      return 'Zu Builds | Builds';
+    case '/parts':
+      return 'Zu Builds | Parts';
+    case '/faq':
+      return 'Zu Builds | FAQ';
+    case '/cart':
+      return 'Zu Builds | Cart';
+    case '/checkout':
+      return 'Zu Builds | Checkout';
+    case '/admin':
+      return 'Zu Builds | Admin';
+    default:
+      if (pathname.startsWith('/product/')) {
+        return 'Zu Builds | Product';
+      }
+      return 'Zu Builds';
+  }
+}
+
 const RouteTitleHandler = () => {
   const location = useLocation();
 
   useEffect(() => {
-    let title = 'Zu Builds';
-    switch (location.pathname) {
-      case '/':
-        title = 'Zu Builds | Builds';
-        break;
-      case '/parts':
-        title = 'Zu Builds | Parts';
-        break;
-      case '/faq':
-        title = 'Zu Builds | FAQ';
-        break;
-      case '/cart':
-        title = 'Zu Builds | Cart';
-        break;
-      case '/checkout':
-        title = 'Zu Builds | Checkout';
-        break;
-      case '/admin':
-        title = 'Zu Builds | Admin';
-        break;
-      default:
-        if (location.pathname.startsWith('/product/')) {
-          title = 'Zu Builds | Product';
-        }
-        break;
-    }
-    document.title = title;
+    document.title = getRouteTitle(location.pathname);
   }, [location.pathname]);
 
   return null;

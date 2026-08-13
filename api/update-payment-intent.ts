@@ -18,7 +18,7 @@ const redis = process.env.KV_REST_API_URL
   : null;
 
 /** Convert a dollar string like "5.49" to integer cents (549) without floating-point errors. */
-function dollarsToCents(dollarStr: string): number {
+export function dollarsToCents(dollarStr: string): number {
   const [dollars, cents = '0'] = dollarStr.split('.');
   const paddedCents = (cents + '00').substring(0, 2);
   return parseInt(dollars, 10) * 100 + parseInt(paddedCents, 10);

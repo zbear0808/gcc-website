@@ -25,6 +25,121 @@ interface VariantSelectorProps<T extends CatalogItem> {
   showExternalLinks?: boolean;
 }
 
+/** Find the best variant item matching a newly selected facet, maximizing overlap with existing selections. */
+export function findBestVariantMatch<T extends CatalogItem>({
+  items,
+  facets,
+  facetKey,
+  facetValue,
+  activeFacets,
+  disabledFn = () => false,
+  isOutOfStock = () => false,
+}: {
+  items: T[];
+  facets: Facet<T>[];
+  facetKey: string;
+  facetValue: string;
+  activeFacets: Record<string, string>;
+  disabledFn?: (item: T) => boolean | string;
+  isOutOfStock?: (id: string) => boolean;
+}): T | null {
+  const newFacets = { ...activeFacets, [facetKey]: facetValue };
+  let bestItem: T | null = null;
+  let bestScore = -1;
+
+  for (const item of items) {
+    if (disabledFn(item) || isOutOfStock(item.id)) continue;
+    if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) continue;
+
+    let score = 0;
+    facets.forEach((f) => {
+      if (f.key !== facetKey) {
+        const itemVal = f.getValue(item);
+        if (itemVal && itemVal === newFacets[f.key]) {
+          score += 1;
+        }
+      }
+    });
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestItem = item;
+    }
+  }
+
+  return bestItem;
+}
+
+export type PriceFragment = { text: string; className: string };
+
+/** Calculate the price display fragments for a given facet option relative to a base price. */
+export function getPriceDisplay<T extends CatalogItem>({
+  items,
+  facets,
+  facetKey,
+  facetValue,
+  activeFacets,
+  basePrice,
+  priceKey = 'price',
+  disabledFn = () => false,
+  isOutOfStock = () => false,
+}: {
+  items: T[];
+  facets: Facet<T>[];
+  facetKey: string;
+  facetValue: string;
+  activeFacets: Record<string, string>;
+  basePrice: number;
+  priceKey?: 'price' | 'individualPrice';
+  disabledFn?: (item: T) => boolean | string;
+  isOutOfStock?: (id: string) => boolean;
+}): PriceFragment[] | null {
+  let matchingItems = items.filter(item => {
+    if (disabledFn(item) || isOutOfStock(item.id)) return false;
+    if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) return false;
+    for (const f of facets) {
+      if (f.key !== facetKey && activeFacets[f.key]) {
+        const val = f.getValue(item);
+        if (val && val !== activeFacets[f.key]) return false;
+      }
+    }
+    return true;
+  });
+
+  if (matchingItems.length === 0) {
+    matchingItems = items.filter(item =>
+      !disabledFn(item) && !isOutOfStock(item.id) && facets.find(f => f.key === facetKey)?.getValue(item) === facetValue
+    );
+  }
+
+  if (matchingItems.length === 0) return null;
+
+  const prices = matchingItems.map(i => {
+    const p = priceKey === 'individualPrice' ? i.individualPrice ?? i.price : i.price;
+    return typeof p === 'number' ? p : 0;
+  });
+  const minDiff = Math.min(...prices) - basePrice;
+  const maxDiff = Math.max(...prices) - basePrice;
+
+  if (minDiff === maxDiff) {
+    if (minDiff === 0) return null;
+    return [{
+      text: minDiff > 0 ? `+$${formatPrice(minDiff)}` : `-$${formatPrice(Math.abs(minDiff))}`,
+      className: minDiff > 0 ? 'price-increase' : 'price-decrease'
+    }];
+  } else {
+    const minSign = minDiff > 0 ? '+' : minDiff < 0 ? '-' : '';
+    const maxSign = maxDiff > 0 ? '+' : maxDiff < 0 ? '-' : '';
+    const minVal = formatPrice(Math.abs(minDiff));
+    const maxVal = formatPrice(Math.abs(maxDiff));
+    return [
+      { text: `$${minSign}${minVal}`, className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : '' },
+      { text: ' to ', className: '' },
+      { text: `${maxSign}${maxVal}`, className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : '' }
+    ];
+  }
+}
+
 export default function VariantSelector<T extends CatalogItem>({
   title,
   items,
@@ -55,102 +170,35 @@ export default function VariantSelector<T extends CatalogItem>({
   }, [selectedItem, facets]);
 
   const handleFacetSelect = (facetKey: string, facetValue: string) => {
-    const newFacets = { ...activeFacets, [facetKey]: facetValue };
-    
-    // Find the best fallback item that matches the newly selected facet
-    let bestItem: T | null = null;
-    let bestScore = -1;
-    
-    for (const item of items) {
-      if (disabledFn(item) || isOutOfStock(item.id)) continue;
-      
-      // Must match the newly clicked facet exactly
-      if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) {
-         continue;
-      }
-
-      let score = 0;
-      facets.forEach((f) => {
-        if (f.key !== facetKey) {
-          const itemVal = f.getValue(item);
-          // If the item shares the same target facet value, boost its score
-          if (itemVal && itemVal === newFacets[f.key]) {
-            score += 1;
-          }
-        }
-      });
-      
-      if (score > bestScore) {
-        bestScore = score;
-        bestItem = item;
-      }
-    }
+    const bestItem = findBestVariantMatch({
+      items,
+      facets,
+      facetKey,
+      facetValue,
+      activeFacets,
+      disabledFn,
+      isOutOfStock,
+    });
 
     if (bestItem) {
       onChange(bestItem.id);
     } else {
-      setActiveFacets(newFacets);
+      setActiveFacets({ ...activeFacets, [facetKey]: facetValue });
     }
   };
 
-  type PriceFragment = { text: string; className: string };
-
-  const getPriceDisplay = (facetKey: string, facetValue: string): PriceFragment[] | null => {
-    let matchingItems = items.filter(item => {
-      if (disabledFn(item) || isOutOfStock(item.id)) return false;
-      if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) return false;
-      
-      for (const f of facets) {
-        if (f.key !== facetKey && activeFacets[f.key]) {
-           const val = f.getValue(item);
-           if (val && val !== activeFacets[f.key]) return false;
-        }
-      }
-      return true;
+  const getPriceDisplayLocal = (facetKey: string, facetValue: string): PriceFragment[] | null => {
+    return getPriceDisplay({
+      items,
+      facets,
+      facetKey,
+      facetValue,
+      activeFacets,
+      basePrice,
+      priceKey,
+      disabledFn,
+      isOutOfStock,
     });
-
-    if (matchingItems.length === 0) {
-      matchingItems = items.filter(item => 
-        !disabledFn(item) && !isOutOfStock(item.id) && facets.find(f => f.key === facetKey)?.getValue(item) === facetValue
-      );
-    }
-
-    if (matchingItems.length === 0) return null;
-
-    const prices = matchingItems.map(i => {
-      const p = priceKey === 'individualPrice' ? i.individualPrice ?? i.price : i.price;
-      return typeof p === 'number' ? p : 0;
-    });
-    const minDiff = Math.min(...prices) - basePrice;
-    const maxDiff = Math.max(...prices) - basePrice;
-
-    if (minDiff === maxDiff) {
-      if (minDiff === 0) return null;
-      return [{
-        text: minDiff > 0 ? `+$${formatPrice(minDiff)}` : `-$${formatPrice(Math.abs(minDiff))}`,
-        className: minDiff > 0 ? 'price-increase' : 'price-decrease'
-      }];
-    } else {
-      const minSign = minDiff > 0 ? '+' : minDiff < 0 ? '-' : '';
-      const maxSign = maxDiff > 0 ? '+' : maxDiff < 0 ? '-' : '';
-      const minVal = formatPrice(Math.abs(minDiff));
-      const maxVal = formatPrice(Math.abs(maxDiff));
-      
-      return [
-        {
-          text: `$${minSign}${minVal}`,
-          className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : ''
-        },
-        {
-          text: ' to ',
-          className: ''
-        },
-        {
-          text: `${maxSign}${maxVal}`,
-          className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : ''
-        }
-      ];
-    }
   };
 
   return (
@@ -183,7 +231,7 @@ export default function VariantSelector<T extends CatalogItem>({
               <div className="variant-options" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {uniqueValues.map(val => {
                   const isActive = activeFacets[facet.key] === val;
-                  const priceFragments = getPriceDisplay(facet.key, val);
+                  const priceFragments = getPriceDisplayLocal(facet.key, val);
                   const isValidAtAll = items.some(i => facet.getValue(i) === val && !disabledFn(i) && !isOutOfStock(i.id));
 
                   const exactMatchingItems = items.filter(item => {

@@ -5,6 +5,20 @@ import { calculateParcel } from '../shared/shipping';
 const easypostApiKey = process.env.EASYPOST_API_KEY || 'fake_key';
 const easypost = new EasyPostClient(easypostApiKey);
 
+/** Transform raw EasyPost rate objects into a simplified format with integer cents. */
+export function formatShippingRates(rates: any[]): { id: string; service: string; carrier: string; rateInCents: number }[] {
+  return rates.map((rate: any) => {
+    const [dollars, cents = '0'] = String(rate.rate).split('.');
+    const rateInCents = parseInt(dollars, 10) * 100 + parseInt((cents + '00').substring(0, 2), 10);
+    return {
+      id: rate.id,
+      service: rate.service,
+      carrier: rate.carrier,
+      rateInCents,
+    };
+  });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -40,16 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     });
 
-    const rates = shipment.rates.map((rate: any) => {
-      const [dollars, cents = '0'] = String(rate.rate).split('.');
-      const rateInCents = parseInt(dollars, 10) * 100 + parseInt((cents + '00').substring(0, 2), 10);
-      return {
-        id: rate.id,
-        service: rate.service,
-        carrier: rate.carrier,
-        rateInCents,
-      };
-    });
+    const rates = formatShippingRates(shipment.rates);
 
     return res.status(200).json({ rates, shipmentId: shipment.id });
   } catch (error: any) {

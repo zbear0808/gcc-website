@@ -9,6 +9,21 @@ const redis = process.env.KV_REST_API_URL
     })
   : null;
 
+/** Filter inventory to only include items that require inventory tracking. */
+export function filterTrackedInventory(
+  rawInventory: Record<string, unknown>,
+  catalogItems: { id: string; requiresInventory?: boolean }[]
+): Record<string, number> {
+  const filtered: Record<string, number> = {};
+  for (const [id, qty] of Object.entries(rawInventory || {})) {
+    const item = catalogItems.find(i => i.id === id);
+    if (item?.requiresInventory !== false) {
+      filtered[id] = Number(qty);
+    }
+  }
+  return filtered;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -18,13 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       if (redis) {
         const inventory = await redis.hgetall('inventory');
-        const filteredInventory: Record<string, number> = {};
-        for (const [id, qty] of Object.entries(inventory || {})) {
-          const item = allItems.find(i => i.id === id);
-          if (item?.requiresInventory !== false) {
-            filteredInventory[id] = Number(qty);
-          }
-        }
+        const filteredInventory = filterTrackedInventory(inventory || {}, allItems);
         return res.status(200).json(filteredInventory);
       } else {
         // Fallback for local development

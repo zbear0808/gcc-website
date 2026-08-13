@@ -8,6 +8,26 @@ const redis = process.env.KV_REST_API_URL
     })
   : null;
 
+/** Parse raw Redis order values and sort by paidAt descending. */
+export function parseAndSortOrders(rawOrders: any[], keys: string[]): any[] {
+  const orders = rawOrders
+    .filter(Boolean)
+    .map((raw: any, index: number) => {
+      const order = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      const key = keys[index];
+      order.id = key.split(':')[1];
+      return order;
+    });
+
+  orders.sort((a: any, b: any) => {
+    const dateA = a.paidAt ? new Date(a.paidAt).getTime() : 0;
+    const dateB = b.paidAt ? new Date(b.paidAt).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  return orders;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -35,22 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const rawOrders = await redis.mget(...allKeys);
     
-    const orders = rawOrders
-      .filter(Boolean)
-      .map((raw: any, index: number) => {
-        const order = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        // Inject the order ID from the key
-        const key = allKeys[index];
-        order.id = key.split(':')[1];
-        return order;
-      });
-
-    // Sort by paidAt descending
-    orders.sort((a: any, b: any) => {
-      const dateA = a.paidAt ? new Date(a.paidAt).getTime() : 0;
-      const dateB = b.paidAt ? new Date(b.paidAt).getTime() : 0;
-      return dateB - dateA;
-    });
+    const orders = parseAndSortOrders(rawOrders, allKeys);
 
     return res.status(200).json({ orders });
   } catch (error: any) {
