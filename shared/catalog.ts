@@ -121,7 +121,7 @@ export const zButtons: ZButtonOption[] = [
 export const membranes: MembraneOption[] = [
   { id: 'membrane-extremerate', label: 'Extremerate Clear Rubber Membranes', description: 'The most stiff and clicky ones.', price: 0, individualPrice: 2, image: '/images/parts/membrane-clear.png' },
   { id: 'membrane-jcd', label: 'JCD Dark Grey Rubber Membranes', description: 'In the middle, more clicky than OEM. (My personal preference)', price: 0, individualPrice: 2, image: '/images/parts/membrane-dark-grey.png' },
-  { id: 'membrane-oem', label: 'OEM Rubber Membranes', description: 'The most squishy ones.', price: 0, individualPrice: 2, image: '/images/parts/membrane-oem.png' },
+  { id: 'membrane-oem', label: 'OEM Rubber Membranes', description: 'The most squishy ones.', price: 0, individualPrice: 3, image: '/images/parts/membrane-oem.png' },
 ];
 
 // Stick Caps
@@ -134,9 +134,9 @@ export const stickCaps: StickCapOption[] = [
   { id: 'wii-cap-good', label: 'OEM Wii Stick Cap (good)', description: 'OEM stick cap in good condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-good.png' },
   { id: 'wii-cap-okay', label: 'OEM Wii Stick Cap (Okay)', description: 'OEM stick cap in okay condition.', price: 2, individualPrice: 3, image: '/images/parts/wii-cap-okay.png' },
   { id: 'wii-cap-poor', label: 'OEM Wii Stick Cap (Poor)', description: 'OEM stick cap in poor condition.', price: 0, individualPrice: 2, image: '/images/parts/wii-cap-poor.png' },
-  { id: 'wii-cap-black-good', label: 'OEM Wii Stick Cap - Black (good)', description: 'OEM black stick cap in good condition.', price: 6, individualPrice: 7, image: '/images/parts/wii-cap-good.png' },
-  { id: 'wii-cap-black-okay', label: 'OEM Wii Stick Cap - Black (Okay)', description: 'OEM black stick cap in okay condition.', price: 4, individualPrice: 5, image: '/images/parts/wii-cap-okay.png' },
-  { id: 'wii-cap-black-poor', label: 'OEM Wii Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 2, individualPrice: 4, image: '/images/parts/wii-cap-poor.png' },
+  { id: 'wii-cap-black-good', label: 'OEM Wii Stick Cap - Black (good)', description: 'OEM black stick cap in good condition.', price: 10, individualPrice: 11, image: '/images/parts/wii-cap-good.png' },
+  { id: 'wii-cap-black-okay', label: 'OEM Wii Stick Cap - Black (Okay)', description: 'OEM black stick cap in okay condition.', price: 8, individualPrice: 9, image: '/images/parts/wii-cap-okay.png' },
+  { id: 'wii-cap-black-poor', label: 'OEM Wii Stick Cap - Black (Poor)', description: 'OEM black stick cap in poor condition.', price: 6, individualPrice: 8, image: '/images/parts/wii-cap-poor.png' },
   { id: 'extremerate-cap', label: 'Extremerate 3rd Party Stick Cap', description: 'Third party stick cap by Extremerate.', price: 2, individualPrice: 3, image: '/images/parts/extremerate-cap.png' },
   { id: 'jcd-cap', label: 'JCD 3rd Party Stick Cap', description: 'Third party stick cap by JCD.', price: 2, individualPrice: 3, image: '/images/parts/jcd-cap.png' },
   { id: 'other-3rd-party-cap', label: 'Other 3rd Party Stick Cap', description: 'Other generic third party stick cap.', price: 1, individualPrice: 2, image: '/images/parts/other-3rd-party-cap.png' },
