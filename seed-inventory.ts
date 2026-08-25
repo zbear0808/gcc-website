@@ -56,6 +56,10 @@ async function seedInventory() {
       quantity = 80;
     } else if (item.id === 'stickbox-t1-t2') {
       quantity = 20;
+    } else if (item.id === 'switch-kailh-choco-red') {
+      quantity = 30;
+    } else if (item.id === 'switch-kailh-choco-brown' || item.id === 'switch-kailh-choco-white') {
+      quantity = 1;
     } else if (item.id === 'other-3rd-party-cap') {
       quantity = 0;
     } else if (item.id === 'wii-cap-black-good') {

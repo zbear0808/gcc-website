@@ -96,6 +96,7 @@ export interface ConfiguratorState {
   triggerPlugs?: boolean;
   kailhChoco?: boolean;
   kailhChocoSide?: TriggerSide;
+  kailhChocoType?: 'red' | 'brown' | 'white';
   springCut?: boolean;
   wornShell?: boolean;
   triggerPlugSide?: TriggerSide;

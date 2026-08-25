@@ -14,6 +14,12 @@ const triggers = [
   { id: 'both', label: 'Both', price: 0 },
 ];
 
+const switchTypes = [
+  { id: 'red', label: 'Red (Linear)', price: 0 },
+  { id: 'brown', label: 'Brown (Tactile)', price: 0 },
+  { id: 'white', label: 'White (Clicky)', price: 0 },
+];
+
 import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
 
 export default function ShopPage() {
@@ -35,6 +41,7 @@ export default function ShopPage() {
   const setTriggerSide = useStore(state => state.setTriggerSide);
   const setTriggerLength = useStore(state => state.setTriggerLength);
   const setkailhChocoSide = useStore(state => state.setkailhChocoSide);
+  const setKailhChocoType = useStore(state => state.setKailhChocoType);
 
   const notchOptions = mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
@@ -280,15 +287,26 @@ export default function ShopPage() {
                 )}
 
                 {config.kailhChoco && (
-                  <ConfigSection
-                    title="kailh Choco Side"
-                    items={triggers}
-                    selectedId={config.kailhChocoSide || 'both'}
-                    onSelect={(id) => setkailhChocoSide(id as import('@shared/types').TriggerSide)}
-                    basePrice={0}
-                    variant="sub"
-                    showExternalLinks={true}
-                  />
+                  <>
+                    <ConfigSection
+                      title="kailh Choco Side"
+                      items={triggers}
+                      selectedId={config.kailhChocoSide || 'both'}
+                      onSelect={(id) => setkailhChocoSide(id as import('@shared/types').TriggerSide)}
+                      basePrice={0}
+                      variant="sub"
+                      showExternalLinks={true}
+                    />
+                    <ConfigSection
+                      title="Switch Type"
+                      items={switchTypes}
+                      selectedId={config.kailhChocoType || 'red'}
+                      onSelect={(id) => setKailhChocoType(id as 'red' | 'brown' | 'white')}
+                      basePrice={0}
+                      variant="sub"
+                      showExternalLinks={false}
+                    />
+                  </>
                 )}
 
                 <ConfigSection

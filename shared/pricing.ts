@@ -211,7 +211,7 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
           addon.id === 'triggerPlugs'
             ? `${(sanitized.triggerPlugLength ?? 'tall').charAt(0).toUpperCase() + (sanitized.triggerPlugLength ?? 'tall').slice(1)} Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
             : addon.id === 'kailhChoco'
-              ? `kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()})`
+              ? `kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()}) - ${(sanitized.kailhChocoType ?? 'red').toUpperCase()}`
               : undefined;
 
         const priceOverride = addon.id === 'kailhChoco'
@@ -300,7 +300,18 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
     if (config.zButton) items.push(config.zButton);
     if (config.stickCap) items.push(config.stickCap);
     if (config.triggerPlugs) items.push(`trigger-plugs-${config.triggerPlugLength ?? 'tall'}`);
-    if (config.kailhChoco) items.push(`kailh-choco-${config.kailhChocoSide ?? 'both'}`);
+    if (config.kailhChoco) {
+      const typeStr = config.kailhChocoType ?? 'red';
+      const switchId = `switch-kailh-choco-${typeStr}`;
+      const side = config.kailhChocoSide ?? 'both';
+      if (side === 'both') {
+        items.push(switchId, switchId);
+        items.push('switch-mount-3d', 'switch-mount-3d');
+      } else {
+        items.push(switchId);
+        items.push('switch-mount-3d');
+      }
+    }
   } else if (isDiyKit(config)) {
     if (config.cable) items.push(config.cable);
     if (config.sliderPots) items.push(config.sliderPots);
