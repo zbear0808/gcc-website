@@ -3,6 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
   build-and-deploy:
@@ -15,16 +16,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run lint
+        run: npm run lint --if-present
+
+      - name: Run typecheck
+        run: npm run typecheck --if-present
+
+      - name: Run tests
+        run: npm run test
+
       - name: Build application
         run: npm run build
-
-      # Optional: Run tests
-      # - name: Run tests
-      #   run: npm run test
 
       # Vercel deployment is handled automatically by their GitHub integration.
       # If you still want to deploy static files to another repo, you can uncomment below.

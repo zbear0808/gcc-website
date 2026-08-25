@@ -12,8 +12,9 @@ export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const store = useStore();
-  
+  const inventory = useStore(state => state.inventory);
+  const cart = useStore(state => state.cart);
+  const updateCartQuantity = useStore(state => state.updateCartQuantity);
   const category = fullCatalog.find(c => c.id === id);
   const searchParams = new URLSearchParams(location.search);
   const preselectedId = searchParams.get('selected');
@@ -24,8 +25,8 @@ export default function ProductPage() {
   if (!category) return <div>Product not found</div>;
 
   const item = category.subtypes.find(i => i.id === selectedItem) || category.subtypes[0];
-  const stock = store.inventory[item.id] || 0;
-  const inCart = store.cart[item.id] || 0;
+  const stock = inventory[item.id] || 0;
+  const inCart = cart[item.id] || 0;
 
   const galleryImages = useMemo(() => {
     const images = new Set<string>();
@@ -52,7 +53,7 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (stock >= inCart + quantityToAdd) {
-      store.updateCartQuantity(item.id, quantityToAdd);
+      updateCartQuantity(item.id, quantityToAdd);
       setQuantityToAdd(1);
     }
   };
@@ -96,7 +97,7 @@ export default function ProductPage() {
                 onChange={setSelectedItem}
                 basePrice={item.individualPrice ?? item.price ?? 0}
                 priceKey="individualPrice"
-                getStock={(id) => store.inventory[id] || 0}
+                
               />
             ) : category.id === 'buttons' ? (
               <VariantSelector
@@ -107,7 +108,7 @@ export default function ProductPage() {
                 onChange={setSelectedItem}
                 basePrice={item.individualPrice ?? item.price ?? 0}
                 priceKey="individualPrice"
-                getStock={(id) => store.inventory[id] || 0}
+                
               />
             ) : category.id === 'stick-caps' ? (
               <VariantSelector
@@ -118,7 +119,7 @@ export default function ProductPage() {
                 onChange={setSelectedItem}
                 basePrice={item.individualPrice ?? item.price ?? 0}
                 priceKey="individualPrice"
-                getStock={(id) => store.inventory[id] || 0}
+                
               />
             ) : (
               <ConfigSection
@@ -128,7 +129,7 @@ export default function ProductPage() {
                 onSelect={setSelectedItem}
                 basePrice={item.individualPrice ?? item.price ?? 0}
                 priceKey="individualPrice"
-                getStock={(id) => store.inventory[id] || 0}
+                
                 descriptionPosition="none"
               />
             )
@@ -177,3 +178,5 @@ export default function ProductPage() {
     </div>
   );
 }
+
+

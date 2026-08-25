@@ -8,16 +8,25 @@ import { TrashIcon } from '@/components/Icons';
 import type { ConfiguratorState } from '@shared/types';
 
 export const renderBuildOptions = (build: ConfiguratorState) => {
-  const options = [];
+  const options: string[] = [];
 
-  if (build.shell) options.push(`Shell: ${getItem(build.shell)?.label || build.shell}`);
-  if (build.buttons) options.push(`Buttons: ${getItem(build.buttons)?.label || build.buttons}`);
-  if (build.cable) options.push(`Cable: ${getItem(build.cable)?.label || build.cable}`);
-  if (build.rumble) options.push(`Rumble: ${getItem(build.rumble)?.label || build.rumble}`);
-  if (build.sliderPots) options.push(`Slider Potentiometers: ${getItem(build.sliderPots)?.label || build.sliderPots}`);
-  if (build.zButton) options.push(`Z Button: ${getItem(build.zButton)?.label || build.zButton}`);
-  if (build.membrane) options.push(`Membranes: ${getItem(build.membrane)?.label || build.membrane}`);
-  if (build.stickCap) options.push(`Stick Cap: ${getItem(build.stickCap)?.label || build.stickCap}`);
+  const keys = [
+    { key: 'shell', label: 'Shell' },
+    { key: 'buttons', label: 'Buttons' },
+    { key: 'cable', label: 'Cable' },
+    { key: 'rumble', label: 'Rumble' },
+    { key: 'sliderPots', label: 'Slider Potentiometers' },
+    { key: 'zButton', label: 'Z Button' },
+    { key: 'membrane', label: 'Membranes' },
+    { key: 'stickCap', label: 'Stick Cap' },
+  ];
+
+  keys.forEach(({ key, label }) => {
+    const val = build[key as keyof ConfiguratorState];
+    if (val && typeof val === 'string') {
+      options.push(`${label}: ${getItem(val)?.label || val}`);
+    }
+  });
 
   if (build.notchesFirefox) options.push(`Notches: Firefox (${build.notchStyle || 'standard'})`);
   if (build.notchesWavedash) options.push(`Notches: Wavedash (${build.notchStyle || 'standard'})`);
@@ -41,13 +50,19 @@ export const renderBuildOptions = (build: ConfiguratorState) => {
 };
 
 export default function CartPage() {
-  const store = useStore();
+  const cart = useStore(state => state.cart);
+  const customBuilds = useStore(state => state.customBuilds);
+  const inventory = useStore(state => state.inventory);
+  const updateCartQuantity = useStore(state => state.updateCartQuantity);
+  const removeCustomBuild = useStore(state => state.removeCustomBuild);
+  const clearCart = useStore(state => state.clearCart);
+  
   const navigate = useNavigate();
 
   // Reconstruct individual items mapping for the cart
   const individualItems = fullCatalog.flatMap(category => category.subtypes);
 
-  const cartItems = Object.entries(store.cart)
+  const cartItems = Object.entries(cart)
     .filter(([_, qty]) => qty > 0)
     .map(([id, qty]) => {
       const itemDef = individualItems.find(i => i.id === id);
@@ -57,13 +72,13 @@ export default function CartPage() {
 
   const cartTotal = () => {
     let partsTotal = 0;
-    if (typeof store.cartTotal === 'function') {
-      partsTotal = store.cartTotal();
+    if (typeof cartTotal === 'function') {
+      partsTotal = cartTotal();
     } else {
       partsTotal = cartItems.reduce((acc, item) => acc + (item.displayPrice || 0) * item.qty, 0);
     }
 
-    const buildsTotal = store.customBuilds?.reduce((sum, build) => sum + calculateTotal(build), 0) ?? 0;
+    const buildsTotal = customBuilds?.reduce((sum, build) => sum + calculateTotal(build), 0) ?? 0;
     return partsTotal + buildsTotal;
   };
 
@@ -73,7 +88,7 @@ export default function CartPage() {
     navigate('/checkout');
   };
 
-  if (cartItems.length === 0 && (!store.customBuilds || store.customBuilds.length === 0)) {
+  if (cartItems.length === 0 && (!customBuilds || customBuilds.length === 0)) {
     return (
       <div className="cart-page empty">
         <h2>Your cart is empty</h2>
@@ -86,7 +101,7 @@ export default function CartPage() {
     <div className="cart-page">
       <h2 className="heading-ndot">Your Cart</h2>
       <div className="cart-items">
-        {store.customBuilds?.map((build, idx) => {
+        {customBuilds?.map((build, idx) => {
           const product = getItem(build.product ?? '');
           const buildPrice = calculateTotal(build);
           return (
@@ -102,7 +117,7 @@ export default function CartPage() {
                 </ul>
               </div>
               <div className="cart-controls">
-                <button aria-label="Remove" onClick={() => store.removeCustomBuild(idx)}>
+                <button aria-label="Remove" onClick={() => removeCustomBuild(idx)}>
                   <TrashIcon />
                 </button>
               </div>
@@ -116,11 +131,11 @@ export default function CartPage() {
               <p>${item.displayPrice}</p>
             </div>
             <div className="cart-controls">
-              <button onClick={() => store.updateCartQuantity(item.id, -1)}>-</button>
+              <button onClick={() => updateCartQuantity(item.id, -1)}>-</button>
               <span>{item.qty}</span>
               <button
-                onClick={() => store.updateCartQuantity(item.id, 1)}
-                disabled={item.qty >= (store.inventory[item.id] || 0)}
+                onClick={() => updateCartQuantity(item.id, 1)}
+                disabled={item.qty >= (inventory[item.id] || 0)}
               >+</button>
             </div>
           </div>
@@ -130,7 +145,7 @@ export default function CartPage() {
         <h3>Total: ${formatPrice(total)}</h3>
       </div>
       <div className="cart-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-        <button className="clear-cart-btn" onClick={() => store.clearCart()} style={{ background: 'transparent', border: '1px solid var(--accent)', color: 'var(--accent)', padding: '0.75rem 1.5rem', borderRadius: '4px', cursor: 'pointer' }}>
+        <button className="btn btn-outline" onClick={() => clearCart()}>
           Clear Cart
         </button>
         <button className="checkout-btn" onClick={handleCheckout} style={{ flex: 1 }}>
@@ -140,3 +155,4 @@ export default function CartPage() {
     </div>
   );
 }
+

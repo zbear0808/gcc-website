@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStore } from '@/store/useStore';
+import styles from '@/assets/styles/components/visualizer.module.css';
 
 const ControllerVisualizer: React.FC = () => {
   const config = useStore((state) => state.config);
@@ -12,8 +13,8 @@ const ControllerVisualizer: React.FC = () => {
   const triggerPlugSide = config.triggerPlugSide || 'both';
   const haskailhChoco = config.kailhChoco || false;
 
-  const leftTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'l') ? 'has-plugs' : haskailhChoco ? 'has-choco' : '';
-  const rightTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'r') ? 'has-plugs' : haskailhChoco ? 'has-choco' : '';
+  const leftTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'l') ? styles['has-plugs'] : haskailhChoco ? styles['has-choco'] : '';
+  const rightTriggerClass = hasTriggerPlugs && (triggerPlugSide === 'both' || triggerPlugSide === 'r') ? styles['has-plugs'] : haskailhChoco ? styles['has-choco'] : '';
 
   // Calculate plug color
   let plugColor = shellColor; // OEM default
@@ -29,20 +30,20 @@ const ControllerVisualizer: React.FC = () => {
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
 
   return (
-    <div className="visualizer-wrapper">
-      <div className={`controller-map ${config.buttons ? `theme-${config.buttons}` : ''}`}>
+    <div className={styles['visualizer-wrapper']}>
+      <div className={`${styles['controller-map']} ${config.buttons ? styles[`theme-${config.buttons}`] : ''}`}>
         {isDIY ? (
-          <div className="phob-pcb">
+          <div className={styles['phob-pcb']}>
             {config.cable && (
-              <div className="cord-container pcb-cord">
-                <div className={`cord ${isParacord ? 'paracord' : ''}`}></div>
-                <div className="plug" style={{ backgroundColor: plugColor }}>
-                  <div className="plug-details"></div>
+              <div className={`${styles['cord-container']} ${styles['pcb-cord']}`}>
+                <div className={`${styles['cord']} ${isParacord ? styles['paracord'] : ''}`}></div>
+                <div className={styles['plug']} style={{ backgroundColor: plugColor }}>
+                  <div className={styles['plug-details']}></div>
                 </div>
               </div>
             )}
-            <div className="pcb-board">
-              <svg className="pcb-svg" width="280" height="200" viewBox="0 0 280 200">
+            <div className={styles['pcb-board']}>
+              <svg className={styles['pcb-svg']} width="280" height="200" viewBox="0 0 280 200">
                 <defs>
                   <filter id="pcb-shadow" x="-10%" y="-10%" width="120%" height="120%">
                     <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.15" />
@@ -57,78 +58,78 @@ const ControllerVisualizer: React.FC = () => {
                 />
               </svg>
 
-              <div className="pcb-chip"></div>
-              <div className="pcb-chip-small"></div>
-              <div className="pcb-start-pad"></div>
+              <div className={styles['pcb-chip']}></div>
+              <div className={styles['pcb-chip-small']}></div>
+              <div className={styles['pcb-start-pad']}></div>
 
-              <div className="pcb-stick-box-left"></div>
+              <div className={styles['pcb-stick-box-left']}></div>
 
-              <div className="pcb-ribbon-cable"></div>
-              <div className="pcb-daughterboard">
-                <div className="pcb-stick-box-c"></div>
+              <div className={styles['pcb-ribbon-cable']}></div>
+              <div className={styles['pcb-daughterboard']}>
+                <div className={styles['pcb-stick-box-c']}></div>
               </div>
 
-              <div className="pcb-button-pad pad-a"></div>
-              <div className="pcb-button-pad pad-b"></div>
-              <div className="pcb-button-pad pad-x"></div>
-              <div className="pcb-button-pad pad-y"></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-a']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-b']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-x']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-y']}`}></div>
 
-              <div className="pcb-button-pad pad-dup"></div>
-              <div className="pcb-button-pad pad-ddown"></div>
-              <div className="pcb-button-pad pad-dleft"></div>
-              <div className="pcb-button-pad pad-dright"></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-dup']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-ddown']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-dleft']}`}></div>
+              <div className={`${styles['pcb-button-pad']} ${styles['pad-dright']}`}></div>
             </div>
           </div>
         ) : (
           <>
             {/* Left Trigger */}
-            <div className={`trigger trigger-l ${leftTriggerClass}`}></div>
+            <div className={`${styles['trigger']} ${styles['trigger-l']} ${leftTriggerClass || ''}`}></div>
             {/* Right Trigger */}
-            <div className={`trigger trigger-r ${rightTriggerClass}`}></div>
+            <div className={`${styles['trigger']} ${styles['trigger-r']} ${rightTriggerClass || ''}`}></div>
 
             <div
-              className="controller-body"
+              className={styles['controller-body']}
               style={{ backgroundColor: shellColor }}
             >
               {/* Cord */}
               {config.cable && (
-                <div className="cord-container">
-                  <div className={`cord ${isParacord ? 'paracord' : ''}`}></div>
-                  <div className="plug" style={{ backgroundColor: plugColor }}>
-                    <div className="plug-details"></div>
+                <div className={styles['cord-container']}>
+                  <div className={`${styles['cord']} ${isParacord ? styles['paracord'] : ''}`}></div>
+                  <div className={styles['plug']} style={{ backgroundColor: plugColor }}>
+                    <div className={styles['plug-details']}></div>
                   </div>
                 </div>
               )}
 
               {/* Left Pod */}
-              <div className="controller-pod-left" style={{ backgroundColor: shellColor }}></div>
+              <div className={styles['controller-pod-left']} style={{ backgroundColor: shellColor }}></div>
 
               {/* Right Pod */}
-              <div className="controller-pod-right" style={{ backgroundColor: shellColor }}></div>
+              <div className={styles['controller-pod-right']} style={{ backgroundColor: shellColor }}></div>
 
               {/* Left Handle */}
-              <div className="controller-handle-left" style={{ backgroundColor: shellColor }}></div>
+              <div className={styles['controller-handle-left']} style={{ backgroundColor: shellColor }}></div>
 
               {/* Right Handle */}
-              <div className="controller-handle-right" style={{ backgroundColor: shellColor }}></div>
+              <div className={styles['controller-handle-right']} style={{ backgroundColor: shellColor }}></div>
 
               {/* D-Pad */}
-              <div className="d-pad"></div>
+              <div className={styles['d-pad']}></div>
 
               {/* Left Stick */}
-              <div className={`stick stick-left ${hasFirefox ? 'has-firefox' : ''} ${hasWavedash ? 'has-wavedash' : ''} notch-style-${config.notchStyle || 'deep'}`}>
-                <div className="notch-indicator"></div>
+              <div className={`${styles['stick']} ${styles['stick-left']} ${hasFirefox ? styles['has-firefox'] : ''} ${hasWavedash ? styles['has-wavedash'] : ''} ${styles[`notch-style-${config.notchStyle || 'deep'}`] || ''}`}>
+                <div className={styles['notch-indicator']}></div>
               </div>
 
               {/* C-Stick (Yellow) */}
-              <div className="stick stick-c"></div>
+              <div className={`${styles['stick']} ${styles['stick-c']}`}></div>
 
               {/* Button Cluster */}
-              <div className="button-group">
-                <div className="btn-v btn-a">A</div>
-                <div className="btn-v btn-b">B</div>
-                <div className="btn-v btn-x">X</div>
-                <div className="btn-v btn-y">Y</div>
+              <div className={styles['button-group']}>
+                <div className={`${styles['btn-v']} ${styles['btn-a']}`}>A</div>
+                <div className={`${styles['btn-v']} ${styles['btn-b']}`}>B</div>
+                <div className={`${styles['btn-v']} ${styles['btn-x']}`}>X</div>
+                <div className={`${styles['btn-v']} ${styles['btn-y']}`}>Y</div>
               </div>
             </div>
           </>

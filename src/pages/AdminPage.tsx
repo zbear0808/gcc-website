@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './AdminPage.css';
 import type { RedisOrder } from '@shared/types';
 
 export default function AdminPage() {
@@ -104,7 +103,7 @@ export default function AdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit" disabled={loading}>Login</button>
+          <button type="submit" className="btn btn-primary" disabled={loading}>Login</button>
         </form>
         {error && <p className="error">{error}</p>}
       </div>
@@ -118,7 +117,7 @@ export default function AdminPage() {
     <div className="admin-container">
       <div className="admin-header">
         <h2>Admin Dashboard</h2>
-        <button className="refresh-btn" onClick={() => window.location.reload()} disabled={loading}>Refresh Data</button>
+        <button className="btn btn-outline" onClick={() => window.location.reload()} disabled={loading}>Refresh Data</button>
       </div>
 
       <section>
@@ -147,7 +146,7 @@ export default function AdminPage() {
               ))}
             </tbody>
           </table>
-          <button type="submit" disabled={loading} style={{ marginBottom: '2rem', padding: '0.8rem 1.5rem', background: '#4ade80', color: 'black', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" disabled={loading} className="btn btn-success" style={{ marginBottom: '2rem' }}>
             Save Inventory
           </button>
         </form>
@@ -172,7 +171,7 @@ export default function AdminPage() {
                   <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
                   <td>{order.email || 'N/A'}</td>
                   <td>
-                    <button onClick={() => fulfillOrder(order.id)} disabled={loading}>
+                    <button className="btn btn-primary" onClick={() => fulfillOrder(order.id)} disabled={loading}>
                       Buy Label & Fulfill
                     </button>
                   </td>

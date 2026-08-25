@@ -1,64 +1,39 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import EasyPostClient from '@easypost/api';
+import { easypost } from './utils/clients';
 import { calculateParcel } from '../shared/shipping';
+import { formatShippingRates } from './utils/helpers';
+import { withMiddleware } from './utils/middleware';
 
-const easypostApiKey = process.env.EASYPOST_API_KEY || 'fake_key';
-const easypost = new EasyPostClient(easypostApiKey);
+async function handler(req: VercelRequest, res: VercelResponse) {
+  const { zip, country } = req.body || {};
+  if (!zip || !country) {
+    return res.status(400).json({ error: 'Destination zip and country are required' });
+  }
 
-/** Transform raw EasyPost rate objects into a simplified format with integer cents. */
-export function formatShippingRates(rates: any[]): { id: string; service: string; carrier: string; rateInCents: number }[] {
-  return rates.map((rate: any) => {
-    const [dollars, cents = '0'] = String(rate.rate).split('.');
-    const rateInCents = parseInt(dollars, 10) * 100 + parseInt((cents + '00').substring(0, 2), 10);
-    return {
-      id: rate.id,
-      service: rate.service,
-      carrier: rate.carrier,
-      rateInCents,
-    };
+  const parcel = calculateParcel(req.body);
+
+  const shipment = await easypost.Shipment.create({
+    to_address: {
+      zip,
+      country,
+    },
+    from_address: {
+      zip: process.env.SHIPPING_ORIGIN_ZIP || '98122',
+      city: process.env.SHIPPING_ORIGIN_CITY || 'Seattle',
+      state: process.env.SHIPPING_ORIGIN_STATE || 'WA',
+      country: process.env.SHIPPING_ORIGIN_COUNTRY || 'US',
+    },
+    parcel: {
+      weight: parcel.weight,
+      length: parcel.length,
+      width: parcel.width,
+      height: parcel.height,
+    },
   });
+
+  const rates = formatShippingRates(shipment.rates);
+
+  return res.status(200).json({ rates, shipmentId: shipment.id });
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
-
-  try {
-    const { zip, country } = req.body || {};
-    if (!zip || !country) {
-      return res.status(400).json({ error: 'Destination zip and country are required' });
-    }
-
-    const parcel = calculateParcel(req.body);
-
-    const shipment = await easypost.Shipment.create({
-      to_address: {
-        zip,
-        country,
-      },
-      from_address: {
-        zip: process.env.SHIPPING_ORIGIN_ZIP || '98122',
-        city: process.env.SHIPPING_ORIGIN_CITY || 'Seattle',
-        state: process.env.SHIPPING_ORIGIN_STATE || 'WA',
-        country: process.env.SHIPPING_ORIGIN_COUNTRY || 'US',
-      },
-      parcel: {
-        weight: parcel.weight,
-        length: parcel.length,
-        width: parcel.width,
-        height: parcel.height,
-      },
-    });
-
-    const rates = formatShippingRates(shipment.rates);
-
-    return res.status(200).json({ rates, shipmentId: shipment.id });
-  } catch (error: any) {
-    console.error('Calculate shipping error:', error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
-  }
-}
+export default withMiddleware(['POST'], handler);

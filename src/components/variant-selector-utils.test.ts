@@ -61,14 +61,13 @@ describe('VariantSelector utils', () => {
       expect(result).toBeNull(); // Only item-a is TypeA, and it's disabled.
     });
 
-    it('Skips out-of-stock items', () => {
+    it('Returns null when no items match the facet value', () => {
       const result = findBestVariantMatch({
         items: mockItems,
         facets: mockFacets,
         facetKey: 'type',
         facetValue: 'TypeA',
-        activeFacets: {},
-        isOutOfStock: (id) => id === 'item-a'
+        activeFacets: { color: 'indigo' },
       });
       expect(result).toBeNull();
     });

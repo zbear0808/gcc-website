@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dollarsToCents } from './update-payment-intent';
-import { formatShippingRates } from './calculate-shipping';
-import { filterTrackedInventory } from './inventory';
-import { parseAndSortOrders } from './admin/orders';
+import { dollarsToCents, formatShippingRates, filterTrackedInventory, parseAndSortOrders } from './utils/helpers';
 
 describe('API Utils', () => {
   describe('dollarsToCents', () => {

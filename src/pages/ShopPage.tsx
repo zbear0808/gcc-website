@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps, mods, addons } from '@shared/catalog';
@@ -17,8 +18,23 @@ import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
 
 export default function ShopPage() {
   const navigate = useNavigate();
-  const store = useStore();
-  const { config } = store;
+  const config = useStore(state => state.config);
+  const addCustomBuild = useStore(state => state.addCustomBuild);
+  const setConfig = useStore(state => state.setConfig);
+  const setProduct = useStore(state => state.setProduct);
+  const setShell = useStore(state => state.setShell);
+  const setButtons = useStore(state => state.setButtons);
+  const setMembrane = useStore(state => state.setMembrane);
+  const setCable = useStore(state => state.setCable);
+  const setRumble = useStore(state => state.setRumble);
+  const setSliderPots = useStore(state => state.setSliderPots);
+  const setZButton = useStore(state => state.setZButton);
+  const setStickCap = useStore(state => state.setStickCap);
+  const toggleMod = useStore(state => state.toggleMod);
+  const setNotchStyle = useStore(state => state.setNotchStyle);
+  const setTriggerSide = useStore(state => state.setTriggerSide);
+  const setTriggerLength = useStore(state => state.setTriggerLength);
+  const setkailhChocoSide = useStore(state => state.setkailhChocoSide);
 
   const notchOptions = mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
@@ -53,9 +69,9 @@ export default function ShopPage() {
   const selectedShell = shells.find(s => s.id === config.shell);
 
   const handleAddToCart = () => {
-    store.addCustomBuild(store.config);
+    addCustomBuild(config);
     // Reset to default config for a fresh build if they come back
-    store.setConfig(() => ({ product: 'full-build' }));
+    setConfig(() => ({ product: 'full-build' }));
     navigate('/cart');
   };
 
@@ -72,7 +88,7 @@ export default function ShopPage() {
               <button
                 key={p.id}
                 className={`product-btn ${config.product === p.id ? 'active' : ''}`}
-                onClick={() => store.setProduct(p.id)}
+                onClick={() => setProduct(p.id)}
               >
                 <div className="product-btn-label">{p.label}</div>
                 <div className="product-btn-price">From ${p.price}</div>
@@ -91,9 +107,8 @@ export default function ShopPage() {
                   items={shells}
                   facets={shellFacets}
                   value={config.shell}
-                  onChange={store.setShell}
+                  onChange={setShell}
                   basePrice={getItemPrice(config.shell ?? '')}
-                  getStock={(id) => store.inventory[id] || 0}
                   showExternalLinks={true}
                 />
 
@@ -101,7 +116,7 @@ export default function ShopPage() {
                   <div className="config-section" style={{ marginTop: '-1rem', marginBottom: '2rem' }}>
                     <button
                       className={`mod-btn ${config.wornShell ? 'active' : ''}`}
-                      onClick={() => store.toggleMod('wornShell')}
+                      onClick={() => toggleMod('wornShell')}
                     >
                       Use Heavily Worn Shell <span className="price-decrease">(-$4.00)</span>
                     </button>
@@ -116,9 +131,8 @@ export default function ShopPage() {
                   items={buttons}
                   facets={buttonFacets}
                   value={config.buttons}
-                  onChange={store.setButtons}
+                  onChange={setButtons}
                   basePrice={getItemPrice(config.buttons ?? '')}
-                  getStock={(id) => store.inventory[id] || 0}
                   showExternalLinks={true}
                 />
 
@@ -126,7 +140,7 @@ export default function ShopPage() {
                   title="Rubber Membranes"
                   items={membranes}
                   selectedId={config.membrane}
-                  onSelect={store.setMembrane}
+                  onSelect={setMembrane}
                   basePrice={getItemPrice(config.membrane ?? '')}
                   descriptionPosition="outside"
                   buttonSize="small"
@@ -135,65 +149,40 @@ export default function ShopPage() {
               </>
             )}
 
-            <ConfigSection
-              title="Cable"
-              items={cables}
-              selectedId={config.cable}
-              onSelect={store.setCable}
-              disabledFn={(item) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false}
-              basePrice={getItemPrice(config.cable ?? '')}
-              descriptionPosition="outside"
-              buttonSize="small"
-              showExternalLinks={true}
-            />
-
-            {config.cable === 'cable-oem' && (
-              <div className="oem-warning">
-                <strong>Please Note:</strong> While we rigorously test all full controller builds, we cannot test the durability of salvaged OEM parts. There is no warranty on OEM cables, so we recommend purchasing a new backup cable.
-              </div>
-            )}
-
-            <ConfigSection
-              title="Rumble Motor"
-              items={rumbles}
-              selectedId={config.rumble}
-              isToggleable={true}
-              onSelect={(id) => store.setRumble(config.rumble === id ? undefined : id)}
-              basePrice={getItemPrice(config.rumble ?? '')}
-              descriptionPosition="none"
-              buttonSize="small"
-              showExternalLinks={true}
-            />
-
-            <ConfigSection
-              title="Slider Potentiometers"
-              items={sliderPots}
-              selectedId={config.sliderPots}
-              onSelect={store.setSliderPots}
-              basePrice={getItemPrice(config.sliderPots ?? '')}
-              descriptionPosition="outside"
-              buttonSize="small"
-              showExternalLinks={true}
-            />
-            <ConfigSection
-              title="Z Button"
-              items={zButtons}
-              selectedId={config.zButton}
-              onSelect={store.setZButton}
-              basePrice={getItemPrice(config.zButton ?? '')}
-              descriptionPosition="none"
-              buttonSize="small"
-              showExternalLinks={true}
-            />
+            {[
+              { title: 'Cable', items: cables, value: config.cable, onSelect: setCable, descriptionPosition: 'outside', buttonSize: 'small', disabledFn: (item: any) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false },
+              { title: 'Rumble Motor', items: rumbles, value: config.rumble, onSelect: (id: string) => setRumble(config.rumble === id ? undefined : id), isToggleable: true, descriptionPosition: 'none', buttonSize: 'small' },
+              { title: 'Slider Potentiometers', items: sliderPots, value: config.sliderPots, onSelect: setSliderPots, descriptionPosition: 'outside', buttonSize: 'small' },
+              { title: 'Z Button', items: zButtons, value: config.zButton, onSelect: setZButton, descriptionPosition: 'none', buttonSize: 'small' }
+            ].map(section => (
+              <React.Fragment key={section.title}>
+                <ConfigSection
+                  title={section.title}
+                  items={section.items}
+                  selectedId={section.value}
+                  onSelect={section.onSelect}
+                  disabledFn={section.disabledFn}
+                  isToggleable={section.isToggleable}
+                  basePrice={getItemPrice(section.value ?? '')}
+                  descriptionPosition={section.descriptionPosition as any}
+                  buttonSize={section.buttonSize as any}
+                  showExternalLinks={true}
+                />
+                {section.title === 'Cable' && config.cable === 'cable-oem' && (
+                  <div className="oem-warning">
+                    <strong>Please Note:</strong> While we rigorously test all full controller builds, we cannot test the durability of salvaged OEM parts. There is no warranty on OEM cables, so we recommend purchasing a new backup cable.
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
             {isFullBuild && (
               <VariantSelector
                 title="Sticks"
                 items={stickCaps}
                 facets={stickCapFacets}
                 value={config.stickCap}
-                onChange={store.setStickCap}
+                onChange={setStickCap}
                 basePrice={getItemPrice(config.stickCap ?? '')}
-                getStock={(id) => store.inventory[id] || 0}
                 showExternalLinks={true}
               />
             )}
@@ -206,7 +195,7 @@ export default function ShopPage() {
                   selectedId={selectedNotch}
                   isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => {
+                    setConfig(prev => {
                       if (selectedNotch === id) {
                         return {
                           ...prev,
@@ -233,7 +222,7 @@ export default function ShopPage() {
                     title="Notch Style"
                     items={notchStyles}
                     selectedId={config.notchStyle || 'deep'}
-                    onSelect={(id) => store.setNotchStyle(id as 'deep' | 'subtle')}
+                    onSelect={(id) => setNotchStyle(id as 'deep' | 'subtle')}
                     basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
                     variant="sub"
                     hideStock={true}
@@ -247,7 +236,7 @@ export default function ShopPage() {
                   selectedId={selectedTriggerMod}
                   isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => {
+                    setConfig(prev => {
                       if (selectedTriggerMod === id) {
                         return {
                           ...prev,
@@ -273,7 +262,7 @@ export default function ShopPage() {
                       title="Trigger Side"
                       items={triggers}
                       selectedId={config.triggerPlugSide || 'both'}
-                      onSelect={(id) => store.setTriggerSide(id as import('@shared/types').TriggerSide)}
+                      onSelect={(id) => setTriggerSide(id as import('@shared/types').TriggerSide)}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={true}
@@ -282,7 +271,7 @@ export default function ShopPage() {
                       title="Trigger Plug Length"
                       items={triggerPlugLengths}
                       selectedId={config.triggerPlugLength || 'tall'}
-                      onSelect={(id) => store.setTriggerLength(id as import('@shared/types').TriggerPlugLength)}
+                      onSelect={(id) => setTriggerLength(id as import('@shared/types').TriggerPlugLength)}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={true}
@@ -295,7 +284,7 @@ export default function ShopPage() {
                     title="kailh Choco Side"
                     items={triggers}
                     selectedId={config.kailhChocoSide || 'both'}
-                    onSelect={(id) => store.setkailhChocoSide(id as import('@shared/types').TriggerSide)}
+                    onSelect={(id) => setkailhChocoSide(id as import('@shared/types').TriggerSide)}
                     basePrice={0}
                     variant="sub"
                     showExternalLinks={true}
@@ -308,7 +297,7 @@ export default function ShopPage() {
                   selectedId={selectedSpring}
                   isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => ({
+                    setConfig(prev => ({
                       ...prev,
                       springCut: selectedSpring === id ? false : id === 'springCut'
                     }));
@@ -324,7 +313,7 @@ export default function ShopPage() {
                   selectedId={selectedDetachableTrigger}
                   isToggleable={true}
                   onSelect={(id) => {
-                    store.setConfig(prev => ({
+                    setConfig(prev => ({
                       ...prev,
                       detachableTriggerPaddle: selectedDetachableTrigger === id ? false : id === 'detachableTriggerPaddle',
                       ...(selectedDetachableTrigger !== id && id === 'detachableTriggerPaddle' ? { kailhChoco: false } : {})
@@ -353,3 +342,4 @@ export default function ShopPage() {
     </div>
   );
 }
+

@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { CatalogItem } from '@shared/types';
 import { formatPrice } from '@shared/pricing';
-import Tooltip from '@/components/Tooltip';
-import { ExternalLinkIcon } from '@/components/Icons';
-import { getCategoryIdForItem } from '@shared/catalog';
+import type { PriceFragment } from './OptionButton';
+import OptionButton from './OptionButton';
 
 export interface Facet<T> {
   key: string;
@@ -19,36 +18,21 @@ interface VariantSelectorProps<T extends CatalogItem> {
   onChange: (id: string) => void;
   basePrice?: number;
   disabledFn?: (item: T) => boolean | string;
-  isOutOfStock?: (id: string) => boolean;
-  getStock?: (id: string) => number;
   priceKey?: 'price' | 'individualPrice';
   showExternalLinks?: boolean;
 }
 
-/** Find the best variant item matching a newly selected facet, maximizing overlap with existing selections. */
 export function findBestVariantMatch<T extends CatalogItem>({
-  items,
-  facets,
-  facetKey,
-  facetValue,
-  activeFacets,
-  disabledFn = () => false,
-  isOutOfStock = () => false,
+  items, facets, facetKey, facetValue, activeFacets, disabledFn = () => false
 }: {
-  items: T[];
-  facets: Facet<T>[];
-  facetKey: string;
-  facetValue: string;
-  activeFacets: Record<string, string>;
-  disabledFn?: (item: T) => boolean | string;
-  isOutOfStock?: (id: string) => boolean;
+  items: T[]; facets: Facet<T>[]; facetKey: string; facetValue: string; activeFacets: Record<string, string>; disabledFn?: (item: T) => boolean | string;
 }): T | null {
   const newFacets = { ...activeFacets, [facetKey]: facetValue };
   let bestItem: T | null = null;
   let bestScore = -1;
 
   for (const item of items) {
-    if (disabledFn(item) || isOutOfStock(item.id)) continue;
+    if (disabledFn(item)) continue;
     if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) continue;
 
     let score = 0;
@@ -70,32 +54,13 @@ export function findBestVariantMatch<T extends CatalogItem>({
   return bestItem;
 }
 
-export type PriceFragment = { text: string; className: string };
-
-/** Calculate the price display fragments for a given facet option relative to a base price. */
 export function getPriceDisplay<T extends CatalogItem>({
-  items,
-  facets,
-  facetKey,
-  facetValue,
-  activeFacets,
-  basePrice,
-  priceKey = 'price',
-  disabledFn = () => false,
-  isOutOfStock = () => false,
+  items, facets, facetKey, facetValue, activeFacets, basePrice, priceKey = 'price', disabledFn = () => false
 }: {
-  items: T[];
-  facets: Facet<T>[];
-  facetKey: string;
-  facetValue: string;
-  activeFacets: Record<string, string>;
-  basePrice: number;
-  priceKey?: 'price' | 'individualPrice';
-  disabledFn?: (item: T) => boolean | string;
-  isOutOfStock?: (id: string) => boolean;
+  items: T[]; facets: Facet<T>[]; facetKey: string; facetValue: string; activeFacets: Record<string, string>; basePrice: number; priceKey?: 'price' | 'individualPrice'; disabledFn?: (item: T) => boolean | string;
 }): PriceFragment[] | null {
   let matchingItems = items.filter(item => {
-    if (disabledFn(item) || isOutOfStock(item.id)) return false;
+    if (disabledFn(item)) return false;
     if (facets.find(f => f.key === facetKey)?.getValue(item) !== facetValue) return false;
     for (const f of facets) {
       if (f.key !== facetKey && activeFacets[f.key]) {
@@ -107,9 +72,7 @@ export function getPriceDisplay<T extends CatalogItem>({
   });
 
   if (matchingItems.length === 0) {
-    matchingItems = items.filter(item =>
-      !disabledFn(item) && !isOutOfStock(item.id) && facets.find(f => f.key === facetKey)?.getValue(item) === facetValue
-    );
+    matchingItems = items.filter(item => !disabledFn(item) && facets.find(f => f.key === facetKey)?.getValue(item) === facetValue);
   }
 
   if (matchingItems.length === 0) return null;
@@ -141,23 +104,11 @@ export function getPriceDisplay<T extends CatalogItem>({
 }
 
 export default function VariantSelector<T extends CatalogItem>({
-  title,
-  items,
-  facets,
-  value,
-  onChange,
-  basePrice = 0,
-  disabledFn = () => false,
-  isOutOfStock = () => false,
-  getStock,
-  priceKey = 'price',
-  showExternalLinks = false,
+  title, items, facets, value, onChange, basePrice = 0, disabledFn = () => false, priceKey = 'price', showExternalLinks = false,
 }: VariantSelectorProps<T>) {
-  
   const selectedItem = useMemo(() => items.find((i) => i.id === value), [items, value]);
   const [activeFacets, setActiveFacets] = useState<Record<string, string>>({});
 
-  // Sync active facets with the external value
   useEffect(() => {
     if (selectedItem) {
       const newFacets: Record<string, string> = {};
@@ -170,16 +121,7 @@ export default function VariantSelector<T extends CatalogItem>({
   }, [selectedItem, facets]);
 
   const handleFacetSelect = (facetKey: string, facetValue: string) => {
-    const bestItem = findBestVariantMatch({
-      items,
-      facets,
-      facetKey,
-      facetValue,
-      activeFacets,
-      disabledFn,
-      isOutOfStock,
-    });
-
+    const bestItem = findBestVariantMatch({ items, facets, facetKey, facetValue, activeFacets, disabledFn });
     if (bestItem) {
       onChange(bestItem.id);
     } else {
@@ -188,17 +130,7 @@ export default function VariantSelector<T extends CatalogItem>({
   };
 
   const getPriceDisplayLocal = (facetKey: string, facetValue: string): PriceFragment[] | null => {
-    return getPriceDisplay({
-      items,
-      facets,
-      facetKey,
-      facetValue,
-      activeFacets,
-      basePrice,
-      priceKey,
-      disabledFn,
-      isOutOfStock,
-    });
+    return getPriceDisplay({ items, facets, facetKey, facetValue, activeFacets, basePrice, priceKey, disabledFn });
   };
 
   return (
@@ -211,18 +143,13 @@ export default function VariantSelector<T extends CatalogItem>({
               const previousFacet = facets[i];
               if (activeFacets[previousFacet.key]) {
                 const itemVal = previousFacet.getValue(item);
-                if (itemVal && itemVal !== activeFacets[previousFacet.key]) {
-                  return false;
-                }
+                if (itemVal && itemVal !== activeFacets[previousFacet.key]) return false;
               }
             }
             return true;
           });
 
-          const uniqueValues = Array.from(new Set(
-            relevantItems.map(i => facet.getValue(i)).filter(Boolean) as string[]
-          ));
-          
+          const uniqueValues = Array.from(new Set(relevantItems.map(i => facet.getValue(i)).filter(Boolean) as string[]));
           if (uniqueValues.length <= 1) return null;
 
           return (
@@ -232,7 +159,7 @@ export default function VariantSelector<T extends CatalogItem>({
                 {uniqueValues.map(val => {
                   const isActive = activeFacets[facet.key] === val;
                   const priceFragments = getPriceDisplayLocal(facet.key, val);
-                  const isValidAtAll = items.some(i => facet.getValue(i) === val && !disabledFn(i) && !isOutOfStock(i.id));
+                  const isValidAtAll = items.some(i => facet.getValue(i) === val && !disabledFn(i));
 
                   const exactMatchingItems = items.filter(item => {
                     if (facet.getValue(item) !== val) return false;
@@ -246,8 +173,6 @@ export default function VariantSelector<T extends CatalogItem>({
                   });
                   
                   const isLeaf = exactMatchingItems.length === 1;
-                  const stock = isLeaf && getStock ? getStock(exactMatchingItems[0].id) : undefined;
-                  const isLeafOutOfStock = isLeaf && isOutOfStock(exactMatchingItems[0].id);
 
                   let disabledReason = null;
                   if (!isValidAtAll) {
@@ -261,69 +186,22 @@ export default function VariantSelector<T extends CatalogItem>({
                     }
                   }
 
-                  const itemCategoryId = showExternalLinks && isLeaf ? getCategoryIdForItem(exactMatchingItems[0].id) : undefined;
-                  const itemId = showExternalLinks && isLeaf ? exactMatchingItems[0].id : undefined;
-
+                  const dummyItem = isLeaf ? exactMatchingItems[0] : { id: `dummy-${val}`, label: val, price: 0 };
+                  
                   return (
-                    <Tooltip key={val} content={disabledReason}>
-                      <div style={{ position: 'relative', display: 'flex' }}>
-                        <button
-                          className={`config-item-btn ${isActive ? 'active' : ''} ${!isValidAtAll ? 'disabled' : ''}`}
-                          onClick={() => {
-                            if (isValidAtAll) handleFacetSelect(facet.key, val);
-                          }}
-                          disabled={!isValidAtAll}
-                          style={{ padding: '0.5rem 1rem', minHeight: 'auto', flex: '0 0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center', paddingRight: itemCategoryId ? '2.5rem' : '1rem' }}
-                        >
-                          <div className="item-label" style={{ fontSize: '0.95rem' }}>
-                            {val}
-                            {priceFragments && (
-                              <span className="item-price" style={{ marginLeft: '0.5rem' }}>
-                                {priceFragments.map((frag, idx) => (
-                                  <span key={idx} className={frag.className}>{frag.text}</span>
-                                ))}
-                              </span>
-                            )}
-                          </div>
-                          {stock !== undefined && (
-                            <div className="item-meta" style={{ margin: 0, paddingLeft: '0.25rem', borderLeft: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
-                              <span className="stock-count" style={{ fontSize: '0.8rem', opacity: 0.8 }}>{stock} in stock</span>
-                              {isLeafOutOfStock && <span className="out-of-stock-badge" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.3rem' }}>Out of Stock</span>}
-                            </div>
-                          )}
-                        </button>
-                        {itemCategoryId && (
-                          <a
-                            href={`/product/${itemCategoryId}?selected=${itemId}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              position: 'absolute',
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              right: '0.5rem',
-                              color: 'var(--color-gray-hover)',
-                              opacity: 0.6,
-                              transition: 'opacity 0.2s, color 0.2s',
-                              display: 'flex',
-                              zIndex: 2,
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.opacity = '1';
-                              e.currentTarget.style.color = 'var(--color-white)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.opacity = '0.6';
-                              e.currentTarget.style.color = 'var(--color-gray-hover)';
-                            }}
-                            title="View Part Details"
-                          >
-                            <ExternalLinkIcon width="16" height="16" />
-                          </a>
-                        )}
-                      </div>
-                    </Tooltip>
+                    <OptionButton
+                      key={val}
+                      item={dummyItem}
+                      isActive={isActive}
+                      disabledReason={!isValidAtAll ? disabledReason || 'Disabled' : undefined}
+                      basePrice={basePrice}
+                      itemPrice={0} // Not used directly when priceFragments is passed
+                      priceFragments={priceFragments}
+                      variant="sub"
+                      hideStock={!isLeaf}
+                      showExternalLinks={showExternalLinks && isLeaf}
+                      onSelect={() => { if (isValidAtAll) handleFacetSelect(facet.key, val); }}
+                    />
                   );
                 })}
               </div>
