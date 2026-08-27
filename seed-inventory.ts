@@ -84,8 +84,8 @@ async function seedInventory() {
   console.log(JSON.stringify(inventory, null, 2));
   console.log('-------------------------------');
 
-  // Remove the `return;` below to actually send the request when you're ready
-  console.log('\nScript is in dry-run mode. Exiting without making API request.');
+  // If we are doing a dry-run, we should exit here.
+  // console.log('\nScript is in dry-run mode. Exiting without making API request.');
   // return;
 
   console.log(`\nSending inventory update to ${API_URL}/api/inventory...`);
@@ -95,16 +95,21 @@ async function seedInventory() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-secret': ADMIN_SECRET
+        'Authorization': `Bearer ${ADMIN_SECRET}`
       },
       body: JSON.stringify(inventory)
     });
 
-    const data = await res.json();
+    const text = await res.text();
     if (res.ok) {
-      console.log('✅ Success! Inventory updated:', data);
+      try {
+        const data = JSON.parse(text);
+        console.log('✅ Success! Inventory updated:', data);
+      } catch(e) {
+        console.log('✅ Success! Inventory updated (non-JSON):', text);
+      }
     } else {
-      console.error('❌ Failed to update inventory:', data);
+      console.error(`❌ Failed to update inventory (Status: ${res.status}):`, text);
     }
   } catch (err) {
     console.error('❌ Request failed:', err);
