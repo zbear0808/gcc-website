@@ -71,13 +71,7 @@ export default function CartPage() {
     .filter(item => item.displayPrice !== undefined);
 
   const cartTotal = () => {
-    let partsTotal = 0;
-    if (typeof cartTotal === 'function') {
-      partsTotal = cartTotal();
-    } else {
-      partsTotal = cartItems.reduce((acc, item) => acc + (item.displayPrice || 0) * item.qty, 0);
-    }
-
+    const partsTotal = cartItems.reduce((acc, item) => acc + (item.displayPrice || 0) * item.qty, 0);
     const buildsTotal = customBuilds?.reduce((sum, build) => sum + calculateTotal(build), 0) ?? 0;
     return partsTotal + buildsTotal;
   };
