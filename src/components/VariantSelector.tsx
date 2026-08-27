@@ -96,7 +96,7 @@ export function getPriceDisplay<T extends CatalogItem>({
     const minVal = formatPrice(Math.abs(minDiff));
     const maxVal = formatPrice(Math.abs(maxDiff));
     return [
-      { text: `$${minSign}${minVal}`, className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : '' },
+      { text: `${minSign}$${minVal}`, className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : '' },
       { text: ' to ', className: '' },
       { text: `${maxSign}$${maxVal}`, className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : '' }
     ];

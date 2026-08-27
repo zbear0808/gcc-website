@@ -123,7 +123,7 @@ describe('VariantSelector utils', () => {
         basePrice: 10
       });
       expect(result).toEqual([
-        { text: '$-5', className: 'price-decrease' },
+        { text: '-$5', className: 'price-decrease' },
         { text: ' to ', className: '' },
         { text: '+$5', className: 'price-increase' }
       ]);
