@@ -367,7 +367,7 @@ export default function ShopPage() {
                 items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false } as any]}
                 selectedId={config.triggerMetalBracket ? 'triggerMetalBracket' : undefined}
                 isToggleable={true}
-                onSelect={(id) => {
+                onSelect={() => {
                   setConfig(prev => ({
                     ...prev,
                     triggerMetalBracket: config.triggerMetalBracket ? false : true

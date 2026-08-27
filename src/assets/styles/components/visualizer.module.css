@@ -242,3 +242,23 @@
 .pcb-cord {
   top: -65px;
 }
+
+@media (max-width: 768px) {
+  .visualizer-wrapper {
+    padding: 1rem;
+  }
+  .controller-map {
+    transform: scale(0.85);
+    margin: -22.5px -30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .visualizer-wrapper {
+    padding: 0.5rem;
+  }
+  .controller-map {
+    transform: scale(0.7);
+    margin: -45px -60px;
+  }
+}
