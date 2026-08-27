@@ -212,4 +212,16 @@
   .header-name {
     font-size: 2rem;
   }
+  .header-content {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    padding: 0 0.75rem;
+  }
+  .header-name {
+    font-size: 1.5rem;
+  }
 }

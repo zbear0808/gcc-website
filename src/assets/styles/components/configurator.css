@@ -9,6 +9,20 @@
   gap: 2rem;
 }
 
+@media (max-width: 768px) {
+  .config-panel {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .config-panel {
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
 .config-section {
   display: flex;
   flex-direction: column;

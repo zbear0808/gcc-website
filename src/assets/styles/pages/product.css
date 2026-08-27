@@ -182,6 +182,13 @@
   .product-details {
     grid-template-columns: 1fr;
     gap: 2rem;
-    padding: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-details {
+    padding: 1rem;
+    gap: 1.5rem;
   }
 }

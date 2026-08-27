@@ -84,4 +84,16 @@
   color: var(--color-white);
 }
 
+@media (max-width: 768px) {
+  .cart-page {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-page {
+    padding: 1.5rem 1rem;
+  }
+}
+
 
