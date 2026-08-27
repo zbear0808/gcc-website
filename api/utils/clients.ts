@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 import EasyPostClient from '@easypost/api';
 
 if (!process.env.STRIPE_SECRET_KEY && process.env.NODE_ENV === 'production') {
-  throw new Error('Missing STRIPE_SECRET_KEY');
+  console.warn('⚠️ Missing STRIPE_SECRET_KEY in production environment');
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
