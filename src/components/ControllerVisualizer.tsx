@@ -30,7 +30,7 @@ const ControllerVisualizer: React.FC = () => {
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
 
   return (
-    <div className={styles['visualizer-wrapper']}>
+    <div className={`${styles['visualizer-wrapper']} glass-panel`}>
       <div className={`${styles['controller-map']} ${config.buttons ? styles[`theme-${config.buttons}`] : ''}`}>
         {isDIY ? (
           <div className={styles['phob-pcb']}>

@@ -1,9 +1,7 @@
-
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '@/store/useStore';
+import { useStore, useCartTotal } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import { calculateTotal, getItem, formatPrice } from '@shared/pricing';
-import '@/assets/styles/pages/cart.css';
 import { TrashIcon } from '@/components/Icons';
 import type { ConfiguratorState } from '@shared/types';
 
@@ -70,13 +68,7 @@ export default function CartPage() {
     })
     .filter(item => item.displayPrice !== undefined);
 
-  const cartTotal = () => {
-    const partsTotal = cartItems.reduce((acc, item) => acc + (item.displayPrice || 0) * item.qty, 0);
-    const buildsTotal = customBuilds?.reduce((sum, build) => sum + calculateTotal(build), 0) ?? 0;
-    return partsTotal + buildsTotal;
-  };
-
-  const total = cartTotal();
+  const total = useCartTotal();
 
   const handleCheckout = () => {
     navigate('/checkout');

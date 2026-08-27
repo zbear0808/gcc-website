@@ -7,7 +7,7 @@ if (!process.env.STRIPE_SECRET_KEY && process.env.NODE_ENV === 'production') {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
-  apiVersion: '2023-10-16',
+  apiVersion: '2023-10-16' as any,
 });
 
 export const easypost = new EasyPostClient(process.env.EASYPOST_API_KEY || 'fake_key');

@@ -26,6 +26,22 @@ export function withMethods(allowedMethods: string[], handler: Handler): Handler
   };
 }
 
+export function withRoute(handlers: Partial<Record<string, Handler>>): Handler {
+  return (req, res) => {
+    const method = req.method || 'GET';
+    if (method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
+    const handler = handlers[method];
+    if (!handler) {
+      return res.status(405).json({ error: 'Method Not Allowed' });
+    }
+    
+    return handler(req, res);
+  };
+}
+
 export function withAdminAuth(handler: Handler): Handler {
   return (req, res) => {
     const authHeader = req.headers.authorization;

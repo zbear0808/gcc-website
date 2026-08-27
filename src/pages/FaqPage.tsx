@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '@/assets/styles/pages/faq.css';
 
 const faqs = [
   {

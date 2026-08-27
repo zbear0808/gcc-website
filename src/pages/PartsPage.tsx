@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '@/store/useStore';
+import { useStore, useCartTotal } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import { formatPrice } from '@shared/pricing';
-import '@/assets/styles/pages/parts.css';
 
 const CollapsibleSection = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -30,22 +29,8 @@ const CollapsibleSection = ({ title, children }: { title: string; children: Reac
 
 export default function PartsPage() {
   const navigate = useNavigate();
-  const store = useStore();
-
-  const cartTotal = () => {
-    if (typeof store.cartTotal === 'function') {
-      return store.cartTotal();
-    }
-    let total = 0;
-    Object.entries(store.cart).forEach(([id, qty]) => {
-      const category = fullCatalog.find(c => c.subtypes.some(i => i.id === id));
-      const item = category?.subtypes.find(i => i.id === id);
-      if (item) {
-        total += (item.price || 0) * qty;
-      }
-    });
-    return total;
-  };
+  const store = useStore() as any;
+  const cartTotal = useCartTotal();
 
   const renderCategory = (category: typeof fullCatalog[0]) => {
     const validPrices = category.subtypes.map(i => i.individualPrice ?? i.price ?? 0).filter(p => p > 0);
@@ -136,7 +121,7 @@ export default function PartsPage() {
       )}
 
       <div className="cart-summary">
-        <span>Total: ${formatPrice(cartTotal())}</span>
+        <span>Total: ${formatPrice(cartTotal)}</span>
         <button onClick={() => navigate('/cart')}>View Cart</button>
       </div>
     </div>

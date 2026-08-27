@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -13,40 +13,7 @@ import CartPage from '@/pages/CartPage';
 import AdminPage from '@/pages/AdminPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 
-/** Map a route pathname to the appropriate page title. */
-export function getRouteTitle(pathname: string): string {
-  switch (pathname) {
-    case '/':
-      return 'Zu Builds | Builds';
-    case '/parts':
-      return 'Zu Builds | Parts';
-    case '/faq':
-      return 'Zu Builds | FAQ';
-    case '/cart':
-      return 'Zu Builds | Cart';
-    case '/checkout':
-      return 'Zu Builds | Checkout';
-    case '/admin':
-      return 'Zu Builds | Admin';
-    default:
-      if (pathname.startsWith('/product/')) {
-        return 'Zu Builds | Product';
-      }
-      return 'Zu Builds';
-  }
-}
-
-const RouteTitleHandler = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    document.title = getRouteTitle(location.pathname);
-  }, [location.pathname]);
-
-  return null;
-};
-
-const App: React.FC = () => {
+const Layout = () => {
   const loadInventory = useStore((state) => state.loadInventory);
 
   useEffect(() => {
@@ -54,27 +21,92 @@ const App: React.FC = () => {
   }, [loadInventory]);
 
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        <RouteTitleHandler />
-        <Header />
-        <main className="main-content">
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<ShopPage />} />
-              <Route path="/parts" element={<PartsPage />} />
-              <Route path="/faq" element={<FaqPage />} />
-              <Route path="/product/:id" element={<ProductPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Routes>
-          </ErrorBoundary>
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <div className="app-container">
+      <Header />
+      <main className="main-content">
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
+      </main>
+      <Footer />
+    </div>
   );
+};
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <>
+            <title>Zu Builds | Builds</title>
+            <ShopPage />
+          </>
+        ),
+      },
+      {
+        path: 'parts',
+        element: (
+          <>
+            <title>Zu Builds | Parts</title>
+            <PartsPage />
+          </>
+        ),
+      },
+      {
+        path: 'faq',
+        element: (
+          <>
+            <title>Zu Builds | FAQ</title>
+            <FaqPage />
+          </>
+        ),
+      },
+      {
+        path: 'product/:id',
+        element: (
+          <>
+            <title>Zu Builds | Product</title>
+            <ProductPage />
+          </>
+        ),
+      },
+      {
+        path: 'cart',
+        element: (
+          <>
+            <title>Zu Builds | Cart</title>
+            <CartPage />
+          </>
+        ),
+      },
+      {
+        path: 'checkout',
+        element: (
+          <>
+            <title>Zu Builds | Checkout</title>
+            <CheckoutPage />
+          </>
+        ),
+      },
+      {
+        path: 'admin',
+        element: (
+          <>
+            <title>Zu Builds | Admin</title>
+            <AdminPage />
+          </>
+        ),
+      },
+    ],
+  },
+]);
+
+const App: React.FC = () => {
+  return <RouterProvider router={router} />;
 };
 
 export default App;

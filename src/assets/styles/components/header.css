@@ -215,6 +215,10 @@
   .header-content {
     padding: 0 1rem;
   }
+  .header-title h1 { font-size: 1.6rem; letter-spacing: 1px; }
+  .header-name.trichromatic { color: var(--color-white); mix-blend-mode: normal; transform: none; }
+  .header-name.trichromatic::before, .header-name.trichromatic::after { display: none; }
+  .header-name.trichromatic:hover { color: var(--color-gray-hover); transform: scale(1.02); }
 }
 
 @media (max-width: 480px) {
@@ -224,4 +228,6 @@
   .header-name {
     font-size: 1.5rem;
   }
+  .header-title h1 { font-size: 1.4rem; }
+  .sidebar { width: 100%; max-width: 100%; }
 }

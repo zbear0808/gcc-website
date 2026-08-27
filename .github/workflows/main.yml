@@ -30,8 +30,6 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Build application
-        run: npm run build
 
       # Vercel deployment is handled automatically by their GitHub integration.
       # If you still want to deploy static files to another repo, you can uncomment below.

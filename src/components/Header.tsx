@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '@/store/useStore';
+import { useCartCount } from '@/store/useStore';
 import { CartIcon } from './Icons';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const cart = useStore((state) => state.cart);
-  const cartCount = Object.values(cart).reduce((sum, count) => sum + count, 0);
+  const cartCount = useCartCount();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);

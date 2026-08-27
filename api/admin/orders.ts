@@ -3,7 +3,7 @@ import { redis } from '../utils/clients';
 import { parseAndSortOrders } from '../utils/helpers';
 import { withMiddleware, withAdminAuth } from '../utils/middleware';
 
-async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(_req: VercelRequest, res: VercelResponse) {
   if (!redis) {
     return res.status(500).json({ error: 'Redis not configured' });
   }

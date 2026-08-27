@@ -6,7 +6,6 @@ import VariantSelector from '@/components/VariantSelector';
 import ConfigSection from '@/components/ConfigSection';
 import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
 import { BackIcon } from '@/components/Icons';
-import '@/assets/styles/pages/product.css';
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();

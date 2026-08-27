@@ -1,12 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
-import { products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps, mods, addons } from '@shared/catalog';
+import {
+  products, shells, buttons, cables, rumbles, sliderPots, zButtons, membranes, stickCaps,
+  getNotchOptions, getTriggerModOptions, getSpringOptions, getDetachableTriggerOptions
+} from '@shared/catalog';
 import { calculateTotal, getItemPrice } from '@shared/pricing';
 import ControllerVisualizer from '@/components/ControllerVisualizer';
 import ConfigSection from '@/components/ConfigSection';
 import VariantSelector from '@/components/VariantSelector';
-import '@/assets/styles/pages/shop.css';
+import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
 
 const triggers = [
   { id: 'l', label: 'Left Only', price: 0 },
@@ -20,59 +23,36 @@ const switchTypes = [
   { id: 'white', label: 'White (Clicky)', price: 0 },
 ];
 
-import { shellFacets, buttonFacets, stickCapFacets } from '@shared/facets';
+const notchStyles = [
+  { id: 'deep', label: 'Deep Grooves (Default)', price: 0 },
+  { id: 'subtle', label: 'Subtle Notches', price: 15 },
+];
+
+const triggerPlugLengths = [
+  { id: 'tall', label: 'Tall', price: 0 },
+  { id: 'short', label: 'Short', price: 0 },
+];
 
 export default function ShopPage() {
   const navigate = useNavigate();
   const config = useStore(state => state.config);
   const addCustomBuild = useStore(state => state.addCustomBuild);
-  const setConfig = useStore(state => state.setConfig);
-  const setProduct = useStore(state => state.setProduct);
-  const setShell = useStore(state => state.setShell);
-  const setButtons = useStore(state => state.setButtons);
-  const setMembrane = useStore(state => state.setMembrane);
-  const setCable = useStore(state => state.setCable);
-  const setRumble = useStore(state => state.setRumble);
-  const setSliderPots = useStore(state => state.setSliderPots);
-  const setZButton = useStore(state => state.setZButton);
-  const setStickCap = useStore(state => state.setStickCap);
-  const toggleMod = useStore(state => state.toggleMod);
-  const setNotchStyle = useStore(state => state.setNotchStyle);
-  const setTriggerSide = useStore(state => state.setTriggerSide);
-  const setTriggerLength = useStore(state => state.setTriggerLength);
-  const setkailhChocoSide = useStore(state => state.setkailhChocoSide);
-  const setKailhChocoType = useStore(state => state.setKailhChocoType);
-  const setTriggerMetalBracketSide = useStore(state => state.setTriggerMetalBracketSide);
+  const updateConfig = useStore(state => state.updateConfig);
 
-  const notchOptions = mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
+  const toggleMod = useStore(state => state.toggleMod);
+
+  const notchOptions = getNotchOptions(config);
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
 
-  const triggerModOptions = addons
-    .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco' || a.id === 'triggerMetalBracket')
-    .map(a =>
-      a.id === 'kailhChoco'
-        ? { ...a, label: 'kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
-        : a.id === 'triggerMetalBracket'
-          ? { ...a, price: (config.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3 }
-          : a
-    );
+  const triggerModOptions = getTriggerModOptions(config);
   const selectedTriggerMod = config.kailhChoco ? 'kailhChoco' : config.triggerMetalBracket ? 'triggerMetalBracket' : config.triggerPlugs ? 'triggerPlugs' : undefined;
 
-  const springOptions = addons.filter(a => a.id === 'springCut');
+  const springOptions = getSpringOptions();
   const selectedSpring = config.springCut ? 'springCut' : undefined;
 
-  const detachableTriggerOptions = mods.filter(m => m.id === 'detachableTriggerPaddle');
+  const detachableTriggerOptions = getDetachableTriggerOptions();
   const selectedDetachableTrigger = config.detachableTriggerPaddle ? 'detachableTriggerPaddle' : undefined;
 
-  const notchStyles = [
-    { id: 'deep', label: 'Deep Grooves (Default)', price: 0 },
-    { id: 'subtle', label: 'Subtle Notches', price: 15 },
-  ];
-
-  const triggerPlugLengths = [
-    { id: 'tall', label: 'Tall', price: 0 },
-    { id: 'short', label: 'Short', price: 0 },
-  ];
   const isFullBuild = config.product === 'full-build';
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
 
@@ -81,7 +61,7 @@ export default function ShopPage() {
   const handleAddToCart = () => {
     addCustomBuild(config);
     // Reset to default config for a fresh build if they come back
-    setConfig(() => ({ product: 'full-build' }));
+    updateConfig({ product: 'full-build' });
     navigate('/cart');
   };
 
@@ -91,14 +71,14 @@ export default function ShopPage() {
         <div className="visualizer-col">
           <ControllerVisualizer />
         </div>
-        <div className="config-panel">
+        <div className="config-panel glass-panel">
           <h2 className="product-section-title">Select Product</h2>
           <div className="product-selector">
             {products.filter(p => p.id !== 'board-only').map(p => (
               <button
                 key={p.id}
                 className={`product-btn ${config.product === p.id ? 'active' : ''}`}
-                onClick={() => setProduct(p.id)}
+                onClick={() => updateConfig({ product: p.id })}
               >
                 <div className="product-btn-label">{p.label}</div>
                 <div className="product-btn-price">From ${p.price}</div>
@@ -117,7 +97,7 @@ export default function ShopPage() {
                   items={shells}
                   facets={shellFacets}
                   value={config.shell}
-                  onChange={setShell}
+                  onChange={(val) => updateConfig({ shell: val })}
                   basePrice={getItemPrice(config.shell ?? '')}
                   showExternalLinks={true}
                 />
@@ -141,7 +121,7 @@ export default function ShopPage() {
                   items={buttons}
                   facets={buttonFacets}
                   value={config.buttons}
-                  onChange={setButtons}
+                  onChange={(val) => updateConfig({ buttons: val })}
                   basePrice={getItemPrice(config.buttons ?? '')}
                   showExternalLinks={true}
                 />
@@ -150,7 +130,7 @@ export default function ShopPage() {
                   title="Rubber Membranes"
                   items={membranes}
                   selectedId={config.membrane}
-                  onSelect={setMembrane}
+                  onSelect={(val) => updateConfig({ membrane: val })}
                   basePrice={getItemPrice(config.membrane ?? '')}
                   descriptionPosition="outside"
                   buttonSize="small"
@@ -160,10 +140,10 @@ export default function ShopPage() {
             )}
 
             {[
-              { title: 'Cable', items: cables, value: config.cable, onSelect: setCable, descriptionPosition: 'outside', buttonSize: 'small', disabledFn: (item: any) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false },
-              { title: 'Rumble Motor', items: rumbles, value: config.rumble, onSelect: (id: string) => setRumble(config.rumble === id ? undefined : id), isToggleable: true, descriptionPosition: 'none', buttonSize: 'small' },
-              { title: 'Slider Potentiometers', items: sliderPots, value: config.sliderPots, onSelect: setSliderPots, descriptionPosition: 'outside', buttonSize: 'small' },
-              { title: 'Z Button', items: zButtons, value: config.zButton, onSelect: setZButton, descriptionPosition: 'none', buttonSize: 'small' }
+              { title: 'Cable', items: cables, value: config.cable, onSelect: (val: string) => updateConfig({ cable: val }), descriptionPosition: 'outside', buttonSize: 'small', disabledFn: (item: any) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false },
+              { title: 'Rumble Motor', items: rumbles, value: config.rumble, onSelect: (id: string) => updateConfig({ rumble: config.rumble === id ? undefined : id }), isToggleable: true, descriptionPosition: 'none', buttonSize: 'small' },
+              { title: 'Slider Potentiometers', items: sliderPots, value: config.sliderPots, onSelect: (val: string) => updateConfig({ sliderPots: val }), descriptionPosition: 'outside', buttonSize: 'small' },
+              { title: 'Z Button', items: zButtons, value: config.zButton, onSelect: (val: string) => updateConfig({ zButton: val }), descriptionPosition: 'none', buttonSize: 'small' }
             ].map(section => (
               <React.Fragment key={section.title}>
                 <ConfigSection
@@ -191,7 +171,7 @@ export default function ShopPage() {
                 items={stickCaps}
                 facets={stickCapFacets}
                 value={config.stickCap}
-                onChange={setStickCap}
+                onChange={(val) => updateConfig({ stickCap: val })}
                 basePrice={getItemPrice(config.stickCap ?? '')}
                 showExternalLinks={true}
               />
@@ -205,20 +185,17 @@ export default function ShopPage() {
                   selectedId={selectedNotch}
                   isToggleable={true}
                   onSelect={(id) => {
-                    setConfig(prev => {
+                    updateConfig(() => {
                       if (selectedNotch === id) {
                         return {
-                          ...prev,
                           notchesFirefox: false,
                           notchesWavedash: false,
                           notchStyle: undefined
                         };
                       }
                       return {
-                        ...prev,
                         notchesFirefox: id === 'notchesFirefox',
                         notchesWavedash: id === 'notchesWavedash',
-                        notchStyle: prev.notchStyle
                       };
                     });
                   }}
@@ -232,7 +209,7 @@ export default function ShopPage() {
                     title="Notch Style"
                     items={notchStyles}
                     selectedId={config.notchStyle || 'deep'}
-                    onSelect={(id) => setNotchStyle(id as 'deep' | 'subtle')}
+                    onSelect={(id) => updateConfig({ notchStyle: id as 'deep' | 'subtle' })}
                     basePrice={notchStyles.find(n => n.id === (config.notchStyle || 'deep'))?.price || 0}
                     variant="sub"
                     hideStock={true}
@@ -246,17 +223,15 @@ export default function ShopPage() {
                   selectedId={selectedTriggerMod}
                   isToggleable={true}
                   onSelect={(id) => {
-                    setConfig(prev => {
+                    updateConfig(() => {
                       if (selectedTriggerMod === id) {
                         return {
-                          ...prev,
                           kailhChoco: false,
                           triggerPlugs: false,
                           triggerMetalBracket: false
                         };
                       }
                       return {
-                        ...prev,
                         kailhChoco: id === 'kailhChoco',
                         triggerPlugs: id === 'triggerPlugs',
                         triggerMetalBracket: id === 'triggerMetalBracket',
@@ -274,7 +249,7 @@ export default function ShopPage() {
                       title="Trigger Side"
                       items={triggers}
                       selectedId={config.triggerPlugSide || 'both'}
-                      onSelect={(id) => setTriggerSide(id as import('@shared/types').TriggerSide)}
+                      onSelect={(id) => updateConfig({ triggerPlugSide: id as import('@shared/types').TriggerSide })}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={true}
@@ -283,7 +258,7 @@ export default function ShopPage() {
                       title="Trigger Plug Length"
                       items={triggerPlugLengths}
                       selectedId={config.triggerPlugLength || 'tall'}
-                      onSelect={(id) => setTriggerLength(id as import('@shared/types').TriggerPlugLength)}
+                      onSelect={(id) => updateConfig({ triggerPlugLength: id as import('@shared/types').TriggerPlugLength })}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={true}
@@ -296,7 +271,7 @@ export default function ShopPage() {
                     title="Trigger Metal Bracket Side"
                     items={triggers}
                     selectedId={config.triggerMetalBracketSide || 'both'}
-                    onSelect={(id) => setTriggerMetalBracketSide(id as import('@shared/types').TriggerSide)}
+                    onSelect={(id) => updateConfig({ triggerMetalBracketSide: id as import('@shared/types').TriggerSide })}
                     basePrice={0}
                     variant="sub"
                     showExternalLinks={true}
@@ -309,7 +284,7 @@ export default function ShopPage() {
                       title="kailh Choco Side"
                       items={triggers}
                       selectedId={config.kailhChocoSide || 'both'}
-                      onSelect={(id) => setkailhChocoSide(id as import('@shared/types').TriggerSide)}
+                      onSelect={(id) => updateConfig({ kailhChocoSide: id as import('@shared/types').TriggerSide })}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={true}
@@ -318,7 +293,7 @@ export default function ShopPage() {
                       title="Switch Type"
                       items={switchTypes}
                       selectedId={config.kailhChocoType || 'red'}
-                      onSelect={(id) => setKailhChocoType(id as 'red' | 'brown' | 'white')}
+                      onSelect={(id) => updateConfig({ kailhChocoType: id as 'red' | 'brown' | 'white' })}
                       basePrice={0}
                       variant="sub"
                       showExternalLinks={false}
@@ -332,8 +307,7 @@ export default function ShopPage() {
                   selectedId={selectedSpring}
                   isToggleable={true}
                   onSelect={(id) => {
-                    setConfig(prev => ({
-                      ...prev,
+                    updateConfig(() => ({
                       springCut: selectedSpring === id ? false : id === 'springCut'
                     }));
                   }}
@@ -348,8 +322,7 @@ export default function ShopPage() {
                   selectedId={selectedDetachableTrigger}
                   isToggleable={true}
                   onSelect={(id) => {
-                    setConfig(prev => ({
-                      ...prev,
+                    updateConfig(() => ({
                       detachableTriggerPaddle: selectedDetachableTrigger === id ? false : id === 'detachableTriggerPaddle',
                       ...(selectedDetachableTrigger !== id && id === 'detachableTriggerPaddle' ? { kailhChoco: false } : {})
                     }));
@@ -368,9 +341,8 @@ export default function ShopPage() {
                 selectedId={config.triggerMetalBracket ? 'triggerMetalBracket' : undefined}
                 isToggleable={true}
                 onSelect={() => {
-                  setConfig(prev => ({
-                    ...prev,
-                    triggerMetalBracket: config.triggerMetalBracket ? false : true
+                  updateConfig((prev: any) => ({
+                    triggerMetalBracket: !prev.triggerMetalBracket
                   }));
                 }}
                 basePrice={0}
@@ -379,7 +351,7 @@ export default function ShopPage() {
             )}
           </>
 
-          <div className="price-breakdown">
+          <div className="price-breakdown glass-panel">
             <h3>Total: ${calculateTotal(config)}</h3>
           </div>
 
@@ -394,4 +366,3 @@ export default function ShopPage() {
     </div>
   );
 }
-

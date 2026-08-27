@@ -1,4 +1,4 @@
-.visualizer-wrapper { display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-backdrop); border-radius: var(--border-radius-md); box-shadow: var(--glass-shadow); padding: 2rem; position: relative; overflow: hidden; }
+.visualizer-wrapper { display: flex; justify-content: center; align-items: center; padding: 2rem; position: relative; overflow: hidden; }
 .controller-map { position: relative; width: 400px; min-width: 400px; height: 300px; transition: all var(--transition-standard); }
 .controller-body { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 280px; height: 100px; background-color: var(--shell-oem); border-radius: 50px; transition: background-color var(--transition-standard); z-index: 2; box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1); }
 .controller-pod-left, .controller-pod-right { position: absolute; top: 15px; width: 84px; height: 145px; background-color: inherit; border-radius: 42px; z-index: -1; transition: background-color var(--transition-standard); box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1); }

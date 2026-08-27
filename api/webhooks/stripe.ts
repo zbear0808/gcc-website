@@ -1,22 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { Redis } from '@upstash/redis';
 import { extractRequestedItems } from '../../shared/pricing';
+import { stripe, redis } from '../utils/clients';
 
 export const config = {
   api: { bodyParser: false },
 };
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2023-10-16' as any,
-});
-
-const redis = process.env.KV_REST_API_URL
-  ? new Redis({
-      url: process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN as string,
-    })
-  : null;
 
 function getRawBody(req: VercelRequest): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -58,21 +47,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const payload = typeof raw === 'string' ? JSON.parse(raw) : raw;
           const requestedItems = extractRequestedItems(payload);
 
-          const promises = Object.entries(requestedItems).map(([id, qty]) => {
-            return redis.hincrby('inventory', id, -(qty as number));
+          const pipeline = redis.multi();
+
+          Object.entries(requestedItems).forEach(([id, qty]) => {
+            pipeline.hincrby('inventory', id, -(qty as number));
           });
-          await Promise.all(promises);
 
           // Update status and move to paid_order prefix
           payload.status = 'paid';
           payload.paidAt = new Date().toISOString();
           payload.stripePaymentIntentId = paymentIntent.id;
           
-          await redis.set(`paid_order:${orderId}`, JSON.stringify(payload));
+          pipeline.set(`paid_order:${orderId}`, JSON.stringify(payload));
           
           // Clean up the old keys
-          await redis.del(`cart:${orderId}`);
-          await redis.del(`order:${orderId}`);
+          pipeline.del(`cart:${orderId}`);
+          pipeline.del(`order:${orderId}`);
+
+          await pipeline.exec();
         }
       }
     }

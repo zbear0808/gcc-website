@@ -14,6 +14,7 @@ import type {
   CatalogCategory,
   TriggerPaddlePcbOption,
   CatalogItem,
+  ConfiguratorState,
 } from './types';
 
 // Products
@@ -312,3 +313,24 @@ export const fullCatalog: CatalogCategory[] = [
 export function getCategoryIdForItem(itemId: string): string | undefined {
   return fullCatalog.find((c) => c.subtypes.some((s) => s.id === itemId))?.id;
 }
+// Helpers to extract logic out of the render phase
+export const getNotchOptions = (_config: ConfiguratorState) => {
+  return mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
+};
+
+export const getTriggerModOptions = (config: ConfiguratorState) => {
+  return addons
+    .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco' || a.id === 'triggerMetalBracket')
+    .map(a =>
+      a.id === 'kailhChoco'
+        ? { ...a, label: 'kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
+        : a.id === 'triggerMetalBracket'
+          ? { ...a, price: (config.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3 }
+          : a
+    );
+};
+
+export const getSpringOptions = () => addons.filter(a => a.id === 'springCut');
+
+export const getDetachableTriggerOptions = () => mods.filter(m => m.id === 'detachableTriggerPaddle');
+
