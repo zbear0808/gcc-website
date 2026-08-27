@@ -98,7 +98,7 @@ export function getPriceDisplay<T extends CatalogItem>({
     return [
       { text: `$${minSign}${minVal}`, className: minDiff > 0 ? 'price-increase' : minDiff < 0 ? 'price-decrease' : '' },
       { text: ' to ', className: '' },
-      { text: `${maxSign}${maxVal}`, className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : '' }
+      { text: `${maxSign}$${maxVal}`, className: maxDiff > 0 ? 'price-increase' : maxDiff < 0 ? 'price-decrease' : '' }
     ];
   }
 }

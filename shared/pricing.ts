@@ -361,7 +361,7 @@ export function extractRequestedItems(payload: {
   cart?: Record<string, number>;
   parts?: boolean;
 }): Record<string, number> {
-  const itemsMap: Record<string, number> = payload.parts ? { ...(payload.cart ?? {}) } : {};
+  const itemsMap: Record<string, number> = { ...(payload.cart ?? {}) };
 
   if (payload.config?.product) {
     const configItems = getAllItemsFromConfig(payload.config);

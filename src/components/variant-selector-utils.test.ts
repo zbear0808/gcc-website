@@ -61,7 +61,7 @@ describe('VariantSelector utils', () => {
       expect(result).toBeNull(); // Only item-a is TypeA, and it's disabled.
     });
 
-    it('Returns null when no items match the facet value', () => {
+    it('Returns the item even if it does not match active secondary facets', () => {
       const result = findBestVariantMatch({
         items: mockItems,
         facets: mockFacets,
@@ -69,7 +69,7 @@ describe('VariantSelector utils', () => {
         facetValue: 'TypeA',
         activeFacets: { color: 'indigo' },
       });
-      expect(result).toBeNull();
+      expect(result?.id).toBe('item-a');
     });
   });
 

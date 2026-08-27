@@ -47,9 +47,9 @@ describe('Shipping', () => {
           // We can mock minimal config state, but usually customBuilds imply a 'full-build'
           // We'll let extractRequestedItems do its job by actually defining what extractRequestedItems returns.
           // Wait, extractRequestedItems will look at `customBuilds` and extract the items from it. 
-          // If customBuilds just has `base: 'full-build'`, it should work.
-          { base: 'full-build' } as any,
-          { base: 'full-build' } as any
+          // If customBuilds just has `product: 'full-build'`, it should work.
+          { product: 'full-build' } as any,
+          { product: 'full-build' } as any
         ]
       };
       const result = calculateParcel(payload);
