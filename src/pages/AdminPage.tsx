@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import type { RedisOrder } from '@shared/types';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,21 +17,24 @@ export default function AdminPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/admin/orders', {
+      const res = await fetch(`${API_BASE}/api/admin/orders`, {
         headers: { Authorization: `Bearer ${password}` }
       });
       if (res.ok) {
         const data = await res.json();
         setOrders(data.orders);
         
-        const invRes = await fetch('/api/inventory');
+        const invRes = await fetch(`${API_BASE}/api/inventory`);
         if (invRes.ok) {
           setInventory(await invRes.json());
         }
 
         setIsAuthenticated(true);
-      } else {
+      } else if (res.status === 401) {
         setError('Invalid password');
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setError(`Server error: ${errData.error || res.statusText}`);
       }
     } catch (err) {
       setError('Failed to fetch orders');
@@ -40,7 +45,7 @@ export default function AdminPage() {
   const fulfillOrder = async (orderId: string) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/fulfill', {
+      const res = await fetch(`${API_BASE}/api/admin/fulfill`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,11 +72,11 @@ export default function AdminPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/inventory', {
+      const res = await fetch(`${API_BASE}/api/inventory`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-secret': password
+          Authorization: `Bearer ${password}`
         },
         body: JSON.stringify(inventory)
       });
