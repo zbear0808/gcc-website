@@ -42,18 +42,21 @@ export default function ShopPage() {
   const setTriggerLength = useStore(state => state.setTriggerLength);
   const setkailhChocoSide = useStore(state => state.setkailhChocoSide);
   const setKailhChocoType = useStore(state => state.setKailhChocoType);
+  const setTriggerMetalBracketSide = useStore(state => state.setTriggerMetalBracketSide);
 
   const notchOptions = mods.filter(m => m.id === 'notchesWavedash' || m.id === 'notchesFirefox');
   const selectedNotch = config.notchesFirefox ? 'notchesFirefox' : config.notchesWavedash ? 'notchesWavedash' : undefined;
 
   const triggerModOptions = addons
-    .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco')
+    .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco' || a.id === 'triggerMetalBracket')
     .map(a =>
       a.id === 'kailhChoco'
         ? { ...a, label: 'kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
-        : a
+        : a.id === 'triggerMetalBracket'
+          ? { ...a, price: (config.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3 }
+          : a
     );
-  const selectedTriggerMod = config.kailhChoco ? 'kailhChoco' : config.triggerPlugs ? 'triggerPlugs' : undefined;
+  const selectedTriggerMod = config.kailhChoco ? 'kailhChoco' : config.triggerMetalBracket ? 'triggerMetalBracket' : config.triggerPlugs ? 'triggerPlugs' : undefined;
 
   const springOptions = addons.filter(a => a.id === 'springCut');
   const selectedSpring = config.springCut ? 'springCut' : undefined;
@@ -248,13 +251,15 @@ export default function ShopPage() {
                         return {
                           ...prev,
                           kailhChoco: false,
-                          triggerPlugs: false
+                          triggerPlugs: false,
+                          triggerMetalBracket: false
                         };
                       }
                       return {
                         ...prev,
                         kailhChoco: id === 'kailhChoco',
                         triggerPlugs: id === 'triggerPlugs',
+                        triggerMetalBracket: id === 'triggerMetalBracket',
                         ...(id === 'kailhChoco' ? { detachableTriggerPaddle: false } : {})
                       };
                     });
@@ -284,6 +289,18 @@ export default function ShopPage() {
                       showExternalLinks={true}
                     />
                   </>
+                )}
+
+                {config.triggerMetalBracket && (
+                  <ConfigSection
+                    title="Trigger Metal Bracket Side"
+                    items={triggers}
+                    selectedId={config.triggerMetalBracketSide || 'both'}
+                    onSelect={(id) => setTriggerMetalBracketSide(id as import('@shared/types').TriggerSide)}
+                    basePrice={0}
+                    variant="sub"
+                    showExternalLinks={true}
+                  />
                 )}
 
                 {config.kailhChoco && (
@@ -342,6 +359,23 @@ export default function ShopPage() {
                   showExternalLinks={true}
                 />
               </>
+            )}
+
+            {isDIY && (
+              <ConfigSection
+                title="Trigger Modifications"
+                items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false } as any]}
+                selectedId={config.triggerMetalBracket ? 'triggerMetalBracket' : undefined}
+                isToggleable={true}
+                onSelect={(id) => {
+                  setConfig(prev => ({
+                    ...prev,
+                    triggerMetalBracket: config.triggerMetalBracket ? false : true
+                  }));
+                }}
+                basePrice={0}
+                showExternalLinks={false}
+              />
             )}
           </>
 

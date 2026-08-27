@@ -63,6 +63,7 @@ export function sanitizeConfig(config: ConfiguratorState): ConfiguratorState {
       notchStyle: result.notchStyle ?? 'deep',
       triggerPlugs: result.triggerPlugs ?? true,
       triggerPlugSide: result.triggerPlugSide ?? 'r',
+      triggerMetalBracketSide: result.triggerMetalBracketSide ?? 'both',
     };
   } else if (isDiyKit(result)) {
     result = {
@@ -111,6 +112,11 @@ export function calculateTotal(config: ConfiguratorState): number {
       kailhChocoPremium = (sanitized.kailhChocoSide ?? 'both') === 'both' ? 40 : 30;
     }
 
+    let triggerMetalBracketPremium = 0;
+    if (sanitized.triggerMetalBracket) {
+      triggerMetalBracketPremium = (sanitized.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3;
+    }
+
     const wornDiscount = sanitized.wornShell ? -4 : 0;
 
     let subtlePremium = 0;
@@ -123,6 +129,7 @@ export function calculateTotal(config: ConfiguratorState): number {
       modsTotal +
       addonsTotal +
       kailhChocoPremium +
+      triggerMetalBracketPremium +
       wornDiscount +
       subtlePremium +
       getItemPrice(sanitized.shell ?? '') +
@@ -137,8 +144,14 @@ export function calculateTotal(config: ConfiguratorState): number {
   }
 
   if (isDiyKit(sanitized)) {
+    let triggerMetalBracketPremium = 0;
+    if (sanitized.triggerMetalBracket) {
+      triggerMetalBracketPremium = 6;
+    }
+
     return (
       base +
+      triggerMetalBracketPremium +
       getItemPrice(sanitized.cable ?? '') +
       getItemPrice(sanitized.sliderPots ?? '') +
       getItemPrice(sanitized.zButton ?? '') +
@@ -212,11 +225,15 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
             ? `${(sanitized.triggerPlugLength ?? 'tall').charAt(0).toUpperCase() + (sanitized.triggerPlugLength ?? 'tall').slice(1)} Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
             : addon.id === 'kailhChoco'
               ? `kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()}) - ${(sanitized.kailhChocoType ?? 'red').toUpperCase()}`
-              : undefined;
+              : addon.id === 'triggerMetalBracket'
+                ? `Trigger Metal Bracket (${(sanitized.triggerMetalBracketSide ?? 'both').toUpperCase()})`
+                : undefined;
 
         const priceOverride = addon.id === 'kailhChoco'
           ? ((sanitized.kailhChocoSide ?? 'both') === 'both' ? 40 : 30)
-          : addon.price;
+          : addon.id === 'triggerMetalBracket'
+            ? ((sanitized.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3)
+            : addon.price;
 
         const item = createStripeLineItem({ ...addon, price: priceOverride } as unknown as CatalogItem, label);
         if (item) items.push(item);
@@ -242,6 +259,11 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
           if (item) items.push(item);
         }
       }
+    }
+
+    if (sanitized.triggerMetalBracket) {
+      const item = createStripeLineItem({ ...getItem('triggerMetalBracket')!, price: 6 } as CatalogItem, "Trigger Metal Bracket (Pair)");
+      if (item) items.push(item);
     }
   }
 
@@ -312,11 +334,22 @@ export function getAllItemsFromConfig(config: ConfiguratorState): string[] {
         items.push('switch-mount-3d');
       }
     }
+    if (config.triggerMetalBracket) {
+      const side = config.triggerMetalBracketSide ?? 'both';
+      if (side === 'both') {
+        items.push('triggerMetalBracket', 'triggerMetalBracket');
+      } else {
+        items.push('triggerMetalBracket');
+      }
+    }
   } else if (isDiyKit(config)) {
     if (config.cable) items.push(config.cable);
     if (config.sliderPots) items.push(config.sliderPots);
     if (config.zButton) items.push(config.zButton);
     if (config.stickCap) items.push(config.stickCap);
+    if (config.triggerMetalBracket) {
+      items.push('triggerMetalBracket', 'triggerMetalBracket');
+    }
   }
 
   return items;

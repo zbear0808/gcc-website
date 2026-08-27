@@ -70,6 +70,8 @@ async function seedInventory() {
       quantity = 50;
     } else if (item.id === 'trigger-paddle-oem') {
       quantity = 45;
+    } else if (item.id === 'triggerMetalBracket') {
+      quantity = 20;
     } else if (stickCapIds.has(item.id)) {
       // General rule for stick caps that didn't match the specific cases above
       quantity = 10;

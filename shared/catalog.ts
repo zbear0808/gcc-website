@@ -61,6 +61,7 @@ export const addons: AddonOption[] = [
   { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs.png', requiresInventory: false },
   { id: 'kailhChoco', label: 'kailh Choco Switch Mechanical Trigger', image: '/images/addons/kailh-choco.png' },
   { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.png', requiresInventory: false },
+  { id: 'triggerMetalBracket', label: 'Trigger Metal Bracket', price: 0, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false },
 ];
 
 // Shells
@@ -168,6 +169,7 @@ export const parts: PartItem[] = [
   { id: 'jst-pigtail-header', label: '2-Pin JST Pigtail and Header', description: '2-pin JST pigtail and header combo for mechanical switch wiring.', price: 0, individualPrice: 1 },
   { id: 'switch-mount-3d', label: '3D Printed Switch Mount', description: '3D printed mount for the mechanical switch.', price: 0, individualPrice: 2 },
   { id: 'screwdriver-set', label: 'Tri-wing + JIS Screwdriver Set', description: 'Includes both a tri-wing and JIS screwdriver needed to open GameCube controllers.', price: 0, individualPrice: 4, image: '/images/parts/screwdrivers.png' },
+  { id: 'triggerMetalBracket', label: 'Trigger Metal Bracket', description: 'OEM part that was found on older gcc only, and not on any t3 controllers.', individualPrice: 4, price: 3, image: '/images/parts/trigger-metal-bracket.png' },
 ];
 
 // Trigger Plugs

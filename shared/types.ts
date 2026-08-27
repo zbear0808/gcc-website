@@ -101,6 +101,8 @@ export interface ConfiguratorState {
   wornShell?: boolean;
   triggerPlugSide?: TriggerSide;
   triggerPlugLength?: TriggerPlugLength;
+  triggerMetalBracket?: boolean;
+  triggerMetalBracketSide?: TriggerSide;
 }
 
 // Cart & Inventory

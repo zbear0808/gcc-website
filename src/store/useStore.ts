@@ -31,6 +31,7 @@ interface AppStore {
   setTriggerLength: (length: TriggerPlugLength) => void;
   setkailhChocoSide: (side: TriggerSide) => void;
   setKailhChocoType: (type: 'red' | 'brown' | 'white') => void;
+  setTriggerMetalBracketSide: (side: TriggerSide) => void;
 
   // Cart actions
   addCustomBuild: (config: ConfiguratorState) => void;
@@ -135,6 +136,11 @@ export const useStore = create<AppStore>()(
       setKailhChocoType: (type) =>
         set((state) => ({
           config: sanitizeConfig({ ...state.config, kailhChocoType: type }),
+        })),
+
+      setTriggerMetalBracketSide: (side) =>
+        set((state) => ({
+          config: sanitizeConfig({ ...state.config, triggerMetalBracketSide: side }),
         })),
 
       // Cart Actions
