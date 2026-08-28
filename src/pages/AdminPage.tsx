@@ -37,7 +37,8 @@ export default function AdminPage() {
         setError(`Server error: ${errData.error || res.statusText}`);
       }
     } catch (err) {
-      setError('Failed to fetch orders');
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to fetch orders: ${message}`);
     }
     setLoading(false);
   };

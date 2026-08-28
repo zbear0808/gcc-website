@@ -52,7 +52,8 @@ export function withAdminAuth(handler: Handler): Handler {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split(' ')[1] !== adminSecret) {
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1]?.trim() : undefined;
+    if (!token || token !== adminSecret.trim()) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
