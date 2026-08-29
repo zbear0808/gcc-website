@@ -30,10 +30,17 @@
     grid-template-columns: 1fr;
   }
   .visualizer-col {
-    position: relative;
-    top: 0;
-    height: 50vh;
+    position: sticky;
+    top: 64px;
+    height: 45vh;
     border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg-form);
+    z-index: 50;
+    transition: all 0.3s ease;
+  }
+  .visualizer-col.is-scrolled {
+    height: 160px;
+    padding: 0.5rem;
   }
 }
 

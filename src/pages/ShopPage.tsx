@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import {
@@ -58,6 +58,17 @@ export default function ShopPage() {
 
   const selectedShell = shells.find(s => s.id === config.shell);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleAddToCart = () => {
     addCustomBuild(config);
     // Reset to default config for a fresh build if they come back
@@ -68,8 +79,8 @@ export default function ShopPage() {
   return (
     <div className="shop-page">
       <div className="shop-layout">
-        <div className="visualizer-col">
-          <ControllerVisualizer />
+        <div className={`visualizer-col ${isScrolled ? 'is-scrolled' : ''}`}>
+          <ControllerVisualizer isMinimized={isScrolled} />
         </div>
         <div className="config-panel glass-panel">
           <h2 className="product-section-title">Select Product</h2>

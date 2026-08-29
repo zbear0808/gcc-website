@@ -2,7 +2,11 @@ import React from 'react';
 import { useStore } from '@/store/useStore';
 import styles from '@/assets/styles/components/visualizer.module.css';
 
-const ControllerVisualizer: React.FC = () => {
+interface Props {
+  isMinimized?: boolean;
+}
+
+const ControllerVisualizer: React.FC<Props> = ({ isMinimized = false }) => {
   const config = useStore((state) => state.config);
 
   const shellColor = `var(--shell-${config.shell || 'oem'})`;
@@ -30,7 +34,7 @@ const ControllerVisualizer: React.FC = () => {
   const isDIY = config.product === 'diy-kit' || config.product === '0-solder-diy-kit';
 
   return (
-    <div className={`${styles['visualizer-wrapper']} glass-panel`}>
+    <div className={`${styles['visualizer-wrapper']} ${isMinimized ? styles['is-minimized'] : ''} glass-panel`}>
       <div className={`${styles['controller-map']} ${config.buttons ? styles[`theme-${config.buttons}`] : ''}`}>
         {isDIY ? (
           <div className={styles['phob-pcb']}>
