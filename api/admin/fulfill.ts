@@ -9,7 +9,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (!redis) {
-    return res.status(500).json({ error: 'Redis not configured' });
+    return res.status(500).json({ error: 'Configuration Error: Redis not configured (missing KV_REST_API_URL or KV_REST_API_TOKEN)' });
   }
 
   const rawOrder = await redis.get<string>(`paid_order:${orderId}`);

@@ -16,6 +16,10 @@ export function withErrorHandler(handler: Handler): Handler {
 
 export function withMethods(allowedMethods: string[], handler: Handler): Handler {
   return (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     if (req.method === 'OPTIONS') {
       return res.status(200).end();
     }
@@ -28,6 +32,10 @@ export function withMethods(allowedMethods: string[], handler: Handler): Handler
 
 export function withRoute(handlers: Partial<Record<string, Handler>>): Handler {
   return (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     const method = req.method || 'GET';
     if (method === 'OPTIONS') {
       return res.status(200).end();
@@ -49,7 +57,7 @@ export function withAdminAuth(handler: Handler): Handler {
     
     if (!adminSecret) {
       console.error('Missing ADMIN_SECRET in environment');
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Configuration Error: Missing ADMIN_SECRET in server environment variables' });
     }
 
     const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1]?.trim() : undefined;
