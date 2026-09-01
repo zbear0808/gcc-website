@@ -40,4 +40,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({ success: true, order });
 }
 
-export default withMiddleware(['POST'], withAdminAuth(handler));
+export default withMiddleware(['POST'], handler);

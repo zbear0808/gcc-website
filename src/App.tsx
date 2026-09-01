@@ -93,7 +93,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'admin',
+        path: 'manage-system-data-xyz',
         element: (
           <>
             <title>Zu Builds | Admin</title>

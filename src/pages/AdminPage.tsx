@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { RedisOrder } from '@shared/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function AdminPage() {
-  const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [orders, setOrders] = useState<RedisOrder[]>([]);
   const [inventory, setInventory] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const login = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const loadData = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE}/api/admin/orders`, {
-        headers: { Authorization: `Bearer ${password}` }
-      });
+      const res = await fetch(`${API_BASE}/api/admin/orders`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data.orders);
@@ -28,10 +23,6 @@ export default function AdminPage() {
         if (invRes.ok) {
           setInventory(await invRes.json());
         }
-
-        setIsAuthenticated(true);
-      } else if (res.status === 401) {
-        setError('Invalid password');
       } else {
         const errData = await res.json().catch(() => ({}));
         setError(`Server error: ${errData.error || res.statusText}`);
@@ -43,14 +34,17 @@ export default function AdminPage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const fulfillOrder = async (orderId: string) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/admin/fulfill`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${password}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ orderId })
       });
@@ -76,8 +70,7 @@ export default function AdminPage() {
       const res = await fetch(`${API_BASE}/api/inventory`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${password}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(inventory)
       });
@@ -98,22 +91,8 @@ export default function AdminPage() {
     setInventory(prev => ({ ...prev, [id]: isNaN(num) ? 0 : num }));
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="admin-login-container">
-        <h2>Admin Login</h2>
-        <form onSubmit={login}>
-          <input 
-            type="password" 
-            placeholder="Enter Admin Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit" className="btn btn-primary" disabled={loading}>Login</button>
-        </form>
-        {error && <p className="error">{error}</p>}
-      </div>
-    );
+  if (error) {
+    return <div className="admin-container"><p className="error">{error}</p></div>;
   }
 
   const paidOrders = orders.filter(o => o.status === 'paid');

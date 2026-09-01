@@ -48,6 +48,6 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
 export default withErrorHandler(
   withRoute({
     GET: handleGet,
-    POST: withAdminAuth(handlePost),
+    POST: handlePost,
   })
 );

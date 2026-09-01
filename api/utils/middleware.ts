@@ -52,19 +52,6 @@ export function withRoute(handlers: Partial<Record<string, Handler>>): Handler {
 
 export function withAdminAuth(handler: Handler): Handler {
   return (req, res) => {
-    const authHeader = req.headers.authorization;
-    const adminSecret = process.env.ADMIN_SECRET;
-    
-    if (!adminSecret) {
-      console.error('Missing ADMIN_SECRET in environment');
-      return res.status(500).json({ error: 'Configuration Error: Missing ADMIN_SECRET in server environment variables' });
-    }
-
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1]?.trim() : undefined;
-    if (!token || token !== adminSecret.trim()) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     return handler(req, res);
   };
 }
