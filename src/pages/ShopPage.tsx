@@ -165,8 +165,8 @@ export default function ShopPage() {
                   disabledFn={section.disabledFn}
                   isToggleable={section.isToggleable}
                   basePrice={getItemPrice(section.value ?? '')}
-                  descriptionPosition={section.descriptionPosition as any}
-                  buttonSize={section.buttonSize as any}
+                  descriptionPosition={section.descriptionPosition as "outside" | "inside"}
+                  buttonSize={section.buttonSize as "small" | "default" | undefined}
                   showExternalLinks={true}
                 />
                 {section.title === 'Cable' && config.cable === 'cable-oem' && (
@@ -348,7 +348,7 @@ export default function ShopPage() {
             {isDIY && (
               <ConfigSection
                 title="Trigger Modifications"
-                items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false } as any]}
+                items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false }]}
                 selectedId={config.triggerMetalBracket ? 'triggerMetalBracket' : undefined}
                 isToggleable={true}
                 onSelect={() => {

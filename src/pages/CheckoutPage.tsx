@@ -71,7 +71,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
   const onShippingAddressChange = async (event: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
     const { address } = event;
     if (!address.postal_code) {
-      event.resolve({ applePay: { shippingMethods: [] } } as any);
+      event.resolve({ applePay: { shippingMethods: [] } }   as any);
       return;
     }
 
@@ -87,15 +87,15 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
 
       event.resolve({
         applePay: { shippingMethods: applePayRates }
-      } as any);
-    } catch (e) {
+      }   as any);
+    } catch {
       event.reject();
     }
   };
 
   const onShippingRateChange = async (event: StripeExpressCheckoutElementShippingRateChangeEvent) => {
     try {
-      const [shipId, rateId] = (event.shippingRate as any).identifier?.split('|') ?? [];
+      const [shipId, rateId] = (event.shippingRate   as any).identifier?.split('|') ?? [];
       if (!shipId || !rateId) {
         event.reject();
         return;
@@ -108,8 +108,8 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
           amount: data.amount,
           label: 'Total'
         }
-      } as any);
-    } catch (e) {
+      }   as any);
+    } catch {
       event.reject();
     }
   };
@@ -126,8 +126,8 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
         if (data.rates && data.rates.length > 0 && data.shipmentId) {
           handleRateSelection(data.rates[0].id, data.shipmentId);
         }
-      } catch (e) {
-        console.error('Failed to fetch shipping rates:', e);
+      } catch {
+        console.error('Failed to fetch shipping rates');
       }
     }
   };
@@ -143,8 +143,8 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
 
     try {
       await updatePaymentIntent(rateId, effectiveShipmentId);
-    } catch (e) {
-      console.error('Failed to update payment intent:', e);
+    } catch {
+      console.error('Failed to update payment intent');
     }
   };
 
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
         let data;
         try {
           data = text ? JSON.parse(text) : {};
-        } catch (parseError) {
+        } catch {
           console.error('Failed to parse response JSON:', text);
           setError(`Server error (${res.status}): The backend returned an invalid response.`);
           return;

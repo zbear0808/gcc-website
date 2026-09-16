@@ -29,7 +29,7 @@ const CollapsibleSection = ({ title, children }: { title: string; children: Reac
 
 export default function PartsPage() {
   const navigate = useNavigate();
-  const store = useStore() as any;
+  const store = useStore();
   const cartTotal = useCartTotal();
 
   const renderCategory = (category: typeof fullCatalog[0]) => {

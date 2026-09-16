@@ -27,8 +27,8 @@ export default function AdminPage() {
         const errData = await res.json().catch(() => ({}));
         setError(`Server error: ${errData.error || res.statusText}`);
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
+    } catch {
+      const message = 'Unknown error';
       setError(`Failed to fetch orders: ${message}`);
     }
     setLoading(false);
@@ -57,7 +57,7 @@ export default function AdminPage() {
         const data = await res.json();
         alert(`Fulfillment failed: ${data.error}`);
       }
-    } catch (err) {
+    } catch {
       alert('Network error during fulfillment');
     }
     setLoading(false);
@@ -80,7 +80,7 @@ export default function AdminPage() {
         const data = await res.json();
         alert(`Failed to save inventory: ${data.error}`);
       }
-    } catch (err) {
+    } catch {
       alert('Error saving inventory');
     }
     setLoading(false);

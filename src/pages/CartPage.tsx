@@ -61,7 +61,7 @@ export default function CartPage() {
   const individualItems = fullCatalog.flatMap(category => category.subtypes);
 
   const cartItems = Object.entries(cart)
-    .filter(([_, qty]) => qty > 0)
+    .filter(([, qty]) => qty > 0)
     .map(([id, qty]) => {
       const itemDef = individualItems.find(i => i.id === id);
       return { id, qty, ...itemDef, displayPrice: itemDef?.individualPrice ?? itemDef?.price };
