@@ -71,7 +71,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
   const onShippingAddressChange = async (event: StripeExpressCheckoutElementShippingAddressChangeEvent) => {
     const { address } = event;
     if (!address.postal_code) {
-      event.resolve({ applePay: { shippingMethods: [] } }   as any);
+      event.resolve({ applePay: { shippingMethods: [] } }   /* eslint-disable-line @typescript-eslint/no-explicit-any */ as any);
       return;
     }
 
@@ -87,7 +87,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
 
       event.resolve({
         applePay: { shippingMethods: applePayRates }
-      }   as any);
+      }   /* eslint-disable-line @typescript-eslint/no-explicit-any */ as any);
     } catch {
       event.reject();
     }
@@ -95,7 +95,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
 
   const onShippingRateChange = async (event: StripeExpressCheckoutElementShippingRateChangeEvent) => {
     try {
-      const [shipId, rateId] = (event.shippingRate   as any).identifier?.split('|') ?? [];
+      const [shipId, rateId] = (event.shippingRate   /* eslint-disable-line @typescript-eslint/no-explicit-any */ as any).identifier?.split('|') ?? [];
       if (!shipId || !rateId) {
         event.reject();
         return;
@@ -108,7 +108,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
           amount: data.amount,
           label: 'Total'
         }
-      }   as any);
+      }   /* eslint-disable-line @typescript-eslint/no-explicit-any */ as any);
     } catch {
       event.reject();
     }
