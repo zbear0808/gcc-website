@@ -4,7 +4,7 @@ import { allItems } from '@shared/catalog';
 
 // Mock fetch
 const mockFetch = vi.fn();
-(globalThis as any).fetch = mockFetch;
+globalThis.fetch = mockFetch;
 
 describe('useStore', () => {
   beforeEach(() => {

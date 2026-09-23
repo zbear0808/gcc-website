@@ -151,7 +151,7 @@ export default function ShopPage() {
             )}
 
             {[
-              { title: 'Cable', items: cables, value: config.cable, onSelect: (val: string) => updateConfig({ cable: val }), descriptionPosition: 'outside', buttonSize: 'small', disabledFn: (item: any) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false },
+              { title: 'Cable', items: cables, value: config.cable, onSelect: (val: string) => updateConfig({ cable: val }), descriptionPosition: 'outside', buttonSize: 'small', disabledFn: (item: /* eslint-disable-line @typescript-eslint/no-explicit-any */ any) => (item.id === 'cable-oem' && (isDIY || selectedShell?.type !== 'oem')) ? "OEM cables require a full build with an OEM shell" : false },
               { title: 'Rumble Motor', items: rumbles, value: config.rumble, onSelect: (id: string) => updateConfig({ rumble: config.rumble === id ? undefined : id }), isToggleable: true, descriptionPosition: 'none', buttonSize: 'small' },
               { title: 'Slider Potentiometers', items: sliderPots, value: config.sliderPots, onSelect: (val: string) => updateConfig({ sliderPots: val }), descriptionPosition: 'outside', buttonSize: 'small' },
               { title: 'Z Button', items: zButtons, value: config.zButton, onSelect: (val: string) => updateConfig({ zButton: val }), descriptionPosition: 'none', buttonSize: 'small' }
@@ -165,8 +165,8 @@ export default function ShopPage() {
                   disabledFn={section.disabledFn}
                   isToggleable={section.isToggleable}
                   basePrice={getItemPrice(section.value ?? '')}
-                  descriptionPosition={section.descriptionPosition as any}
-                  buttonSize={section.buttonSize as any}
+                  descriptionPosition={section.descriptionPosition as "outside" | "inside"}
+                  buttonSize={section.buttonSize as "small" | "default" | undefined}
                   showExternalLinks={true}
                 />
                 {section.title === 'Cable' && config.cable === 'cable-oem' && (
@@ -348,11 +348,11 @@ export default function ShopPage() {
             {isDIY && (
               <ConfigSection
                 title="Trigger Modifications"
-                items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false } as any]}
+                items={[{ id: 'triggerMetalBracket', label: 'Trigger Metal Bracket (Pair)', price: 6, image: '/images/addons/trigger-metal-bracket.png', requiresInventory: false }]}
                 selectedId={config.triggerMetalBracket ? 'triggerMetalBracket' : undefined}
                 isToggleable={true}
                 onSelect={() => {
-                  updateConfig((prev: any) => ({
+                  updateConfig((prev: /* eslint-disable-line @typescript-eslint/no-explicit-any */ any) => ({
                     triggerMetalBracket: !prev.triggerMetalBracket
                   }));
                 }}
