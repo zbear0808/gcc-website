@@ -12,9 +12,17 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key', {
 
 export const easypost = new EasyPostClient(process.env.EASYPOST_API_KEY || 'fake_key');
 
-export const redis = process.env.KV_REST_API_URL
+const isRedisConfigured = Boolean(
+  process.env.KV_REST_API_URL &&
+  !process.env.KV_REST_API_URL.includes('replace') &&
+  process.env.KV_REST_API_TOKEN &&
+  !process.env.KV_REST_API_TOKEN.includes('replace') &&
+  process.env.USE_FALLBACK_INVENTORY !== 'true'
+);
+
+export const redis = isRedisConfigured
   ? new Redis({
-      url: process.env.KV_REST_API_URL,
+      url: process.env.KV_REST_API_URL!,
       token: process.env.KV_REST_API_TOKEN as string,
     })
   : null;

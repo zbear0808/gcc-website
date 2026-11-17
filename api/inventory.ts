@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { redis } from './utils/clients';
 import { allItems } from '../shared/catalog';
 import { filterTrackedInventory } from './utils/helpers';
-import { withErrorHandler, withRoute, withAdminAuth } from './utils/middleware';
+import { withErrorHandler, withRoute } from './utils/middleware';
 
 async function handleGet(_req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=60');

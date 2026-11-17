@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { redis, easypost } from '../utils/clients';
-import { withMiddleware, withAdminAuth } from '../utils/middleware';
+import { withMiddleware } from '../utils/middleware';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   const { orderId } = req.body;

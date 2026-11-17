@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { redis } from '../utils/clients';
 import { parseAndSortOrders } from '../utils/helpers';
-import { withMiddleware, withAdminAuth } from '../utils/middleware';
+import { withMiddleware } from '../utils/middleware';
 
 async function handler(_req: VercelRequest, res: VercelResponse) {
   if (!redis) {
