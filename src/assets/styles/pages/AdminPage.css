@@ -3,7 +3,7 @@
   margin: 100px auto;
   padding: 2rem;
   background: #111;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid #333;
   text-align: center;
 }
@@ -73,7 +73,7 @@
   border-collapse: collapse;
   margin-bottom: 3rem;
   background: #111;
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
 }
 

@@ -55,7 +55,7 @@
   background-color: var(--color-bg-card, rgba(255, 255, 255, 0.1));
 }
 
-.toggle-btn { background-color: var(--color-bg-input); color: var(--color-gray-hover); border: 1px solid var(--color-border-input); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-inter); }
+.toggle-btn { background-color: var(--color-bg-input); color: var(--color-gray-hover); border: 1px solid var(--color-border-input); padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-inter); }
 .toggle-btn:hover { background-color: var(--color-border); }
 .toggle-btn.active { background-color: var(--color-success); color: var(--color-black); border-color: var(--color-success); font-weight: bold; }
 
