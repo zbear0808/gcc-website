@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { loadStripe, type StripeElementsOptions, type StripeAddressElementChangeEvent, type StripeExpressCheckoutElementShippingAddressChangeEvent, type StripeExpressCheckoutElementShippingRateChangeEvent } from '@stripe/stripe-js';
 import {
   Elements,
@@ -9,7 +9,9 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { useStore } from '@/store/useStore';
+import { useStore, useCartTotal } from '@/store/useStore';
+import { fullCatalog } from '@shared/catalog';
+import { calculateTotal, formatPrice, getItem } from '@shared/pricing';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
 const API_BASE = import.meta.env.VITE_API_URL || '';
@@ -167,7 +169,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="checkout-form" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <form onSubmit={handleSubmit} className="checkout-form">
       <div className="express-checkout">
         <ExpressCheckoutElement
           onShippingAddressChange={onShippingAddressChange}
@@ -193,7 +195,9 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
         />
       </div>
 
-      <div className="separator" style={{ textAlign: 'center', margin: '1rem 0' }}>Or pay with card</div>
+      <div className="checkout-separator"><span>or pay with card</span></div>
+
+      <h2 className="checkout-step">Shipping address</h2>
 
       <AddressElement
         options={{ mode: 'shipping' }}
@@ -201,38 +205,35 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
       />
 
       {shippingRates.length > 0 && (
-        <div className="shipping-options" style={{ background: '#f5f5f5', padding: '1rem', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0 }}>Shipping Options</h3>
+        <fieldset className="shipping-options">
+          <legend className="checkout-step">Shipping method</legend>
           {shippingRates.map(rate => (
-            <div key={rate.id} className="shipping-rate-option" style={{ margin: '0.5rem 0' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  name="shippingRate"
-                  value={rate.id}
-                  checked={selectedRate === rate.id}
-                  onChange={() => handleRateSelection(rate.id)}
-                />
-                {rate.service} - ${(rate.rateInCents / 100).toFixed(2)}
-              </label>
-            </div>
+            <label key={rate.id} className={`shipping-rate-option ${selectedRate === rate.id ? 'active' : ''}`}>
+              <input
+                type="radio"
+                name="shippingRate"
+                value={rate.id}
+                checked={selectedRate === rate.id}
+                onChange={() => handleRateSelection(rate.id)}
+              />
+              <span>{rate.service}</span>
+              <span className="shipping-rate-price">${(rate.rateInCents / 100).toFixed(2)}</span>
+            </label>
           ))}
-        </div>
+        </fieldset>
       )}
 
+      <h2 className="checkout-step">Payment</h2>
       <div className="payment-element-wrapper">
         <PaymentElement />
       </div>
 
-      {errorMessage && <div className="error-message" style={{ color: 'red' }}>{errorMessage}</div>}
+      {errorMessage && <div className="checkout-error" role="alert">{errorMessage}</div>}
 
-      <button
-        type="submit"
-        disabled={!stripe || loading || !selectedRate}
-        style={{ padding: '1rem', background: 'var(--accent, #007bff)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', opacity: (!stripe || loading || !selectedRate) ? 0.5 : 1 }}
-      >
-        {loading ? 'Processing...' : 'Pay Now'}
+      <button type="submit" className="btn btn-go btn-lg btn-block" disabled={!stripe || loading || !selectedRate}>
+        {loading ? 'Processing…' : 'Pay now'}
       </button>
+      {!selectedRate && <p className="checkout-hint">Enter your address to see shipping options.</p>}
     </form>
   );
 };
@@ -243,8 +244,10 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState('');
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const isEmpty = Object.values(store.cart).every((qty) => qty <= 0) && store.customBuilds.length === 0;
 
   useEffect(() => {
+    if (isEmpty) return;
     const fetchIntent = async () => {
       setError(null);
       try {
@@ -280,36 +283,108 @@ export default function CheckoutPage() {
       }
     };
     fetchIntent();
-  }, [store.cart, store.customBuilds]);
+  }, [store.cart, store.customBuilds, isEmpty]);
+
+  if (isEmpty) return <Navigate to="/cart" replace />;
 
   if (error) {
     return (
-      <div className="checkout-page" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: 'white', color: 'black', borderRadius: '8px', textAlign: 'center' }}>
-        <h2 style={{ color: '#d32f2f', marginBottom: '1rem' }}>Checkout Error</h2>
-        <p style={{ marginBottom: '2rem' }}>{error}</p>
-        <button
-          onClick={() => navigate(-1)}
-          style={{ padding: '0.75rem 1.5rem', background: 'var(--accent, #007bff)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          Go Back
+      <div className="page page-narrow checkout-result">
+        <h1 className="page-title">Checkout isn’t working right now</h1>
+        <p className="page-intro">{error}</p>
+        <button className="btn btn-outline" onClick={() => navigate(-1)}>
+          Go back
         </button>
       </div>
     );
   }
 
-  if (!clientSecret) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Checkout...</div>;
+  if (!clientSecret) {
+    return (
+      <div className="page page-narrow checkout-loading" aria-busy="true">
+        Loading checkout…
+      </div>
+    );
+  }
 
   const options: StripeElementsOptions = {
     clientSecret,
-    appearance: { theme: 'stripe' },
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#9a8cf0',
+        colorBackground: '#1b1924',
+        colorText: '#f1eff6',
+        colorTextSecondary: '#a29db3',
+        colorDanger: '#e0605e',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+        borderRadius: '3px',
+      },
+      rules: {
+        '.Input': { border: '1px solid #403b52', boxShadow: 'none' },
+        '.Input:focus': { border: '1px solid #9a8cf0', boxShadow: '0 0 0 1px #9a8cf0' },
+      },
+    },
   };
 
   return (
-    <div className="checkout-page" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', background: 'white', color: 'black', borderRadius: '8px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Checkout</h2>
-      <Elements stripe={stripePromise} options={options}>
-        <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
-      </Elements>
+    <div className="page checkout-page">
+      <h1 className="page-title">Checkout</h1>
+      <div className="checkout-layout">
+        <div className="checkout-main">
+          <Elements stripe={stripePromise} options={options}>
+            <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
+          </Elements>
+        </div>
+        <OrderSummary />
+      </div>
     </div>
+  );
+}
+
+function OrderSummary() {
+  const cart = useStore((state) => state.cart);
+  const customBuilds = useStore((state) => state.customBuilds);
+  const subtotal = useCartTotal();
+  const parts = fullCatalog.flatMap((c) => c.subtypes);
+
+  const lines = [
+    ...customBuilds.map((build, idx) => ({
+      key: `build-${idx}`,
+      label: getItem(build.product ?? '')?.label ?? 'Custom build',
+      qty: 1,
+      price: calculateTotal(build),
+    })),
+    ...Object.entries(cart)
+      .filter(([, qty]) => qty > 0)
+      .map(([id, qty]) => {
+        const item = parts.find((p) => p.id === id);
+        return { key: id, label: item?.label ?? id, qty, price: (item?.individualPrice ?? item?.price ?? 0) * qty };
+      }),
+  ];
+
+  return (
+    <aside className="checkout-summary">
+      <div className="checkout-summary-header">
+        <h2>Order</h2>
+        <Link to="/cart">Edit</Link>
+      </div>
+      <ul>
+        {lines.map((line) => (
+          <li key={line.key}>
+            <span>
+              {line.label}
+              {line.qty > 1 && <span className="checkout-qty"> × {line.qty}</span>}
+            </span>
+            <span>${formatPrice(line.price)}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="checkout-summary-total">
+        <span>Subtotal</span>
+        <span>${formatPrice(subtotal)}</span>
+      </div>
+      <p className="checkout-summary-note">Shipping is added once you pick a method.</p>
+    </aside>
   );
 }

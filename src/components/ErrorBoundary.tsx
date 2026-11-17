@@ -12,7 +12,7 @@ interface State {
 
 export default class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -26,11 +26,15 @@ export default class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
-          <h2>Oops, there was an error!</h2>
-          <p>{this.state.error?.message}</p>
-          <button onClick={() => window.location.reload()} style={{ padding: '0.5rem 1rem', marginTop: '1rem' }}>
-            Reload Page
+        <div className="page page-narrow checkout-result">
+          <h1 className="page-title">Something broke</h1>
+          <p className="page-intro">
+            Sorry about that. Reloading usually fixes it. Your cart is saved. If it keeps happening, email{' '}
+            <a href="mailto:contact@gcccontrollers.com">contact@gcccontrollers.com</a>
+            {this.state.error?.message ? ` and mention: “${this.state.error.message}”` : ''}.
+          </p>
+          <button className="btn btn-outline" onClick={() => window.location.reload()}>
+            Reload page
           </button>
         </div>
       );

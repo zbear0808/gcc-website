@@ -11,6 +11,7 @@
 @import './pages/parts.css';
 @import './pages/product.css';
 @import './pages/cart.css';
+@import './pages/checkout.css';
 @import './pages/faq.css';
 @import './pages/AdminPage.css';
 
@@ -30,7 +31,7 @@
   font-weight: normal;
   letter-spacing: 1px;
   line-height: 1.1;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .page-intro {

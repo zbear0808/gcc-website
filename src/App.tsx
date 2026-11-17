@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -13,19 +13,25 @@ import CartPage from '@/pages/CartPage';
 import AdminPage from '@/pages/AdminPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import CheckoutSuccessPage from '@/pages/CheckoutSuccessPage';
 
 const Layout = () => {
   const loadInventory = useStore((state) => state.loadInventory);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     loadInventory();
   }, [loadInventory]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <div className="app-container">
       <Header />
       <main className="main-content">
-        <ErrorBoundary>
+        <ErrorBoundary key={pathname}>
           <Outlet />
         </ErrorBoundary>
       </main>
@@ -85,6 +91,15 @@ const router = createBrowserRouter([
           <>
             <title>Zu Builds | Checkout</title>
             <CheckoutPage />
+          </>
+        ),
+      },
+      {
+        path: 'checkout/success',
+        element: (
+          <>
+            <title>Zu Builds | Order placed</title>
+            <CheckoutSuccessPage />
           </>
         ),
       },

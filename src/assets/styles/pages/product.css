@@ -141,6 +141,7 @@
   font-family: var(--font-ndot);
   font-size: 5rem;
   line-height: 1;
+  margin-bottom: var(--space-5);
   color: var(--color-indigo);
 }
 .not-found-actions { display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap; }
