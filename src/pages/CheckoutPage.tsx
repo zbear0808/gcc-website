@@ -90,7 +90,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
       event.resolve({
         applePay: { shippingMethods: applePayRates }
       } as any);
-    } catch (e) {
+    } catch {
       event.reject();
     }
   };
@@ -111,7 +111,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
           label: 'Total'
         }
       } as any);
-    } catch (e) {
+    } catch {
       event.reject();
     }
   };
@@ -264,7 +264,7 @@ export default function CheckoutPage() {
         let data;
         try {
           data = text ? JSON.parse(text) : {};
-        } catch (parseError) {
+        } catch {
           console.error('Failed to parse response JSON:', text);
           setError(`Server error (${res.status}): The backend returned an invalid response.`);
           return;
