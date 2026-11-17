@@ -6,6 +6,7 @@
 @import './components/buttons.css';
 @import './components/configurator.css';
 @import './components/cart-controls.css';
+@import './components/product-image.css';
 @import './pages/shop.css';
 @import './pages/parts.css';
 @import './pages/product.css';

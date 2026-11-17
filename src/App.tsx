@@ -12,6 +12,7 @@ import ProductPage from '@/pages/ProductPage';
 import CartPage from '@/pages/CartPage';
 import AdminPage from '@/pages/AdminPage';
 import CheckoutPage from '@/pages/CheckoutPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const Layout = () => {
   const loadInventory = useStore((state) => state.loadInventory);
@@ -67,12 +68,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'product/:id',
-        element: (
-          <>
-            <title>Zu Builds | Product</title>
-            <ProductPage />
-          </>
-        ),
+        element: <ProductPage />,
       },
       {
         path: 'cart',
@@ -101,6 +97,7 @@ const router = createBrowserRouter([
           </>
         ),
       },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);

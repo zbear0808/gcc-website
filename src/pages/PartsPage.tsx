@@ -1,129 +1,112 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useStore, useCartTotal } from '@/store/useStore';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useStore, useCartCount, useCartTotal } from '@/store/useStore';
 import { fullCatalog } from '@shared/catalog';
 import { formatPrice } from '@shared/pricing';
+import type { CatalogCategory } from '@shared/types';
+import ProductImage from '@/components/ProductImage';
+import StockLabel from '@/components/StockLabel';
 
-const CollapsibleSection = ({ title, children }: { title: string; children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(true);
+const groups = [
+  { id: 'cosmetic', label: 'Cosmetic', ids: ['shells', 'buttons', 'wii-caps', 'membranes', 'stick-caps'] },
+  { id: 'stickbox', label: 'Stickbox', ids: ['stickbox', 'stickbox-t1-t2', 'magnet-mount', 'dh1212-magnet', 'stickbox-pot'] },
+  {
+    id: 'electronics',
+    label: 'Electronics',
+    ids: ['board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable', 'trigger-paddle-pcbs', 'z-buttons'],
+  },
+  { id: 'triggers', label: 'Mechanical triggers', ids: ['switch-kailh-choco', 'jst-pigtail-header', 'switch-mount-3d'] },
+];
+
+const groupedIds = new Set(groups.flatMap((g) => g.ids));
+const allGroups = [
+  ...groups.map((g) => ({ ...g, items: fullCatalog.filter((c) => g.ids.includes(c.id)) })),
+  { id: 'other', label: 'Tools & other', ids: [], items: fullCatalog.filter((c) => !groupedIds.has(c.id)) },
+].filter((g) => g.items.length > 0);
+
+function priceLabel(category: CatalogCategory) {
+  const prices = category.subtypes.map((i) => i.individualPrice ?? i.price ?? 0).filter((p) => p > 0);
+  if (prices.length === 0) return 'Not sold separately';
+  const min = Math.min(...prices);
+  return min === Math.max(...prices) ? `$${formatPrice(min)}` : `From $${formatPrice(min)}`;
+}
+
+function PartCard({ category }: { category: CatalogCategory }) {
+  const inventory = useStore((state) => state.inventory);
+  const totalStock = category.subtypes.reduce((sum, item) => sum + (inventory[item.id] || 0), 0);
+  const options = category.subtypes.length;
 
   return (
-    <div className="collapsible-section">
-      <h2
-        className="heading-ndot"
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', userSelect: 'none' }}
-      >
-        <span style={{ fontSize: '0.6em', transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
-        {title}
-      </h2>
-      {isOpen && (
-        <div className="catalog-grid">
-          {children}
+    <Link to={`/product/${category.id}`} className="catalog-card">
+      <div className="catalog-image">
+        <ProductImage src={category.image} alt={category.label} />
+      </div>
+      <div className="catalog-info">
+        <h3>{category.label}</h3>
+        {options > 1 && <span className="catalog-options">{options} options</span>}
+        <div className="catalog-info-bottom">
+          <span className="catalog-price">{priceLabel(category)}</span>
+          <StockLabel stock={totalStock} />
         </div>
-      )}
-    </div>
+      </div>
+    </Link>
   );
-};
-
+}
 
 export default function PartsPage() {
-  const navigate = useNavigate();
-  const store = useStore() as any;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const active = searchParams.get('cat') ?? 'all';
+  const cartCount = useCartCount();
   const cartTotal = useCartTotal();
 
-  const renderCategory = (category: typeof fullCatalog[0]) => {
-    const validPrices = category.subtypes.map(i => i.individualPrice ?? i.price ?? 0).filter(p => p > 0);
-    const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0;
-    const maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0;
+  const visible = active === 'all' ? allGroups : allGroups.filter((g) => g.id === active);
 
-    let priceDisplay = '';
-    if (validPrices.length === 0) {
-      priceDisplay = 'Not available individually';
-    } else {
-      priceDisplay = minPrice === maxPrice ? `$${minPrice}` : `From $${minPrice}`;
-    }
-
-    const totalStock = category.subtypes.reduce((sum, item) => sum + (store.inventory[item.id] || 0), 0);
-
-    return (
-      <div key={category.id} className="catalog-card card-base" onClick={() => navigate(`/product/${category.id}`)}>
-        <img src={category.image} alt={category.label} />
-        <div className="catalog-info">
-          <h3>{category.label}</h3>
-          <div className="catalog-info-bottom">
-            <p className="price">{priceDisplay}</p>
-            {totalStock <= 0 ? (
-              <span className="stock-out">Out of stock</span>
-            ) : totalStock <= 10 ? (
-              <span className="stock-low">Low stock</span>
-            ) : (
-              <span className="stock-ok">In stock</span>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+  const setFilter = (id: string) => {
+    if (id === 'all') setSearchParams({}, { replace: true });
+    else setSearchParams({ cat: id }, { replace: true });
   };
 
-  const electronicsIds = [
-    'board-only', 'board-oem', 'cables', 'rumble-motors', 'slider-pots', '6-pin-ribbon-cable',
-    'trigger-paddle-pcbs', 'z-buttons'
-  ];
-
-  const shellsAndButtonsIds = [
-    'shells', 'buttons', 'wii-caps', 'membranes', 'stick-caps'
-  ];
-
-  const mechanicalTriggerIds = [
-    'switch-kailh-choco', 'jst-pigtail-header', 'switch-mount-3d'
-  ];
-
-  const stickboxIds = [
-    'stickbox', 'stickbox-t1-t2', 'magnet-mount', 'dh1212-magnet', 'stickbox-pot'
-  ];
-
-  const electronics = fullCatalog.filter(c => electronicsIds.includes(c.id));
-  const shellsAndButtons = fullCatalog.filter(c => shellsAndButtonsIds.includes(c.id));
-  const mechanicalTriggers = fullCatalog.filter(c => mechanicalTriggerIds.includes(c.id));
-  const stickboxes = fullCatalog.filter(c => stickboxIds.includes(c.id));
-  const others = fullCatalog.filter(c =>
-    !electronicsIds.includes(c.id) &&
-    !shellsAndButtonsIds.includes(c.id) &&
-    !mechanicalTriggerIds.includes(c.id) &&
-    !stickboxIds.includes(c.id)
-  );
-
   return (
-    <div className="parts-page">
-      <h1 className="heading-ndot">Parts Catalog</h1>
+    <div className="page parts-page">
+      <h1 className="page-title">Parts</h1>
+      <p className="page-intro">
+        The same parts I use in my builds, sold on their own for repairs and DIY projects. OEM parts are salvaged from
+        used controllers, so check each listing for condition.
+      </p>
 
-      <CollapsibleSection title="Cosmetic Parts">
-        {shellsAndButtons.map(renderCategory)}
-      </CollapsibleSection>
-
-      <CollapsibleSection title="Stickbox Parts">
-        {stickboxes.map(renderCategory)}
-      </CollapsibleSection>
-
-      <CollapsibleSection title="Electronic Parts">
-        {electronics.map(renderCategory)}
-      </CollapsibleSection>
-
-      <CollapsibleSection title="Mechanical Trigger Mod">
-        {mechanicalTriggers.map(renderCategory)}
-      </CollapsibleSection>
-
-      {others.length > 0 && (
-        <CollapsibleSection title="Other Parts">
-          {others.map(renderCategory)}
-        </CollapsibleSection>
-      )}
-
-      <div className="cart-summary">
-        <span>Total: ${formatPrice(cartTotal)}</span>
-        <button onClick={() => navigate('/cart')}>View Cart</button>
+      <div className="filter-chips" role="toolbar" aria-label="Filter parts">
+        {[{ id: 'all', label: 'All' }, ...allGroups].map((g) => (
+          <button
+            key={g.id}
+            className={`chip ${active === g.id ? 'active' : ''}`}
+            aria-pressed={active === g.id}
+            onClick={() => setFilter(g.id)}
+          >
+            {g.label}
+          </button>
+        ))}
       </div>
+
+      {visible.map((group) => (
+        <section key={group.id} className="parts-group">
+          <h2 className="parts-group-title">{group.label}</h2>
+          <div className="catalog-grid">
+            {group.items.map((category) => (
+              <PartCard key={category.id} category={category} />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {cartCount > 0 && (
+        <div className="cart-summary">
+          <span>
+            {cartCount} {cartCount === 1 ? 'item' : 'items'} · <strong>${formatPrice(cartTotal)}</strong>
+          </span>
+          <Link to="/cart" className="btn btn-go">
+            View cart
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

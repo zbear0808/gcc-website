@@ -5,10 +5,9 @@ import Tooltip from '@/components/Tooltip';
 import { CheckIcon, ExternalLinkIcon } from '@/components/Icons';
 import { getCategoryIdForItem } from '@shared/catalog';
 import { useStore } from '@/store/useStore';
+import { LOW_STOCK_THRESHOLD as LOW_STOCK } from '@/components/StockLabel';
 
 export interface PriceFragment { text: string; className: string; }
-
-const LOW_STOCK = 3;
 
 interface OptionButtonProps {
   item: CatalogItem;
@@ -49,7 +48,8 @@ const OptionButton: React.FC<OptionButtonProps> = ({
   onSelect,
 }) => {
   const stock = useStore((state) => state.inventory[item.id] || 0);
-  const tracksStock = item.requiresInventory !== false;
+  const inventoryLoaded = useStore((state) => state.inventoryLoaded);
+  const tracksStock = inventoryLoaded && item.requiresInventory !== false;
   const isOutOfStock = tracksStock && stock <= 0;
   const disabled = !!disabledReason || isOutOfStock;
 

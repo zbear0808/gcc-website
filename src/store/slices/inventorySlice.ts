@@ -6,6 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export interface InventorySlice {
   inventory: Inventory;
+  inventoryLoaded: boolean;
   setInventory: (inventory: Inventory) => void;
   loadInventory: () => Promise<void>;
   getStock: (itemId: string) => number;
@@ -14,23 +15,21 @@ export interface InventorySlice {
 
 export const createInventorySlice: StateCreator<InventorySlice, [], [], InventorySlice> = (set, get) => ({
   inventory: {},
+  inventoryLoaded: false,
 
-  setInventory: (inventory) => set({ inventory }),
+  setInventory: (inventory) => set({ inventory, inventoryLoaded: true }),
 
   loadInventory: async () => {
     try {
       const res = await fetch(`${API_BASE}/api/inventory`);
       if (!res.ok) throw new Error('Server not running');
       const data = await res.json();
-      set({ inventory: data });
+      set({ inventory: data, inventoryLoaded: true });
     } catch {
       console.warn('Failed to fetch inventory from server.');
 
       const currentInventory = get().inventory;
-      if (Object.keys(currentInventory).length > 0) {
-        // Retain existing inventory data
-        return;
-      }
+      if (Object.keys(currentInventory).length > 0) return;
 
       if (import.meta.env.DEV) {
         console.warn('Local development: using fallback inventory.');
@@ -38,7 +37,7 @@ export const createInventorySlice: StateCreator<InventorySlice, [], [], Inventor
         for (const item of allItems) {
           fallback[item.id] = 10;
         }
-        set({ inventory: fallback });
+        set({ inventory: fallback, inventoryLoaded: true });
       }
     }
   },
