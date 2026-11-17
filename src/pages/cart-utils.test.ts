@@ -62,7 +62,7 @@ describe('CartPage utils', () => {
         kailhChocoSide: 'both'
       };
       const result = renderBuildOptions(config);
-      expect(result).toContain('kailh Choco Triggers: Both');
+      expect(result).toContain('Kailh Choco Triggers: Both');
     });
 
     it('Includes Spring Cut and Detachable Trigger Paddle Mod', () => {

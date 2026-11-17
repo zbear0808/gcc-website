@@ -9,6 +9,7 @@ interface Group {
 
 interface ConfigSectionProps {
   title: string;
+  hint?: string;
   category?: keyof ConfiguratorState;
   items: CatalogItem[];
   config?: ConfiguratorState;
@@ -25,10 +26,12 @@ interface ConfigSectionProps {
   isToggleable?: boolean;
   priceKey?: 'price' | 'individualPrice';
   showExternalLinks?: boolean;
+  children?: React.ReactNode;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
   title,
+  hint,
   category,
   items,
   config,
@@ -45,21 +48,18 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   isToggleable = false,
   priceKey = 'price',
   showExternalLinks = false,
+  children,
 }) => {
+  const isItemActive = (item: CatalogItem) => {
+    if (selectedId !== undefined) return selectedId === item.id;
+    const val = category && config ? config[category] : undefined;
+    if (isMulti) return (Array.isArray(val) ? (val as string[]) : []).includes(item.id);
+    return val === item.id;
+  };
+
   const renderItem = (item: CatalogItem) => {
     const disabledResult = disabledFn(item);
-    const disabledReason = typeof disabledResult === 'string' ? disabledResult : (disabledResult ? 'Disabled' : null);
-    
-    let isActive = false;
-    if (selectedId !== undefined) {
-      isActive = selectedId === item.id;
-    } else if (isMulti) {
-      const val = category && config ? config[category] : undefined;
-      const multiValues = (Array.isArray(val) ? val : []) as string[];
-      isActive = multiValues.includes(item.id);
-    } else if (category && config) {
-      isActive = config[category] === item.id;
-    }
+    const disabledReason = typeof disabledResult === 'string' ? disabledResult : disabledResult ? 'Disabled' : null;
 
     const p = priceKey === 'individualPrice' ? item.individualPrice ?? item.price : item.price;
     const itemPrice = typeof p === 'number' ? p : 0;
@@ -68,7 +68,7 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
       <OptionButton
         key={item.id}
         item={item}
-        isActive={isActive}
+        isActive={isItemActive(item)}
         disabledReason={disabledReason}
         basePrice={basePrice}
         itemPrice={itemPrice}
@@ -83,57 +83,35 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
     );
   };
 
+  const gridClass = `config-items-grid${variant === 'sub' ? ' sub-grid' : ''}`;
+  const activeDescription = descriptionPosition === 'outside' ? items.find(isItemActive)?.description : undefined;
+
   return (
-    <div className={`config-section ${variant === 'sub' ? 'sub-variant' : ''}`}>
+    <div className={`config-section${variant === 'sub' ? ' sub-variant' : ''}`}>
       {title && (
-        variant === 'sub' ? (
-          <h4 className="section-subtitle">{title}</h4>
-        ) : (
-          <h3 className="section-title">{title}</h3>
-        )
+        <div className="section-heading">
+          {variant === 'sub' ? <h4 className="section-subtitle">{title}</h4> : <h3 className="section-title">{title}</h3>}
+          {hint && <span className="section-hint">{hint}</span>}
+        </div>
       )}
-      
+
       {groups ? (
         groups.map((group) => {
           const groupItems = items.filter(group.filterFn);
           if (groupItems.length === 0) return null;
-          
           return (
             <div key={group.groupTitle} className="config-group">
               <h4 className="group-title">{group.groupTitle}</h4>
-              <div className={`config-items-grid ${variant === 'sub' ? 'sub-grid' : ''}`}>
-                {groupItems.map(renderItem)}
-              </div>
+              <div className={gridClass}>{groupItems.map(renderItem)}</div>
             </div>
           );
         })
       ) : (
-        <div className={`config-items-grid ${variant === 'sub' ? 'sub-grid' : ''}`}>
-          {items.map(renderItem)}
-        </div>
+        <div className={gridClass}>{items.map(renderItem)}</div>
       )}
-      
-      {descriptionPosition === 'outside' && (
-        <div className="section-description-outside">
-          {items.map(item => {
-            let isActive = false;
-            if (selectedId !== undefined) {
-              isActive = selectedId === item.id;
-            } else if (isMulti) {
-              const val = category && config ? config[category] : undefined;
-              const multiValues = (Array.isArray(val) ? val : []) as string[];
-              isActive = multiValues.includes(item.id);
-            } else if (category && config) {
-              isActive = config[category] === item.id;
-            }
-            return isActive && item.description ? (
-              <div key={item.id} className="active-item-description">
-                {item.description}
-              </div>
-            ) : null;
-          })}
-        </div>
-      )}
+
+      {activeDescription && <p className="section-description-outside">{activeDescription}</p>}
+      {children}
     </div>
   );
 };

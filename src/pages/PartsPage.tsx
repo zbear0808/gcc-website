@@ -54,11 +54,11 @@ export default function PartsPage() {
           <div className="catalog-info-bottom">
             <p className="price">{priceDisplay}</p>
             {totalStock <= 0 ? (
-              <span className="text-error">Out of stock</span>
+              <span className="stock-out">Out of stock</span>
             ) : totalStock <= 10 ? (
-              <span className="text-warning">Low stock</span>
+              <span className="stock-low">Low stock</span>
             ) : (
-              <span className="stock-count">In stock</span>
+              <span className="stock-ok">In stock</span>
             )}
           </div>
         </div>

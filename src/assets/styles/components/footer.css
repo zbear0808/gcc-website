@@ -1,42 +1,77 @@
 .footer {
-  background-color: var(--color-bg-header);
-  border-top: 1px solid var(--color-border);
-  padding: 0.75rem 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-top: auto;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
-.footer-links {
+.footer-inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: var(--space-6);
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-6) var(--space-6);
+}
+
+.footer-logo {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-ndot);
+  font-size: var(--text-xl);
+  color: var(--color-text);
+}
+
+.footer-brand p {
+  max-width: 36ch;
+  line-height: 1.6;
+}
+
+.footer-col {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footer-col .eyebrow { margin-bottom: var(--space-1); }
+
+.footer-col a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-col a:hover { color: var(--color-text); }
+
+.footer-icon-link {
+  display: inline-flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-2);
+  word-break: break-all;
 }
 
-.footer-links a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-gray-hover);
-  padding: 0.75rem;
-  border-radius: 50%;
-  background: var(--color-bg-input);
-  transition: all var(--transition-fast);
+.footer-icon-link svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
-.footer-links a svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  transition: transform var(--transition-fast);
+.footer-bottom {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
 }
 
-.footer-links a:hover {
-  background: var(--color-white);
-  color: var(--color-black);
-  transform: translateY(-4px);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+@media (max-width: 900px) {
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; }
 }
 
-
+@media (max-width: 480px) {
+  .footer-inner { grid-template-columns: 1fr; padding: var(--space-6) var(--space-4); }
+  .footer-bottom { padding: var(--space-4); }
+}

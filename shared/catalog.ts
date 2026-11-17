@@ -60,7 +60,7 @@ export const mods: ModOption[] = [
 
 export const addons: AddonOption[] = [
   { id: 'triggerPlugs', label: 'Trigger Plugs', price: 0, image: '/images/addons/trigger-plugs-short.webp', requiresInventory: false },
-  { id: 'kailhChoco', label: 'kailh Choco Switch Mechanical Trigger', image: '/images/addons/kailh-choco.webp' },
+  { id: 'kailhChoco', label: 'Kailh Choco Switch Mechanical Trigger', image: '/images/addons/kailh-choco.webp' },
   { id: 'springCut', label: 'Cut Springs', price: 0, image: '/images/addons/cut-springs.webp', requiresInventory: false },
   { id: 'triggerMetalBracket', label: 'Trigger Metal Bracket', price: 0, image: '/images/addons/trigger-metal-bracket.webp', requiresInventory: false },
 ];
@@ -323,7 +323,7 @@ export const getTriggerModOptions = (config: ConfiguratorState) => {
     .filter(a => a.id === 'triggerPlugs' || a.id === 'kailhChoco' || a.id === 'triggerMetalBracket')
     .map(a =>
       a.id === 'kailhChoco'
-        ? { ...a, label: 'kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
+        ? { ...a, label: 'Kailh Choco Switch', price: (config.kailhChocoSide ?? 'both') === 'both' ? 40 : 30 }
         : a.id === 'triggerMetalBracket'
           ? { ...a, price: (config.triggerMetalBracketSide ?? 'both') === 'both' ? 6 : 3 }
           : a

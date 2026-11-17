@@ -14,7 +14,7 @@ export function toggleModLogic(currentConfig: ConfiguratorState, modId: keyof Co
     updated = { ...updated, notchesFirefox: false };
   }
 
-  // Trigger Plugs and kailh Choco are mutually exclusive
+  // Trigger Plugs and Kailh Choco are mutually exclusive
   if (modId === 'triggerPlugs' && newVal) {
     updated = { ...updated, kailhChoco: false };
   }

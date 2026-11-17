@@ -37,7 +37,7 @@ export const renderBuildOptions = (build: ConfiguratorState) => {
 
   if (build.kailhChoco) {
     const side = build.kailhChocoSide === 'l' ? 'Left' : build.kailhChocoSide === 'r' ? 'Right' : 'Both';
-    options.push(`kailh Choco Triggers: ${side}`);
+    options.push(`Kailh Choco Triggers: ${side}`);
   }
 
   if (build.springCut) options.push(`Spring Cut`);

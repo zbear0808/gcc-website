@@ -1,100 +1,88 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useCartCount } from '@/store/useStore';
-import { CartIcon } from './Icons';
+import { CartIcon, CloseIcon, MenuIcon } from './Icons';
+
+const navLinks = [
+  { label: 'Builds', path: '/', end: true },
+  { label: 'Parts', path: '/parts', end: false },
+  { label: 'FAQ', path: '/faq', end: false },
+];
+
+const navClass = ({ isActive }: { isActive: boolean }) => `nav-link${isActive ? ' active' : ''}`;
 
 const Header: React.FC = () => {
-  const navigate = useNavigate();
   const cartCount = useCartCount();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-  const closeSidebar = () => setSidebarOpen(false);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
-  const navLinks = [
-    { label: 'Builds', path: '/' },
-    { label: 'Parts', path: '/parts' },
-    { label: 'FAQ', path: '/faq' },
-  ];
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
 
   return (
     <header className="header">
       <div className="header-content">
         <button
-          className="mobile-menu-btn"
-          onClick={toggleSidebar}
-          aria-label="Menu"
+          className="icon-btn mobile-menu-btn"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={menuOpen}
         >
-          {sidebarOpen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
-              <circle cx="5" cy="5" r="1.5" />
-              <circle cx="12" cy="5" r="1.5" />
-              <circle cx="19" cy="5" r="1.5" />
-              <circle cx="5" cy="12" r="1.5" />
-              <circle cx="12" cy="12" r="1.5" />
-              <circle cx="19" cy="12" r="1.5" />
-              <circle cx="5" cy="19" r="1.5" />
-              <circle cx="12" cy="19" r="1.5" />
-              <circle cx="19" cy="19" r="1.5" />
-            </svg>
-          )}
+          <MenuIcon />
         </button>
 
-        <div className="header-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <h1 className="header-name trichromatic" data-text="Zu Builds">
+        <Link to="/" className="header-title" aria-label="Zu Builds home">
+          <span className="header-name trichromatic" data-text="Zu Builds">
             Zu Builds
-          </h1>
-        </div>
+          </span>
+        </Link>
 
-        <nav className="desktop-nav">
+        <nav className="desktop-nav" aria-label="Main">
           {navLinks.map((link) => (
-            <span
-              key={link.path}
-              className="nav-link"
-              onClick={() => navigate(link.path)}
-              style={{ cursor: 'pointer' }}
-            >
+            <NavLink key={link.path} to={link.path} end={link.end} className={navClass}>
               {link.label}
-            </span>
+            </NavLink>
           ))}
         </nav>
 
-        <div
-          className="cart-icon-container"
-          onClick={() => navigate('/cart')}
-          style={{ cursor: 'pointer' }}
-        >
+        <Link to="/cart" className="icon-btn cart-link" aria-label={`Cart, ${cartCount} items`}>
           <CartIcon />
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-        </div>
+        </Link>
       </div>
 
-      {sidebarOpen && (
-        <div className="sidebar-overlay">
-          <div className="sidebar">
-            <button className="close-btn" onClick={closeSidebar}>
-              <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
+      {menuOpen && (
+        <div className="sidebar-overlay" onClick={() => setMenuOpen(false)}>
+          <div className="sidebar" role="dialog" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
+            <button className="icon-btn close-btn" onClick={() => setMenuOpen(false)} aria-label="Close menu">
+              <CloseIcon />
             </button>
-            <nav className="mobile-nav">
+            <nav className="mobile-nav" aria-label="Main">
               {navLinks.map((link) => (
-                <span
+                <NavLink
                   key={link.path}
-                  className="sidebar-link"
-                  onClick={() => {
-                    navigate(link.path);
-                    closeSidebar();
-                  }}
-                  style={{ cursor: 'pointer' }}
+                  to={link.path}
+                  end={link.end}
+                  className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
                 >
                   {link.label}
-                </span>
+                </NavLink>
               ))}
+              <NavLink to="/cart" className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}>
+                Cart{cartCount > 0 ? ` (${cartCount})` : ''}
+              </NavLink>
             </nav>
           </div>
         </div>

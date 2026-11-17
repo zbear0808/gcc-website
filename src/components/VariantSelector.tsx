@@ -135,8 +135,10 @@ export default function VariantSelector<T extends CatalogItem>({
 
   return (
     <div className="config-section">
-      <h3 className="section-title">{title}</h3>
-      <div className="variant-selector" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="section-heading">
+        <h3 className="section-title">{title}</h3>
+      </div>
+      <div className="variant-selector">
         {facets.map((facet, facetIndex) => {
           const relevantItems = items.filter(item => {
             for (let i = 0; i < facetIndex; i++) {
@@ -153,9 +155,9 @@ export default function VariantSelector<T extends CatalogItem>({
           if (uniqueValues.length <= 1) return null;
 
           return (
-            <div key={facet.key} className="variant-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <h4 className="variant-label" style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>{facet.label}</h4>
-              <div className="variant-options" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div key={facet.key} className="variant-row">
+              <h4 className="variant-label">{facet.label}</h4>
+              <div className="variant-options">
                 {uniqueValues.map(val => {
                   const isActive = activeFacets[facet.key] === val;
                   const priceFragments = getPriceDisplayLocal(facet.key, val);
@@ -186,7 +188,7 @@ export default function VariantSelector<T extends CatalogItem>({
                     }
                   }
 
-                  const dummyItem = isLeaf ? exactMatchingItems[0] : { id: `dummy-${val}`, label: val, price: 0 };
+                  const dummyItem = isLeaf ? { ...exactMatchingItems[0], label: val } : { id: `dummy-${val}`, label: val, price: 0, requiresInventory: false };
                   
                   return (
                     <OptionButton
@@ -195,9 +197,10 @@ export default function VariantSelector<T extends CatalogItem>({
                       isActive={isActive}
                       disabledReason={!isValidAtAll ? disabledReason || 'Disabled' : undefined}
                       basePrice={basePrice}
-                      itemPrice={0} // Not used directly when priceFragments is passed
+                      itemPrice={0}
                       priceFragments={priceFragments}
                       variant="sub"
+                      descriptionPosition="none"
                       hideStock={!isLeaf}
                       showExternalLinks={showExternalLinks && isLeaf}
                       onSelect={() => { if (isValidAtAll) handleFacetSelect(facet.key, val); }}

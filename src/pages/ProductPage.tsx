@@ -137,11 +137,11 @@ export default function ProductPage() {
           <div className="price">${item.individualPrice ?? item.price ?? 0}</div>
           <div className="stock">
             {stock <= 0 ? (
-              <span className="text-error">Out of stock</span>
+              <span className="stock-out">Out of stock</span>
             ) : stock <= 10 ? (
-              <span className="text-warning">Low stock</span>
+              <span className="stock-low">Low stock</span>
             ) : (
-              <span className="stock-count">In stock</span>
+              <span className="stock-ok">In stock</span>
             )}
           </div>
 

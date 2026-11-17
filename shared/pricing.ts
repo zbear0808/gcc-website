@@ -224,7 +224,7 @@ export function getLineItems(config: ConfiguratorState): StripeLineItem[] {
           addon.id === 'triggerPlugs'
             ? `${(sanitized.triggerPlugLength ?? 'tall').charAt(0).toUpperCase() + (sanitized.triggerPlugLength ?? 'tall').slice(1)} Trigger Plugs (${(sanitized.triggerPlugSide ?? 'both').toUpperCase()})`
             : addon.id === 'kailhChoco'
-              ? `kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()}) - ${(sanitized.kailhChocoType ?? 'red').toUpperCase()}`
+              ? `Kailh Choco Switch Mechanical Trigger (${(sanitized.kailhChocoSide ?? 'both').toUpperCase()}) - ${(sanitized.kailhChocoType ?? 'red').toUpperCase()}`
               : addon.id === 'triggerMetalBracket'
                 ? `Trigger Metal Bracket (${(sanitized.triggerMetalBracketSide ?? 'both').toUpperCase()})`
                 : undefined;
