@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { redis } from '../utils/clients';
 import { parseAndSortOrders } from '../utils/helpers';
-import { withMiddleware } from '../utils/middleware';
+import { withMiddleware, withAdminAuth } from '../utils/middleware';
 
 async function handler(_req: VercelRequest, res: VercelResponse) {
   if (!redis) {
@@ -23,4 +23,4 @@ async function handler(_req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({ orders });
 }
 
-export default withMiddleware(['GET'], handler);
+export default withMiddleware(['GET'], withAdminAuth(handler));

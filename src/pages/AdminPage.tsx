@@ -1,28 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { RedisOrder } from '@shared/types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
+const TOKEN_KEY = 'zu-admin-token';
 
 export default function AdminPage() {
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) ?? '');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [orders, setOrders] = useState<RedisOrder[]>([]);
   const [inventory, setInventory] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const loadData = async () => {
+  const authHeaders = (t: string) => ({ Authorization: `Bearer ${t}` });
+
+  const loadData = useCallback(async (t: string) => {
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE}/api/admin/orders`);
+      const res = await fetch(`${API_BASE}/api/admin/orders`, { headers: authHeaders(t) });
       if (res.ok) {
         const data = await res.json();
         setOrders(data.orders);
-        
+
         const invRes = await fetch(`${API_BASE}/api/inventory`);
         if (invRes.ok) {
           setInventory(await invRes.json());
         }
+
+        sessionStorage.setItem(TOKEN_KEY, t);
+        setToken(t);
+        setIsAuthenticated(true);
+      } else if (res.status === 401) {
+        sessionStorage.removeItem(TOKEN_KEY);
+        setIsAuthenticated(false);
+        setError('Invalid password');
       } else {
         const errData = await res.json().catch(() => ({}));
         setError(`Server error: ${errData.error || res.statusText}`);
@@ -32,32 +46,42 @@ export default function AdminPage() {
       setError(`Failed to fetch orders: ${message}`);
     }
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const saved = sessionStorage.getItem(TOKEN_KEY);
+    if (saved) loadData(saved);
+  }, [loadData]);
+
+  const login = (e: React.FormEvent) => {
+    e.preventDefault();
+    loadData(password);
+  };
+
+  const logout = () => {
+    sessionStorage.removeItem(TOKEN_KEY);
+    setToken('');
+    setPassword('');
+    setIsAuthenticated(false);
+  };
 
   const fulfillOrder = async (orderId: string) => {
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/admin/fulfill`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ orderId })
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+        body: JSON.stringify({ orderId }),
       });
-      
+
       if (res.ok) {
         const data = await res.json();
-        // Update the order in the list
-        setOrders(prev => prev.map(o => o.id === orderId ? data.order : o));
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
       } else {
         const data = await res.json();
         alert(`Fulfillment failed: ${data.error}`);
       }
-    } catch (err) {
+    } catch {
       alert('Network error during fulfillment');
     }
     setLoading(false);
@@ -69,10 +93,8 @@ export default function AdminPage() {
     try {
       const res = await fetch(`${API_BASE}/api/inventory`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(inventory)
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+        body: JSON.stringify(inventory),
       });
       if (res.ok) {
         alert('Inventory saved successfully!');
@@ -80,7 +102,7 @@ export default function AdminPage() {
         const data = await res.json();
         alert(`Failed to save inventory: ${data.error}`);
       }
-    } catch (err) {
+    } catch {
       alert('Error saving inventory');
     }
     setLoading(false);
@@ -88,22 +110,48 @@ export default function AdminPage() {
 
   const handleInventoryChange = (id: string, value: string) => {
     const num = parseInt(value, 10);
-    setInventory(prev => ({ ...prev, [id]: isNaN(num) ? 0 : num }));
+    setInventory((prev) => ({ ...prev, [id]: isNaN(num) ? 0 : num }));
   };
 
-  if (error) {
-    return <div className="admin-container"><p className="error">{error}</p></div>;
+  if (!isAuthenticated) {
+    return (
+      <div className="admin-login-container">
+        <h2>Admin Login</h2>
+        <form onSubmit={login}>
+          <input
+            type="password"
+            placeholder="Admin password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit" className="btn btn-primary" disabled={loading || !password}>
+            {loading ? 'Checking…' : 'Log in'}
+          </button>
+        </form>
+        {error && <p className="error">{error}</p>}
+      </div>
+    );
   }
 
-  const paidOrders = orders.filter(o => o.status === 'paid');
-  const shippedOrders = orders.filter(o => o.status === 'shipped');
+  const paidOrders = orders.filter((o) => o.status === 'paid');
+  const shippedOrders = orders.filter((o) => o.status === 'shipped');
 
   return (
     <div className="admin-container">
       <div className="admin-header">
         <h2>Admin Dashboard</h2>
-        <button className="btn btn-outline" onClick={() => window.location.reload()} disabled={loading}>Refresh Data</button>
+        <div className="admin-header-actions">
+          <button className="btn btn-outline" onClick={() => loadData(token)} disabled={loading}>
+            Refresh
+          </button>
+          <button className="btn btn-outline" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </div>
+
+      {error && <p className="error">{error}</p>}
 
       <section>
         <h3>Inventory Management</h3>
@@ -120,18 +168,18 @@ export default function AdminPage() {
                 <tr key={id}>
                   <td>{id}</td>
                   <td>
-                    <input 
-                      type="number" 
-                      value={qty} 
+                    <input
+                      className="admin-input"
+                      type="number"
+                      value={qty}
                       onChange={(e) => handleInventoryChange(id, e.target.value)}
-                      style={{ padding: '0.5rem', background: '#222', color: 'white', border: '1px solid #444', borderRadius: '4px' }}
                     />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button type="submit" disabled={loading} className="btn btn-success" style={{ marginBottom: '2rem' }}>
+          <button type="submit" disabled={loading} className="btn btn-success admin-save-btn">
             Save Inventory
           </button>
         </form>
@@ -139,7 +187,9 @@ export default function AdminPage() {
 
       <section>
         <h3>Paid Orders (Ready to Ship)</h3>
-        {paidOrders.length === 0 ? <p>No paid orders pending.</p> : (
+        {paidOrders.length === 0 ? (
+          <p>No paid orders pending.</p>
+        ) : (
           <table className="admin-table">
             <thead>
               <tr>
@@ -150,7 +200,7 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {paidOrders.map(order => (
+              {paidOrders.map((order) => (
                 <tr key={order.id}>
                   <td>{order.id}</td>
                   <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
@@ -169,7 +219,9 @@ export default function AdminPage() {
 
       <section>
         <h3>Shipped Orders</h3>
-        {shippedOrders.length === 0 ? <p>No shipped orders.</p> : (
+        {shippedOrders.length === 0 ? (
+          <p>No shipped orders.</p>
+        ) : (
           <table className="admin-table">
             <thead>
               <tr>
@@ -179,7 +231,7 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {shippedOrders.map(order => (
+              {shippedOrders.map((order) => (
                 <tr key={order.id}>
                   <td>{order.id}</td>
                   <td>{order.paidAt ? new Date(order.paidAt).toLocaleString() : 'N/A'}</td>
@@ -188,7 +240,9 @@ export default function AdminPage() {
                       <a href={order.trackingUrl} target="_blank" rel="noreferrer">
                         {order.trackingNumber || 'Track'}
                       </a>
-                    ) : 'N/A'}
+                    ) : (
+                      'N/A'
+                    )}
                   </td>
                 </tr>
               ))}

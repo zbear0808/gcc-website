@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { redis, easypost } from '../utils/clients';
-import { withMiddleware } from '../utils/middleware';
+import { withMiddleware, withAdminAuth } from '../utils/middleware';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   const { orderId } = req.body;
@@ -40,4 +40,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({ success: true, order });
 }
 
-export default withMiddleware(['POST'], handler);
+export default withMiddleware(['POST'], withAdminAuth(handler));

@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => Promise<void | VercelResponse> | void | VercelResponse;
@@ -50,8 +51,26 @@ export function withRoute(handlers: Partial<Record<string, Handler>>): Handler {
   };
 }
 
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+}
+
 export function withAdminAuth(handler: Handler): Handler {
   return (req, res) => {
+    const adminSecret = process.env.ADMIN_SECRET?.trim();
+    if (!adminSecret) {
+      console.error('Missing ADMIN_SECRET in environment');
+      return res.status(500).json({ error: 'Configuration Error: Missing ADMIN_SECRET in server environment variables' });
+    }
+
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice('Bearer '.length).trim() : undefined;
+    if (!token || !safeEqual(token, adminSecret)) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     return handler(req, res);
   };
 }
